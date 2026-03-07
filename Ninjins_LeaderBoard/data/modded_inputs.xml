@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<modded_inputs>
+    <inputs>
+        <actions>
+			<input name="UAOpenTrackingModLeaderboardPVE" loc="STR_tracking_mod_open_leaderboard_pve" />
+			<input name="UAOpenTrackingModLeaderboardPVP" loc="STR_tracking_mod_open_leaderboard_pvp" />
+        </actions>
+    </inputs>
+	<sorting name="tracking_mod" loc="STR_tracking_mod_menu">
+		<input name="UAOpenTrackingModLeaderboardPVE"/>
+		<input name="UAOpenTrackingModLeaderboardPVP"/>
+	</sorting>
+    <preset>
+		<input name="UAOpenTrackingModLeaderboardPVE">
+            <btn name="kF5"/>
+        </input>
+		<input name="UAOpenTrackingModLeaderboardPVP">
+            <btn name="kF6"/>
+        </input>
+    </preset>
+</modded_inputs>

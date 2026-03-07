@@ -1,0 +1,184 @@
+class PVPCategory
+{
+	string CategoryID;
+	string DisplayName;
+	ref array<string> ClassNames;
+	void PVPCategory()
+	{
+		CategoryID = "";
+		DisplayName = "";
+		ClassNames = new array<string>();
+	}
+	bool MatchesClass(string className, Object entity = null)
+	{
+		if (!ClassNames || ClassNames.Count() == 0)
+			return false;
+		for (int i = 0; i < ClassNames.Count(); i++)
+		{
+			string categoryClassName = ClassNames[i];
+			if (categoryClassName == className)
+				return true;
+			if (className.Length() > categoryClassName.Length())
+			{
+				string prefix = className.Substring(0, categoryClassName.Length());
+				if (prefix == categoryClassName)
+				{
+					string nextChar = className.Substring(categoryClassName.Length(), 1);
+					if (nextChar == "_")
+						return true;
+				}
+			}
+			if (entity && entity.IsKindOf(categoryClassName))
+				return true;
+			if (MatchesBaseClassByConfig(className, categoryClassName))
+				return true;
+		}
+		return false;
+	}
+	bool MatchesBaseClassByConfig(string className, string baseClassName)
+	{
+		if (className == baseClassName)
+			return true;
+		if (!GetGame().ConfigIsExisting("CfgVehicles " + className))
+			return false;
+		if (!GetGame().ConfigIsExisting("CfgVehicles " + baseClassName))
+			return false;
+		string configPath = "CfgVehicles " + className;
+		string parentPath = configPath + " parent";
+		if (GetGame().ConfigIsExisting(parentPath))
+		{
+			string parentClass;
+			GetGame().ConfigGetText(parentPath, parentClass);
+			if (parentClass == baseClassName)
+				return true;
+			if (MatchesBaseClassByConfig(parentClass, baseClassName))
+				return true;
+		}
+		int childCount = GetGame().ConfigGetChildrenCount(configPath);
+		for (int i = 0; i < childCount; i++)
+		{
+			string childName;
+			GetGame().ConfigGetChildName(configPath, i, childName);
+			if (childName == "parent")
+			{
+				string parentClassFromChild;
+				GetGame().ConfigGetText(configPath + " " + childName, parentClassFromChild);
+				if (parentClassFromChild == baseClassName)
+					return true;
+				if (MatchesBaseClassByConfig(parentClassFromChild, baseClassName))
+					return true;
+			}
+		}
+		return false;
+	}
+}
+class PVPCategoryConfigJson
+{
+	autoptr array<ref PVPCategory> Categories;
+	int PVPDeathPenaltyPoints;
+	void PVPCategoryConfigJson()
+	{
+		Categories = new array<ref PVPCategory>();
+		PVPDeathPenaltyPoints = 1;
+	}
+}
+class PVPCategoryConfig
+{
+	protected static ref PVPCategoryConfig Instance;
+	protected ref array<ref PVPCategory> m_Categories;
+	protected ref map<string, ref PVPCategory> m_CategoryMap;
+	protected int m_PVPDeathPenaltyPoints;
+	const string PVP_CATEGORIES_FILE = TRACKING_MOD_DATA_DIR + "PVP_Categories.json";
+	void PVPCategoryConfig()
+	{
+		m_Categories = new array<ref PVPCategory>();
+		m_CategoryMap = new map<string, ref PVPCategory>();
+		LoadCategories();
+	}
+	static PVPCategoryConfig GetInstance(bool reload = false)
+	{
+		if (!Instance)
+		{
+			Instance = new PVPCategoryConfig();
+		}
+		if (reload)
+		{
+			Instance.LoadCategories();
+		}
+		return Instance;
+	}
+	void LoadCategories()
+	{
+		m_Categories.Clear();
+		m_CategoryMap.Clear();
+		if (!FileExist(PVP_CATEGORIES_FILE))
+		{
+			CreateDefaultCategories();
+			return;
+		}
+		PVPCategoryConfigJson jsonData = new PVPCategoryConfigJson();
+		if (FileExist(PVP_CATEGORIES_FILE))
+		{
+			JsonFileLoader<PVPCategoryConfigJson>.JsonLoadFile(PVP_CATEGORIES_FILE, jsonData);
+		}
+		if (jsonData)
+		{
+			if (jsonData.Categories)
+			{
+				for (int i = 0; i < jsonData.Categories.Count(); i++)
+				{
+					PVPCategory category = jsonData.Categories[i];
+					if (category && category.CategoryID != "")
+					{
+						m_Categories.Insert(category);
+						m_CategoryMap.Set(category.CategoryID, category);
+					}
+				}
+			}
+			m_PVPDeathPenaltyPoints = jsonData.PVPDeathPenaltyPoints;
+		}
+		Print("[TrackingMod] Loaded " + m_Categories.Count().ToString() + " PVP categories, PVPDeathPenaltyPoints: " + m_PVPDeathPenaltyPoints.ToString());
+	}
+	void CreateDefaultCategories()
+	{
+		PVPCategoryConfigJson defaultData = new PVPCategoryConfigJson();
+		PVPCategory players = new PVPCategory();
+		players.CategoryID = "Players";
+		players.ClassNames.Insert("PlayerBase:100:1");
+		defaultData.Categories.Insert(players);
+		defaultData.PVPDeathPenaltyPoints = 10;
+		JsonFileLoader<PVPCategoryConfigJson>.JsonSaveFile(PVP_CATEGORIES_FILE, defaultData);
+		LoadCategories();
+	}
+	array<ref PVPCategory> GetCategories()
+	{
+		return m_Categories;
+	}
+	PVPCategory GetCategory(string categoryID)
+	{
+		if (m_CategoryMap.Contains(categoryID))
+			return m_CategoryMap.Get(categoryID);
+		return null;
+	}
+	array<string> GetCategoryIDsForClass(string className, Object entity = null)
+	{
+		array<string> matchingCategories = new array<string>();
+		for (int i = 0; i < m_Categories.Count(); i++)
+		{
+			PVPCategory category = m_Categories[i];
+			if (category && category.MatchesClass(className, entity))
+			{
+				matchingCategories.Insert(category.CategoryID);
+			}
+		}
+		return matchingCategories;
+	}
+	bool HasCategory(string categoryID)
+	{
+		return m_CategoryMap.Contains(categoryID);
+	}
+	int GetPVPDeathPenaltyPoints()
+	{
+		return m_PVPDeathPenaltyPoints;
+	}
+}

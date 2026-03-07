@@ -1,0 +1,302 @@
+GridSpacerWidgetClass TrackingModPvPPlayerEntry {
+ ignorepointer 1
+ position 0 0
+ size 0.98 1
+ halign center_ref
+ valign top_ref
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ priority 1
+ scriptclass "TrackingModPvPPlayerEntryController"
+ style Empty
+ "Size To Content H" 0
+ "Size To Content V" 1
+ content_halign center
+ Columns 1
+ Rows 1
+ {
+  PanelWidgetClass player_header_panel {
+   visible 1
+   ignorepointer 1
+   color 0.18 0.18 0.18 0.95
+   size 1 45
+   halign center_ref
+   valign center_ref
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 1
+   style blank
+   {
+    PanelWidgetClass player_header_background {
+     visible 1
+     ignorepointer 1
+     color 0.18 0.18 0.18 0.95
+     size 1 1
+     halign center_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     style DayZDefaultPanel
+    }
+    PanelWidgetClass player_border_top {
+     visible 1
+     ignorepointer 1
+     color 0.9 0.2 0.2 0.4
+     position 0 0
+     size 1 1
+     halign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 1
+     priority 100
+     style DayZDefaultPanel
+    }
+    PanelWidgetClass player_border_bottom {
+     visible 1
+     ignorepointer 1
+     color 0.9 0.2 0.2 0.4
+     position 0 44
+     size 1 1
+     halign center_ref
+     hexactpos 0
+     vexactpos 1
+     hexactsize 0
+     vexactsize 1
+     priority 100
+     style DayZDefaultPanel
+    }
+    PanelWidgetClass player_border_left {
+     visible 0
+     ignorepointer 1
+     color 0.9 0.2 0.2 0.4
+     position 0 0
+     size 1 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     priority 100
+     style DayZDefaultPanel
+    }
+    PanelWidgetClass player_border_right {
+     visible 1
+     ignorepointer 1
+     color 0.9 0.2 0.2 0.4
+     size 1 1
+     halign right_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 1
+     vexactsize 0
+     priority 100
+     style DayZDefaultPanel
+    }
+    PanelWidgetClass player_online_indicator {
+     visible 1
+     ignorepointer 1
+     position 0 0
+     size 0.005 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     priority 50
+     style rover_sim_colorable
+    }
+    ImageWidgetClass Survivor_Female {
+     visible 1
+     ignorepointer 1
+     color 1 1 1 1
+     position 0.005 0
+     size 40 40
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 1
+     vexactsize 1
+     priority 50
+     image0 ""
+     mode blend
+     "src alpha" 1
+     "clamp mode" clamp
+     "stretch mode" stretch_w_h
+     "flip v" 0
+    }
+    TextWidgetClass player_position {
+     ignorepointer 1
+     color 1 1 1 1
+     position 0.08 0
+     size 0.05 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook16"
+     "text halign" center
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "PlayerPosition"
+      }
+     }
+    }
+    TextWidgetClass player_name {
+     ignorepointer 1
+     color 1 1 1 1
+     position 0.13 0
+     size 0.2 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook16"
+     "text halign" left
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "PlayerName"
+      }
+     }
+    }
+    TextWidgetClass player_pvp_points {
+     ignorepointer 1
+     color 1 1 1 1
+     position 0.34 0
+     size 0.08 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook16"
+     "text halign" right
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "PVPPoints"
+      }
+     }
+    }
+    TextWidgetClass player_longest_range {
+     ignorepointer 1
+     color 0.569 0.275 1.0 1
+     position 0.43 0
+     size 0.08 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook16"
+     "text halign" right
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "LongestRange"
+      }
+     }
+    }
+    TextWidgetClass player_kills {
+     ignorepointer 1
+     color 1 1 1 1
+     position 0.52 0
+     size 0.06 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook16"
+     "text halign" right
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "Kills"
+      }
+     }
+    }
+    TextWidgetClass player_deaths {
+     ignorepointer 1
+     color 1 1 1 1
+     position 0.59 0
+     size 0.06 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook16"
+     "text halign" right
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "Deaths"
+      }
+     }
+    }
+    TextWidgetClass player_kd_ratio {
+     ignorepointer 1
+     color 0.569 0.275 1.0 1
+     position 0.66 0
+     size 0.08 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook16"
+     "text halign" right
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "KDRatio"
+      }
+     }
+    }
+    ButtonWidgetClass claim_reward_button {
+     visible 0
+     clipchildren 0
+     ignorepointer 0
+     color 0.569 0.275 1 0.8
+     position 0.75 0
+     size 0.15 1
+     halign left_ref
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     style Default
+     {
+      ScriptParamsClass {
+       Relay_Command "OnClaimRewardButtonClick"
+      }
+      TextWidgetClass claim_reward_text {
+       ignorepointer 1
+       color 1 1 1 1
+       position 0 0
+       size 1 1
+       halign center_ref
+       valign center_ref
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       font "gui/fonts/metronbook16"
+       "text halign" center
+       "text valign" center
+       text "Claim Reward"
+      }
+     }
+    }
+   }
+  }
+ }
+}

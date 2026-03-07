@@ -1,0 +1,16 @@
+MetaFileClass {
+ Name "{FD90337355028247}src/Ninjins_LeaderBoard/gui/icons/survivor/male.edds"
+ Author "desktop-5n5atj7"
+ ChangeDate -260721612
+ Configurations {
+  PNGResourceClass PC {
+   SourceFile "male.png"
+  }
+  PNGResourceClass XBOX_ONE : PC {
+  }
+  PNGResourceClass PS4 : PC {
+  }
+  PNGResourceClass LINUX : PC {
+  }
+ }
+}
