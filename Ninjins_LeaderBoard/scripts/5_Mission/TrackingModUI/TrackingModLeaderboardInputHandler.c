@@ -17,6 +17,7 @@ modded class MissionBase
 		if (!m_RPCRegistered)
 		{
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboard", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboardDenied", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceivePlayerDataUpdate", this, SingleplayerExecutionType.Client);
 			TrackingModUI.InitLogFile();
@@ -83,39 +84,11 @@ modded class MissionBase
 	
 	void OpenTrackingModLeaderboardPVE()
 	{
-		TrackingModData data;
-		TrackingModLeaderboardData leaderboardData;
 		PlayerBase player;
 		
 		player = PlayerBase.Cast(GetGame().GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
-		
-		data = TrackingModData.GetInstance();
-		if (data && data.m_PlayerDataMap && data.m_PlayerDataMap.Count() > 0)
-		{
-			leaderboardData = BuildLeaderboardDataFromMap(data, 1, true);
-			if (leaderboardData)
-			{
-				m_PendingPVEMode = true;
-				m_PendingPVPMode = false;
-				
-				if (!m_LeaderboardMenu)
-				{
-					m_LeaderboardMenu = new TrackingModLeaderboardMenu();
-					GetGame().GetMission().GetHud().Show(false);
-				}
-				
-				if (m_LeaderboardMenu)
-				{
-					m_LeaderboardMenu.ClearCache();
-					m_LeaderboardMenu.SetLeaderboardData(leaderboardData);
-				}
-				
-				m_PendingPVEMode = false;
-				return;
-			}
-		}
 		
 		m_PendingPVEMode = true;
 		m_PendingPVPMode = false;
@@ -132,38 +105,11 @@ modded class MissionBase
 	
 	void OpenTrackingModLeaderboardPVP()
 	{
-		TrackingModData data;
-		TrackingModLeaderboardData leaderboardData;
 		PlayerBase player;
 		
 		player = PlayerBase.Cast(GetGame().GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
-		
-		data = TrackingModData.GetInstance();
-		if (data && data.m_PlayerDataMap && data.m_PlayerDataMap.Count() > 0)
-		{
-			leaderboardData = BuildLeaderboardDataFromMap(data, 1, false);
-			if (leaderboardData)
-			{
-				m_PendingPVPMode = true;
-				m_PendingPVEMode = false;
-				
-				if (!m_PvPLeaderboardMenu)
-				{
-					m_PvPLeaderboardMenu = new TrackingModPvPLeaderboardMenu();
-					GetGame().GetMission().GetHud().Show(false);
-				}
-				
-				if (m_PvPLeaderboardMenu)
-				{
-					m_PvPLeaderboardMenu.SetLeaderboardData(leaderboardData);
-				}
-				
-				m_PendingPVPMode = false;
-				return;
-			}
-		}
 		
 		m_PendingPVPMode = true;
 		m_PendingPVEMode = false;
@@ -176,6 +122,29 @@ modded class MissionBase
 		TrackingModUI.LogRPC("========================================");
 		
 		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
+	}
+
+	void ReceiveTrackingModLeaderboardDenied(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<string> messageParam;
+		PlayerBase player;
+		string message;
+		
+		if (type != CallType.Client)
+			return;
+		
+		if (!ctx.Read(messageParam))
+			return;
+		
+		message = "[TrackingMod] Access denied. Admin only.";
+		if (messageParam && messageParam.param1 != "")
+			message = messageParam.param1;
+		
+		m_PendingPVEMode = false;
+		m_PendingPVPMode = false;
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (player)
+			player.MessageAction(message);
 	}
 	
 	void ReceiveTrackingModLeaderboard(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)

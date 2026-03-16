@@ -150,6 +150,10 @@ Alle Konfigurationsdateien werden beim ersten Serverstart automatisch generiert 
 | `ShowPlayerOnlineStatusPVP` | `bool` | `true` | Online-Status im PvP-Leaderboard anzeigen |
 | `SurvivorIconPathMale` | `string` | `"...male.edds"` | Pfad zum männlichen Survivor-Icon |
 | `SurvivorIconPathFemale` | `string` | `"...female.edds"` | Pfad zum weiblichen Survivor-Icon |
+| `EnableWebExport` | `bool` | `true` | Exportiert die Leaderboard-Daten als JSON für Webseiten |
+| `WebExportFileName` | `string` | `"LeaderboardWebExport.json"` | Dateiname der Web-Export-JSON unter `Data/` |
+| `WebExportIncludePlayerIDs` | `bool` | `false` | Gibt Steam64-IDs im Export frei |
+| `WebExportMaxPlayers` | `int` | `100` | Max. Anzahl exportierter Spieler je PvE-/PvP-Liste |
 
 #### Kill/Death-Tracking deaktivieren
 
@@ -199,6 +203,39 @@ Alle Konfigurationsdateien werden beim ersten Serverstart automatisch generiert 
             "ZoneNames": ["FlagPvPZone_", "KOTHZone_"]
         }
     ]
+}
+```
+
+#### Web-Export für Webseite
+
+Wenn `EnableWebExport` aktiv ist, schreibt der Server nach Änderungen und beim Start automatisch eine JSON-Datei nach:
+
+```
+$profile:Ninjins_Tracking_Mod/Data/LeaderboardWebExport.json
+```
+
+Diese Datei kann von einer Webseite, einem API-Proxy oder einem Cron-/Sync-Job eingelesen werden.
+
+**Beispiel:**
+```json
+{
+    "generatedAt": "2026-03-16 03:10:00",
+    "playerOnlineCounter": 12,
+    "totalPlayers": 245,
+    "includePlayerIDs": false,
+    "exportPlayerLimit": 100,
+    "topPVEPlayers": [
+        {
+            "playerName": "Psyern",
+            "pvePoints": 5120,
+            "pvpPoints": 320,
+            "pveDeaths": 4,
+            "pvpDeaths": 1,
+            "isOnline": 1,
+            "lastLoginDate": "2026-03-16 03:09:22"
+        }
+    ],
+    "topPVPPlayers": []
 }
 ```
 
@@ -536,6 +573,7 @@ $profile:Ninjins_Tracking_Mod/
 │   ├── PVE_Categories.json             # PvE-Kategorien
 │   ├── PVP_Categories.json             # PvP-Kategorien
 │   ├── TrackingModRewardConfig.json    # Reward-Konfiguration
+│   ├── LeaderboardWebExport.json       # Web-Export für externe Webseiten/API-Bridge
 │   ├── Players/
 │   │   ├── <SteamID64>.json            # Individuelle Spielerdaten
 │   │   └── ...
@@ -581,6 +619,12 @@ Die Mod nutzt den **Community Framework RPC-Manager** für Client-Server-Kommuni
 | `ClaimTrackingModReward` | Client → Server | Milestone-Reward einfordern |
 | `ReceiveTrackingModRewardClaim` | Server → Client | Reward-Claim-Ergebnis |
 | `ReceivePlayerDataUpdate` | Server → Client | Spielerdaten-Update |
+
+### Web-Schnittstelle
+
+- Es gibt keinen eingebauten HTTP-Server im Mod.
+- Stattdessen erzeugt der Server eine maschinenlesbare JSON-Datei für externe Web-Anbindungen.
+- Empfohlener Betrieb: Webserver oder kleines Backend liest `LeaderboardWebExport.json` aus dem Server-Profil und liefert sie an die Webseite aus.
 
 ### UI-System (MVC)
 

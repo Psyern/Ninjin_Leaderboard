@@ -37,10 +37,14 @@ class TrackingModConfig
 	bool ExcludePVPKillWhenBothInPVE;
 	bool EnableZoneKillExclusions;
 	autoptr array<ref ZoneKillExclusion> ExcludeKillsInZones;
+	bool EnableWebExport;
+	string WebExportFileName;
+	bool WebExportIncludePlayerIDs;
+	int WebExportMaxPlayers;
 	void TrackingModConfig()
 	{
 		AdminIDs = new array<string>();
-		AdminIDs.Insert("76561198853703934");
+		AdminIDs.Insert("76561198043039918");
 		DeletePlayerFilesOlderThanDays = 0;
 		UseUTCForDates = false;
 		EnableRewardSystem = false;
@@ -76,6 +80,10 @@ class TrackingModConfig
 		ExcludePVPKillWhenBothInPVE = false;
 		EnableZoneKillExclusions = false;
 		ExcludeKillsInZones = new array<ref ZoneKillExclusion>();
+		EnableWebExport = true;
+		WebExportFileName = "LeaderboardWebExport.json";
+		WebExportIncludePlayerIDs = false;
+		WebExportMaxPlayers = 100;
 		ZoneKillExclusion example1;
 		ZoneKillExclusion example2;
 		ZoneKillExclusion example3;
@@ -129,6 +137,12 @@ class TrackingModConfig
 				config.MaxPVEPlayersDisplay = 100;
 			if (config.MaxPVPPlayersDisplay > 100)
 				config.MaxPVPPlayersDisplay = 100;
+			if (config.WebExportFileName == "")
+				config.WebExportFileName = "LeaderboardWebExport.json";
+			if (config.WebExportMaxPlayers < 1)
+				config.WebExportMaxPlayers = 1;
+			if (config.WebExportMaxPlayers > 1000)
+				config.WebExportMaxPlayers = 1000;
 			Print("[TrackingMod] Config loaded from: " + TRACKING_MOD_CONFIG_FILE);
 			Print("[TrackingMod] Loaded values - MaxPVEPlayersDisplay: " + config.MaxPVEPlayersDisplay.ToString() + ", MaxPVPPlayersDisplay: " + config.MaxPVPPlayersDisplay.ToString() + ", ShowPlayerOnlineStatusPVE: " + config.ShowPlayerOnlineStatusPVE.ToString() + ", ShowPlayerOnlineStatusPVP: " + config.ShowPlayerOnlineStatusPVP.ToString());
 		}

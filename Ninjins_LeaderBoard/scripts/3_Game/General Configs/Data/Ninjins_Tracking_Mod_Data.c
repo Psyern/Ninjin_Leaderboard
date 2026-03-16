@@ -1,6 +1,7 @@
 const string TRACKING_MOD_ROOT_FOLDER = "$profile:Ninjins_Tracking_Mod\\";
 const string TRACKING_MOD_DATA_DIR = TRACKING_MOD_ROOT_FOLDER + "Data\\";
 const string TRACKING_MOD_PLAYERS_DIR = TRACKING_MOD_DATA_DIR + "Players\\";
+const string TRACKING_MOD_WEB_EXPORT_FILE = TRACKING_MOD_DATA_DIR + "LeaderboardWebExport.json";
 
 static string GetPlayerFilePath(string playerID)
 {
@@ -945,9 +946,11 @@ class TrackingModData
 			playerData = m_PlayerDataMap.GetElement(i);
 			if (playerData && playerID != "")
 			{
-				SavePlayerData(playerData, playerID);
+				SavePlayerData(playerData, playerID, true);
 			}
 		}
+		
+		ExportWebLeaderboard();
 	}
 	
 	static void ForceSave()
@@ -1041,7 +1044,7 @@ class TrackingModData
 		return playerData;
 	}
 	
-	void SavePlayerData(PlayerDeathData playerData, string plainID)
+	void SavePlayerData(PlayerDeathData playerData, string plainID, bool skipWebExport = false)
 	{
 		string filePath;
 		bool wasNewPlayer;
@@ -1068,6 +1071,163 @@ class TrackingModData
 				MarkLeaderboardDirty();
 			}
 		}
+		
+		if (!skipWebExport)
+		{
+			ExportWebLeaderboard();
+		}
+	}
+	
+	void ExportWebLeaderboard()
+	{
+		TrackingModWebLeaderboardExport exportData;
+		array<ref PlayerDeathData> sortedPVE;
+		array<ref PlayerDeathData> sortedPVP;
+		int playerLimit;
+		bool includePlayerIDs;
+		bool useUTC;
+		CF_Date currentDate;
+		PVECategoryConfig categoryConfig;
+		array<ref PVECategory> categories;
+		int idx;
+		PVECategory category;
+		TrackingModWebLeaderboardPlayerData exportPlayer;
+		string exportFilePath;
+		
+		if (!GetGame().IsDedicatedServer())
+			return;
+		
+		if (!g_TrackingModConfig || !g_TrackingModConfig.EnableWebExport)
+			return;
+		
+		if (!m_PlayerDataMap)
+			return;
+		
+		playerLimit = g_TrackingModConfig.WebExportMaxPlayers;
+		if (playerLimit < 1)
+			playerLimit = 1;
+		includePlayerIDs = g_TrackingModConfig.WebExportIncludePlayerIDs;
+		useUTC = g_TrackingModConfig.UseUTCForDates;
+		currentDate = CF_Date.Now(useUTC);
+		exportFilePath = TRACKING_MOD_WEB_EXPORT_FILE;
+		if (g_TrackingModConfig.WebExportFileName != "")
+			exportFilePath = TRACKING_MOD_DATA_DIR + g_TrackingModConfig.WebExportFileName;
+		
+		sortedPVE = GetSortedPVEList();
+		sortedPVP = GetSortedPVPList();
+		exportData = new TrackingModWebLeaderboardExport();
+		exportData.generatedAt = currentDate.ToString(CF_Date.DATETIME);
+		exportData.playerOnlineCounter = GetOnlinePlayerCount();
+		exportData.totalPlayers = m_PlayerDataMap.Count();
+		exportData.disablePVELeaderboard = g_TrackingModConfig.DisablePVELeaderboard;
+		exportData.disablePVPLeaderboard = g_TrackingModConfig.DisablePVPLeaderboard;
+		exportData.includePlayerIDs = includePlayerIDs;
+		exportData.exportPlayerLimit = playerLimit;
+		
+		categoryConfig = PVECategoryConfig.GetInstance();
+		if (categoryConfig)
+		{
+			categories = categoryConfig.GetCategories();
+			for (idx = 0; idx < categories.Count(); idx++)
+			{
+				category = categories.Get(idx);
+				if (category && category.CategoryID != "" && category.ClassNamePreview != "")
+				{
+					exportData.categoryPreviews.Set(category.CategoryID, category.ClassNamePreview);
+				}
+			}
+		}
+		
+		for (idx = 0; idx < sortedPVE.Count() && idx < playerLimit; idx++)
+		{
+			exportPlayer = CreateWebLeaderboardPlayerData(sortedPVE.Get(idx), includePlayerIDs);
+			if (exportPlayer)
+				exportData.topPVEPlayers.Insert(exportPlayer);
+		}
+		
+		for (idx = 0; idx < sortedPVP.Count() && idx < playerLimit; idx++)
+		{
+			exportPlayer = CreateWebLeaderboardPlayerData(sortedPVP.Get(idx), includePlayerIDs);
+			if (exportPlayer)
+				exportData.topPVPPlayers.Insert(exportPlayer);
+		}
+		
+		JsonFileLoader<TrackingModWebLeaderboardExport>.JsonSaveFile(exportFilePath, exportData);
+	}
+	
+	protected int GetOnlinePlayerCount()
+	{
+		int idx;
+		int onlineCount;
+		PlayerDeathData playerData;
+		
+		onlineCount = 0;
+		for (idx = 0; idx < m_PlayerDataMap.Count(); idx++)
+		{
+			playerData = m_PlayerDataMap.GetElement(idx);
+			if (playerData && playerData.playerIsOnline == 1)
+				onlineCount++;
+		}
+		
+		return onlineCount;
+	}
+	
+	protected TrackingModWebLeaderboardPlayerData CreateWebLeaderboardPlayerData(PlayerDeathData playerData, bool includePlayerIDs)
+	{
+		TrackingModWebLeaderboardPlayerData exportPlayer;
+		int idx;
+		string key;
+		int value;
+		
+		if (!playerData)
+			return null;
+		
+		exportPlayer = new TrackingModWebLeaderboardPlayerData();
+		if (includePlayerIDs)
+			exportPlayer.playerID = playerData.PlayerID;
+		exportPlayer.playerName = playerData.PlayerName;
+		exportPlayer.deathCount = playerData.GetTotalPVPDeaths();
+		exportPlayer.pveDeaths = playerData.GetTotalPVEDeaths();
+		exportPlayer.pvpDeaths = playerData.GetTotalPVPDeaths();
+		exportPlayer.pvePoints = playerData.GetPVEPoints();
+		exportPlayer.pvpPoints = playerData.GetPVPPoints();
+		exportPlayer.isOnline = playerData.playerIsOnline;
+		exportPlayer.survivorType = playerData.survivorType;
+		exportPlayer.lastLoginDate = playerData.LastLoginDate;
+		if (g_TrackingModRewardConfig && g_TrackingModRewardConfig.EnableMilestoneRewards)
+			exportPlayer.pendingRewards = TrackingModMilestoneHelper.CalculatePendingRewards(playerData);
+		
+		if (playerData.CategoryKills)
+		{
+			for (idx = 0; idx < playerData.CategoryKills.Count(); idx++)
+			{
+				key = playerData.CategoryKills.GetKey(idx);
+				value = playerData.CategoryKills.GetElement(idx);
+				exportPlayer.categoryKills.Set(key, value);
+			}
+		}
+		
+		if (playerData.CategoryDeaths)
+		{
+			for (idx = 0; idx < playerData.CategoryDeaths.Count(); idx++)
+			{
+				key = playerData.CategoryDeaths.GetKey(idx);
+				value = playerData.CategoryDeaths.GetElement(idx);
+				exportPlayer.categoryDeaths.Set(key, value);
+			}
+		}
+		
+		if (playerData.CategoryLongestRanges)
+		{
+			for (idx = 0; idx < playerData.CategoryLongestRanges.Count(); idx++)
+			{
+				key = playerData.CategoryLongestRanges.GetKey(idx);
+				value = playerData.CategoryLongestRanges.GetElement(idx);
+				exportPlayer.categoryLongestRanges.Set(key, value);
+			}
+		}
+		
+		return exportPlayer;
 	}
 	
 	void UpdateLastLoginDate(PlayerDeathData playerData)

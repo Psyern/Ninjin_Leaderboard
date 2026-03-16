@@ -29,6 +29,7 @@ modded class MissionServer extends MissionBase
 			{
 				data.MarkLeaderboardDirty();
 				data.RebuildSortedLists();
+				data.ExportWebLeaderboard();
 			}
 			
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", this, SingleplayerExecutionType.Server);
@@ -124,6 +125,13 @@ modded class MissionServer extends MissionBase
 		if (!GetGame().IsDedicatedServer() || !sender)
 		{
 			TrackingMod.LogWarning("Request rejected - not server or no sender");
+			return;
+		}
+		
+		if (!g_TrackingModConfig || !g_TrackingModConfig.IsAdmin(senderID))
+		{
+			TrackingMod.LogWarning("RequestTrackingModLeaderboard - access denied for " + senderName + " (ID: " + senderID + ")");
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboardDenied", new Param1<string>("[TrackingMod] Access denied. Admin only."), true, sender);
 			return;
 		}
 		
@@ -627,6 +635,10 @@ modded class MissionServer extends MissionBase
 			{
 				TrackingMod.LogInfo(string.Format("Updated online status for %1 currently connected players", updatedCount));
 			}
+			
+			g_TrackingModData.MarkLeaderboardDirty();
+			g_TrackingModData.RebuildSortedLists();
+			g_TrackingModData.ExportWebLeaderboard();
 		}
 		
 		TrackingMod.LogInfo("Configs reloaded successfully!");
