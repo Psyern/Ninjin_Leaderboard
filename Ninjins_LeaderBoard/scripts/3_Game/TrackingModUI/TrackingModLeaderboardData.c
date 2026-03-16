@@ -83,4 +83,68 @@ class TrackingModRewardClaimResponse
 	}
 }
 
+class TrackingModWebLeaderboardPlayerData
+{
+	string playerID;
+	string playerName;
+	int deathCount;
+	int pveDeaths;
+	int pvpDeaths;
+	int pvePoints;
+	int pvpPoints;
+	int isOnline;
+	string survivorType;
+	string lastLoginDate;
+	int pendingRewards;
+	ref map<string, int> categoryKills;
+	ref map<string, int> categoryDeaths;
+	ref map<string, int> categoryLongestRanges;
+	
+	void TrackingModWebLeaderboardPlayerData()
+	{
+		playerID = "";
+		playerName = "";
+		deathCount = 0;
+		pveDeaths = 0;
+		pvpDeaths = 0;
+		pvePoints = 0;
+		pvpPoints = 0;
+		isOnline = 0;
+		survivorType = "";
+		lastLoginDate = "";
+		pendingRewards = 0;
+		categoryKills = new map<string, int>();
+		categoryDeaths = new map<string, int>();
+		categoryLongestRanges = new map<string, int>();
+	}
+}
+
+class TrackingModWebLeaderboardExport
+{
+	string generatedAt;
+	int playerOnlineCounter;
+	int totalPlayers;
+	bool disablePVPLeaderboard;
+	bool disablePVELeaderboard;
+	bool includePlayerIDs;
+	int exportPlayerLimit;
+	ref array<ref TrackingModWebLeaderboardPlayerData> topPVEPlayers;
+	ref array<ref TrackingModWebLeaderboardPlayerData> topPVPPlayers;
+	ref map<string, string> categoryPreviews;
+	
+	void TrackingModWebLeaderboardExport()
+	{
+		generatedAt = "";
+		playerOnlineCounter = 0;
+		totalPlayers = 0;
+		disablePVPLeaderboard = false;
+		disablePVELeaderboard = false;
+		includePlayerIDs = false;
+		exportPlayerLimit = 0;
+		topPVEPlayers = new array<ref TrackingModWebLeaderboardPlayerData>();
+		topPVPPlayers = new array<ref TrackingModWebLeaderboardPlayerData>();
+		categoryPreviews = new map<string, string>();
+	}
+}
+
 #endif
