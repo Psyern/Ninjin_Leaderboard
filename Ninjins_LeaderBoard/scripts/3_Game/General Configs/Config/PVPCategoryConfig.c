@@ -3,27 +3,47 @@ class PVPCategory
 	string CategoryID;
 	string DisplayName;
 	ref array<string> ClassNames;
+
 	void PVPCategory()
 	{
 		CategoryID = "";
 		DisplayName = "";
 		ClassNames = new array<string>();
 	}
+
+	string ExtractConfiguredClassName(string configuredClassName)
+	{
+		int firstColonIndex;
+		
+		firstColonIndex = configuredClassName.IndexOf(":");
+		if (firstColonIndex == -1)
+			return configuredClassName;
+		
+		return configuredClassName.Substring(0, firstColonIndex);
+	}
+
 	bool MatchesClass(string className, Object entity = null)
 	{
+		string configuredClassName;
+		string categoryClassName;
+		string prefix;
+		string nextChar;
+		int i;
+		
 		if (!ClassNames || ClassNames.Count() == 0)
 			return false;
-		for (int i = 0; i < ClassNames.Count(); i++)
+		for (i = 0; i < ClassNames.Count(); i++)
 		{
-			string categoryClassName = ClassNames[i];
+			configuredClassName = ClassNames[i];
+			categoryClassName = ExtractConfiguredClassName(configuredClassName);
 			if (categoryClassName == className)
 				return true;
 			if (className.Length() > categoryClassName.Length())
 			{
-				string prefix = className.Substring(0, categoryClassName.Length());
+				prefix = className.Substring(0, categoryClassName.Length());
 				if (prefix == categoryClassName)
 				{
-					string nextChar = className.Substring(categoryClassName.Length(), 1);
+					nextChar = className.Substring(categoryClassName.Length(), 1);
 					if (nextChar == "_")
 						return true;
 				}
@@ -173,6 +193,38 @@ class PVPCategoryConfig
 		}
 		return matchingCategories;
 	}
+
+	string GetPrimaryPlayerCategoryID()
+	{
+		int i;
+		PVPCategory category;
+		string classNameEntry;
+		string configuredClassName;
+		
+		if (m_Categories)
+		{
+			for (i = 0; i < m_Categories.Count(); i++)
+			{
+				category = m_Categories.Get(i);
+				if (!category || !category.ClassNames)
+					continue;
+				
+				for (int j = 0; j < category.ClassNames.Count(); j++)
+				{
+					classNameEntry = category.ClassNames.Get(j);
+					configuredClassName = category.ExtractConfiguredClassName(classNameEntry);
+					if (configuredClassName == "PlayerBase")
+						return category.CategoryID;
+				}
+			}
+			
+			if (m_Categories.Count() > 0 && m_Categories.Get(0))
+				return m_Categories.Get(0).CategoryID;
+		}
+		
+		return "Players";
+	}
+
 	bool HasCategory(string categoryID)
 	{
 		return m_CategoryMap.Contains(categoryID);

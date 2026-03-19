@@ -162,6 +162,8 @@ class TrackingModRewardHelper
 		EntityAI attachment;
 		TrackingModRewardAttachment attachmentConfig;
 		float randomChance;
+		InventoryLocation attachmentLocation;
+		bool canCreateAsAttachment;
 		
 		for (j = 0; j < attachmentConfigs.Count(); j++)
 		{
@@ -179,7 +181,22 @@ class TrackingModRewardHelper
 				continue;
 			}
 			
-			attachment = parentEntity.GetInventory().CreateInInventory(attachmentConfig.ItemClassName);
+			attachment = null;
+			attachmentLocation = new InventoryLocation;
+			canCreateAsAttachment = false;
+			if (parentEntity.GetInventory())
+			{
+				canCreateAsAttachment = parentEntity.GetInventory().CanAddAttachmentEx(attachmentConfig.ItemClassName);
+				if (canCreateAsAttachment)
+				{
+					attachment = parentEntity.GetInventory().CreateAttachment(attachmentConfig.ItemClassName);
+				}
+				
+				if (!attachment)
+				{
+					attachment = parentEntity.GetInventory().CreateInInventory(attachmentConfig.ItemClassName);
+				}
+			}
 			if (!attachment)
 			{
 				TrackingMod.LogWarning("[TrackingModRewardHelper] Failed to create attachment: " + attachmentConfig.ItemClassName + " for " + parentItemName);

@@ -128,13 +128,6 @@ modded class MissionServer extends MissionBase
 			return;
 		}
 		
-		if (!g_TrackingModConfig || !g_TrackingModConfig.IsAdmin(senderID))
-		{
-			TrackingMod.LogWarning("RequestTrackingModLeaderboard - access denied for " + senderName + " (ID: " + senderID + ")");
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboardDenied", new Param1<string>("[TrackingMod] Access denied. Admin only."), true, sender);
-			return;
-		}
-		
 		pageSize = 25;
 		
 		if (g_TrackingModConfig)

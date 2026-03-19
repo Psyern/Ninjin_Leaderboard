@@ -9,6 +9,114 @@ class TrackingModPvPPlayerEntry: ScriptView
 	protected Widget player_online_indicator;
 	protected ButtonWidget claim_reward_button;
 	protected ImageWidget Survivor_Female;
+
+	protected int GetPVPCategoryValue(map<string, int> categoryMap, string categoryID)
+	{
+		PVPCategoryConfig pvpCategoryConfig;
+		string primaryCategoryID;
+		int totalValue;
+		
+		if (!categoryMap)
+			return 0;
+		
+		if (categoryMap.Contains(categoryID))
+			return categoryMap.Get(categoryID);
+		
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		if (!pvpCategoryConfig)
+			return 0;
+		
+		primaryCategoryID = pvpCategoryConfig.GetPrimaryPlayerCategoryID();
+		if (categoryID != primaryCategoryID)
+			return 0;
+		
+		totalValue = 0;
+		if (categoryMap.Contains("Players"))
+			totalValue += categoryMap.Get("Players");
+		if (categoryMap.Contains("Player"))
+			totalValue += categoryMap.Get("Player");
+		if (categoryMap.Contains("Spieler"))
+			totalValue += categoryMap.Get("Spieler");
+		if (categoryMap.Contains("Survivor"))
+			totalValue += categoryMap.Get("Survivor");
+		
+		return totalValue;
+	}
+
+	protected int GetTotalPVPKills()
+	{
+		PVPCategoryConfig pvpCategoryConfig;
+		array<ref PVPCategory> categories;
+		ref map<string, bool> processedCategories;
+		PVPCategory category;
+		string categoryID;
+		int totalKills;
+		int i;
+		
+		if (!m_PlayerData || !m_PlayerData.categoryKills)
+			return 0;
+		
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		if (!pvpCategoryConfig)
+			return GetPVPCategoryValue(m_PlayerData.categoryKills, "Players");
+		
+		categories = pvpCategoryConfig.GetCategories();
+		processedCategories = new map<string, bool>();
+		totalKills = 0;
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = categories.Get(i);
+			if (!category || category.CategoryID == "")
+				continue;
+			
+			categoryID = category.CategoryID;
+			if (processedCategories.Contains(categoryID))
+				continue;
+			processedCategories.Set(categoryID, true);
+			totalKills += GetPVPCategoryValue(m_PlayerData.categoryKills, categoryID);
+		}
+		
+		return totalKills;
+	}
+
+	protected int GetLongestPVPRange()
+	{
+		PVPCategoryConfig pvpCategoryConfig;
+		array<ref PVPCategory> categories;
+		ref map<string, bool> processedCategories;
+		PVPCategory category;
+		string categoryID;
+		int longestRange;
+		int categoryRange;
+		int i;
+		
+		if (!m_PlayerData || !m_PlayerData.categoryLongestRanges)
+			return 0;
+		
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		if (!pvpCategoryConfig)
+			return GetPVPCategoryValue(m_PlayerData.categoryLongestRanges, "Players");
+		
+		categories = pvpCategoryConfig.GetCategories();
+		processedCategories = new map<string, bool>();
+		longestRange = 0;
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = categories.Get(i);
+			if (!category || category.CategoryID == "")
+				continue;
+			
+			categoryID = category.CategoryID;
+			if (processedCategories.Contains(categoryID))
+				continue;
+			processedCategories.Set(categoryID, true);
+			categoryRange = GetPVPCategoryValue(m_PlayerData.categoryLongestRanges, categoryID);
+			if (categoryRange > longestRange)
+				longestRange = categoryRange;
+		}
+		
+		return longestRange;
+	}
 	
 	void TrackingModPvPPlayerEntry(TrackingModLeaderboardPlayerData playerData, int position)
 	{
@@ -31,16 +139,7 @@ class TrackingModPvPPlayerEntry: ScriptView
 			m_EntryController.PlayerPosition = positionStr;
 			m_EntryController.PVPPoints = m_PlayerData.pvpPoints.ToString();
 			
-			playerKills = 0;
-			if (m_PlayerData.categoryKills)
-			{
-				if (m_PlayerData.categoryKills.Contains("Players"))
-					playerKills = m_PlayerData.categoryKills.Get("Players");
-				else if (m_PlayerData.categoryKills.Contains("Spieler"))
-					playerKills = m_PlayerData.categoryKills.Get("Spieler");
-				else if (m_PlayerData.categoryKills.Contains("Survivor"))
-					playerKills = m_PlayerData.categoryKills.Get("Survivor");
-			}
+			playerKills = GetTotalPVPKills();
 			
 			m_EntryController.Kills = playerKills.ToString();
 			m_EntryController.Deaths = m_PlayerData.deathCount.ToString();
@@ -69,16 +168,7 @@ class TrackingModPvPPlayerEntry: ScriptView
 			}
 			m_EntryController.KDRatio = kdStr;
 			
-			longestRange = 0;
-			if (m_PlayerData && m_PlayerData.categoryLongestRanges)
-			{
-				if (m_PlayerData.categoryLongestRanges.Contains("Players"))
-					longestRange = m_PlayerData.categoryLongestRanges.Get("Players");
-				else if (m_PlayerData.categoryLongestRanges.Contains("Spieler"))
-					longestRange = m_PlayerData.categoryLongestRanges.Get("Spieler");
-				else if (m_PlayerData.categoryLongestRanges.Contains("Survivor"))
-					longestRange = m_PlayerData.categoryLongestRanges.Get("Survivor");
-			}
+			longestRange = GetLongestPVPRange();
 			
 			m_EntryController.LongestRange = longestRange.ToString() + " m";
 			

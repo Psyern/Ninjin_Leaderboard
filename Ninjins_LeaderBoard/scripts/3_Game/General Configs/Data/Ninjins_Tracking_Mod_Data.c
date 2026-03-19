@@ -75,31 +75,35 @@ class PlayerDeathData
 		string basePointsStr;
 		string multiplierStr;
 		int kill;
+		ref map<string, bool> processedCategories;
 		
 		PvPPoints = 0;
+		categoryConfig = PVPCategoryConfig.GetInstance();
+		if (!categoryConfig)
+			return;
+		categories = categoryConfig.GetCategories();
+		processedCategories = new map<string, bool>();
+		
 		if (!CategoryKills)
 		{
-			categoryConfig = PVPCategoryConfig.GetInstance();
-			categories = categoryConfig.GetCategories();
-			
 			for (i = 0; i < categories.Count(); i++)
 			{
 				category = categories[i];
 				if (category && category.CategoryID != "")
 				{
-				categoryID = category.CategoryID;
-				categoryDeaths = GetCategoryDeaths(categoryID);
-				PvPPoints -= categoryDeaths * categoryConfig.GetPVPDeathPenaltyPoints();
+					categoryID = category.CategoryID;
+					if (processedCategories.Contains(categoryID))
+						continue;
+					processedCategories.Set(categoryID, true);
+					categoryDeaths = GetCategoryDeaths(categoryID);
+					PvPPoints -= categoryDeaths * categoryConfig.GetPVPDeathPenaltyPoints();
+				}
 			}
+			
+			if (PvPPoints < 0)
+				PvPPoints = 0;
+			return;
 		}
-		
-		if (PvPPoints < 0)
-			PvPPoints = 0;
-		return;
-	}
-		
-		categoryConfig = PVPCategoryConfig.GetInstance();
-		categories = categoryConfig.GetCategories();
 		
 		for (i = 0; i < categories.Count(); i++)
 		{
@@ -107,6 +111,9 @@ class PlayerDeathData
 			if (category && category.CategoryID != "")
 			{
 				categoryID = category.CategoryID;
+				if (processedCategories.Contains(categoryID))
+					continue;
+				processedCategories.Set(categoryID, true);
 				categoryKills = GetCategoryKills(categoryID);
 				if (categoryKills > 0)
 				{
@@ -289,7 +296,73 @@ class PlayerDeathData
 		if (CategoryKills.Contains(categoryID))
 			return CategoryKills.Get(categoryID);
 		
-		return 0;
+		return GetLegacyPlayerCategoryValue(CategoryKills, categoryID);
+	}
+
+	int GetCategoryLongestRange(string categoryID)
+	{
+		int longestRange;
+		
+		if (!CategoryLongestRanges)
+			CategoryLongestRanges = new map<string, int>();
+		
+		if (CategoryLongestRanges.Contains(categoryID))
+			return CategoryLongestRanges.Get(categoryID);
+		
+		longestRange = GetLegacyPlayerCategoryLongestRange(categoryID);
+		return longestRange;
+	}
+
+	protected bool IsPrimaryPVPPlayerCategory(string categoryID)
+	{
+		PVPCategoryConfig pvpCategoryConfig;
+		
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		if (!pvpCategoryConfig)
+			return categoryID == "Players";
+		
+		return categoryID == pvpCategoryConfig.GetPrimaryPlayerCategoryID();
+	}
+
+	protected int GetLegacyPlayerCategoryValue(map<string, int> categoryMap, string categoryID)
+	{
+		int totalValue;
+		
+		if (!categoryMap || !IsPrimaryPVPPlayerCategory(categoryID))
+			return 0;
+		
+		totalValue = 0;
+		if (categoryMap.Contains("Players"))
+			totalValue += categoryMap.Get("Players");
+		if (categoryMap.Contains("Player"))
+			totalValue += categoryMap.Get("Player");
+		if (categoryMap.Contains("Spieler"))
+			totalValue += categoryMap.Get("Spieler");
+		if (categoryMap.Contains("Survivor"))
+			totalValue += categoryMap.Get("Survivor");
+		
+		return totalValue;
+	}
+
+	protected int GetLegacyPlayerCategoryLongestRange(string categoryID)
+	{
+		int longestRange;
+		
+		if (!CategoryLongestRanges || !IsPrimaryPVPPlayerCategory(categoryID))
+			return 0;
+		
+		longestRange = 0;
+		if (CategoryLongestRanges.Contains("Players") && CategoryLongestRanges.Get("Players") > longestRange)
+			longestRange = CategoryLongestRanges.Get("Players");
+		if (CategoryLongestRanges.Contains("Player") && CategoryLongestRanges.Get("Player") > longestRange)
+			longestRange = CategoryLongestRanges.Get("Player");
+		if (CategoryLongestRanges.Contains("Spieler") && CategoryLongestRanges.Get("Spieler") > longestRange)
+			longestRange = CategoryLongestRanges.Get("Spieler");
+		if (CategoryLongestRanges.Contains("Survivor") && CategoryLongestRanges.Get("Survivor") > longestRange)
+			longestRange = CategoryLongestRanges.Get("Survivor");
+		
+		return longestRange;
+		
 	}
 	
 	int GetCategoryDeaths(string categoryID)
@@ -300,7 +373,8 @@ class PlayerDeathData
 		if (CategoryDeaths.Contains(categoryID))
 			return CategoryDeaths.Get(categoryID);
 		
-		return 0;
+		return GetLegacyPlayerCategoryValue(CategoryDeaths, categoryID);
+		
 	}
 	
 	int GetTotalPVPDeaths()
@@ -311,6 +385,7 @@ class PlayerDeathData
 		PVPCategory category;
 		string categoryID;
 		int totalDeaths;
+		ref map<string, bool> processedCategories;
 		
 		totalDeaths = 0;
 		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
@@ -320,6 +395,7 @@ class PlayerDeathData
 		categories = pvpCategoryConfig.GetCategories();
 		if (!categories)
 			return 0;
+		processedCategories = new map<string, bool>();
 		
 		for (i = 0; i < categories.Count(); i++)
 		{
@@ -327,6 +403,9 @@ class PlayerDeathData
 			if (category && category.CategoryID != "")
 			{
 				categoryID = category.CategoryID;
+				if (processedCategories.Contains(categoryID))
+					continue;
+				processedCategories.Set(categoryID, true);
 				totalDeaths += GetCategoryDeaths(categoryID);
 			}
 		}
@@ -1282,11 +1361,10 @@ class TrackingModData
 		
 		if (killedByPlayer)
 		{
-			playerData.AddCategoryDeath("KilledByPlayers");
+			pvpCategoryConfig = PVPCategoryConfig.GetInstance();
 			
 			if (killerType != "")
 			{
-				pvpCategoryConfig = PVPCategoryConfig.GetInstance();
 				matchingCategories = pvpCategoryConfig.GetCategoryIDsForClass(killerType, null);
 				
 				if (matchingCategories.Count() > 0)
@@ -1300,14 +1378,16 @@ class TrackingModData
 				}
 				else
 				{
-					playerData.AddCategoryDeath("Players");
-					Print("[TrackingMod] PVP death added to default Players category (victim died by player, killer class: " + killerType + " - no PVP category match found)");
+					categoryID = pvpCategoryConfig.GetPrimaryPlayerCategoryID();
+					playerData.AddCategoryDeath(categoryID);
+					Print("[TrackingMod] PVP death added to default PVP category: " + categoryID + " (victim died by player, killer class: " + killerType + " - no PVP category match found)");
 				}
 			}
 			else
 			{
-				playerData.AddCategoryDeath("Players");
-				Print("[TrackingMod] PVP death added to default Players category (victim died by player)");
+				categoryID = pvpCategoryConfig.GetPrimaryPlayerCategoryID();
+				playerData.AddCategoryDeath(categoryID);
+				Print("[TrackingMod] PVP death added to default PVP category: " + categoryID + " (victim died by player)");
 			}
 		}
 		else if (killedByZombie || killedByAnimal || killedByAI)
@@ -1463,8 +1543,9 @@ class TrackingModData
 		}
 		else
 		{
-			playerData.AddCategoryKill("Players", range, 1);
-			Print("[TrackingMod] PVP kill added to default Players category (killer: " + playerID + ", victim class: " + victimClassName + " - no match found)");
+			categoryID = pvpCategoryConfig.GetPrimaryPlayerCategoryID();
+			playerData.AddCategoryKill(categoryID, range, 1);
+			Print("[TrackingMod] PVP kill added to default PVP category: " + categoryID + " (killer: " + playerID + ", victim class: " + victimClassName + " - no match found)");
 		}
 		
 		SavePlayerData(playerData, playerID);
