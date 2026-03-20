@@ -162,8 +162,6 @@ class TrackingModRewardHelper
 		EntityAI attachment;
 		TrackingModRewardAttachment attachmentConfig;
 		float randomChance;
-		InventoryLocation attachmentLocation;
-		bool canCreateAsAttachment;
 		
 		for (j = 0; j < attachmentConfigs.Count(); j++)
 		{
@@ -182,15 +180,9 @@ class TrackingModRewardHelper
 			}
 			
 			attachment = null;
-			attachmentLocation = new InventoryLocation;
-			canCreateAsAttachment = false;
 			if (parentEntity.GetInventory())
 			{
-				canCreateAsAttachment = parentEntity.GetInventory().CanAddAttachmentEx(attachmentConfig.ItemClassName);
-				if (canCreateAsAttachment)
-				{
-					attachment = parentEntity.GetInventory().CreateAttachment(attachmentConfig.ItemClassName);
-				}
+				attachment = parentEntity.GetInventory().CreateAttachment(attachmentConfig.ItemClassName);
 				
 				if (!attachment)
 				{
