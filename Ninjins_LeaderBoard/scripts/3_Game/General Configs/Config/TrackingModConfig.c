@@ -41,6 +41,7 @@ class TrackingModConfig
 	string WebExportFileName;
 	bool WebExportIncludePlayerIDs;
 	int WebExportMaxPlayers;
+	int WebExportIntervalSeconds;
 	void TrackingModConfig()
 	{
 		AdminIDs = new array<string>();
@@ -84,6 +85,7 @@ class TrackingModConfig
 		WebExportFileName = "LeaderboardWebExport.json";
 		WebExportIncludePlayerIDs = false;
 		WebExportMaxPlayers = 100;
+		WebExportIntervalSeconds = 300;
 		ZoneKillExclusion example1;
 		ZoneKillExclusion example2;
 		ZoneKillExclusion example3;

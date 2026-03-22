@@ -2,6 +2,11 @@ modded class MissionServer extends MissionBase
 {
 	protected ref map<string, int> m_LeaderboardRequestTimes;
 	protected const int LEADERBOARD_RATE_LIMIT_MS = 500;
+	#ifdef PSYERNS_FRAMEWORK
+	protected float m_WebExportTimer;
+	protected float m_WebExportInterval;
+	protected bool m_WebExportEnabled;
+	#endif
 	
 	override void OnInit()
 	{
@@ -43,9 +48,41 @@ modded class MissionServer extends MissionBase
 			TrackingMod.LogInfo("Zone callbacks registered with NinjinsPvPPvE");
 			#endif
 			TrackingMod.LogInfo("Server initialized - Directories checked/created, data loaded, categories initialized, config loaded");
+
+			#ifdef PSYERNS_FRAMEWORK
+			m_WebExportEnabled = false;
+			m_WebExportTimer = 0;
+			m_WebExportInterval = 300;
+			if (g_TrackingModConfig && g_TrackingModConfig.WebExportIntervalSeconds > 0)
+				m_WebExportInterval = g_TrackingModConfig.WebExportIntervalSeconds;
+			if (PF_WebConfig.GetInstance().IsEndpointEnabled("Leaderboard"))
+			{
+				TrackingModWebExportHelper.Init();
+				m_WebExportEnabled = TrackingModWebExportHelper.IsInitialized();
+				if (m_WebExportEnabled)
+					TrackingMod.LogInfo("Web export enabled - interval: " + m_WebExportInterval.ToString() + "s");
+			}
+			#endif
 		}
 	}
 	
+	#ifdef PSYERNS_FRAMEWORK
+	override void OnUpdate(float timeslice)
+	{
+		super.OnUpdate(timeslice);
+
+		if (m_WebExportEnabled && GetGame().IsDedicatedServer())
+		{
+			m_WebExportTimer += timeslice;
+			if (m_WebExportTimer >= m_WebExportInterval)
+			{
+				m_WebExportTimer = 0;
+				TrackingModWebExportHelper.SendExport();
+			}
+		}
+	}
+	#endif
+
 	void RequestTrackingModLeaderboard(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
 	{
 		Param1<int> params;
