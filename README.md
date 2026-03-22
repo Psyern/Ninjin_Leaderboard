@@ -1,194 +1,196 @@
-# 🏆 Ninjins LeaderBoard — DayZ Mod
+# Ninjins LeaderBoard — DayZ Mod
 
 [![DayZ](https://img.shields.io/badge/DayZ-1.29+-blue)](https://dayz.com)
 [![Enforce Script](https://img.shields.io/badge/Enforce-Script-orange)](https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax)
 [![Maintainer](https://img.shields.io/badge/Maintainer-Psyern-green)](https://github.com/Psyern)
 
-> **Ein vollständiges PvE- & PvP-Leaderboard- und Kill-Tracking-System für DayZ Standalone Server.**
+> **A complete PvE & PvP leaderboard and kill-tracking system for DayZ Standalone servers.**
+
+**User Guides:** [English](docs/GUIDE_EN.md) | [Deutsch](docs/GUIDE_DE.md)
 
 ---
 
-## ⚠️ Wichtiger Hinweis — Maintainer-Wechsel
+## Important Notice — Maintainer Change
 
-> Mit **DayZ Update 1.29** beendet **Ninjin** seine Modding-Karriere.
-> Die Instandhaltung und Weiterentwicklung dieser Mod wird ab sofort von **Psyern** übernommen.
+> With **DayZ Update 1.29**, **Ninjin** has retired from modding.
+> Maintenance and further development of this mod is now taken over by **Psyern**.
 >
-> Vielen Dank an Ninjin für die originale Entwicklung und den Grundstein dieses Projekts! 🙏
+> Many thanks to Ninjin for the original development and the foundation of this project!
 
 ---
 
-## 📖 Inhaltsverzeichnis
+## Table of Contents
 
-- [Features](#-features)
-- [Abhängigkeiten](#-abhängigkeiten)
-- [Installation](#-installation)
-- [Konfiguration](#%EF%B8%8F-konfiguration)
-  - [Hauptkonfiguration (LeaderBoardConfig.json)](#hauptkonfiguration-leaderboardconfigjson)
-  - [PvE-Kategorien (PVE\_Categories.json)](#pve-kategorien-pve_categoriesjson)
-  - [PvP-Kategorien (PVP\_Categories.json)](#pvp-kategorien-pvp_categoriesjson)
-  - [Reward-System (TrackingModRewardConfig.json)](#reward-system-trackingmodrewardconfigjson)
-  - [Logger-Konfiguration](#logger-konfiguration)
-- [Tastenbelegung](#-tastenbelegung)
-- [Projektstruktur](#-projektstruktur)
-- [Technische Details](#-technische-details)
-  - [Script-Module](#script-module)
-  - [Kill-Tracking-System](#kill-tracking-system)
-  - [Punkte-System](#punkte-system)
-  - [Reward/Milestone-System](#rewardmilestone-system)
-  - [Zonen-Integration (NinjinsPvPPvE)](#zonen-integration-ninjinspvppve)
-  - [Daten-Speicherung](#daten-speicherung)
-  - [RPC-Kommunikation](#rpc-kommunikation)
-  - [UI-System (MVC)](#ui-system-mvc)
-- [Serverseitige Dateien](#-serverseitige-dateien)
-- [Optionale Mod-Kompatibilität](#-optionale-mod-kompatibilität)
-- [Fehlerbehebung](#-fehlerbehebung)
-- [Credits](#-credits)
-- [Lizenz](#-lizenz)
+- [Features](#features)
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+- [Configuration](#configuration)
+  - [Main Configuration (LeaderBoardConfig.json)](#main-configuration-leaderboardconfigjson)
+  - [PvE Categories (PVE\_Categories.json)](#pve-categories-pve_categoriesjson)
+  - [PvP Categories (PVP\_Categories.json)](#pvp-categories-pvp_categoriesjson)
+  - [Reward System (TrackingModRewardConfig.json)](#reward-system-trackingmodrewardconfigjson)
+  - [Logger Configuration](#logger-configuration)
+- [Key Bindings](#key-bindings)
+- [Project Structure](#project-structure)
+- [Technical Details](#technical-details)
+  - [Script Modules](#script-modules)
+  - [Kill Tracking System](#kill-tracking-system)
+  - [Points System](#points-system)
+  - [Reward/Milestone System](#rewardmilestone-system)
+  - [Zone Integration (NinjinsPvPPvE)](#zone-integration-ninjinspvppve)
+  - [Data Storage](#data-storage)
+  - [RPC Communication](#rpc-communication)
+  - [UI System (MVC)](#ui-system-mvc)
+- [Server-Side Files](#server-side-files)
+- [Optional Mod Compatibility](#optional-mod-compatibility)
+- [Troubleshooting](#troubleshooting)
+- [Credits](#credits)
+- [License](#license)
 
 ---
 
-## ✨ Features
+## Features
 
 ### Leaderboard
-- **Separates PvE- und PvP-Leaderboard** — jeweils unabhängig schaltbar
-- **Kategorie-basiertes Kill-Tracking** — Zombies, Wölfe, Tiere, Spieler, AI und mehr
-- **Punkte-System** mit konfigurierbaren Basispunkten und Multiplikatoren pro Kategorie
-- **Todes-Strafpunkte** — konfigurierbar für PvE und PvP
-- **Online-Status-Anzeige** — zeigt an, welche Spieler gerade online sind
-- **Survivor-Typ-Icons** — männliche/weibliche Survivor-Icons im Leaderboard
-- **Seitenweise Navigation** — paginiertes Leaderboard mit Client-seitigem Page-Caching
-- **Rate-Limiting** — Server-seitige Anfragebegrenzung (500ms) gegen Spam
+- **Separate PvE and PvP leaderboards** — each independently toggleable
+- **Category-based kill tracking** — Zombies, Wolves, Animals, Players, AI, and more
+- **Points system** with configurable base points and multipliers per category
+- **Death penalty points** — configurable for PvE and PvP
+- **Online status display** — shows which players are currently online
+- **Survivor type icons** — male/female survivor icons in the leaderboard
+- **Paginated navigation** — paginated leaderboard with client-side page caching
+- **Rate limiting** — server-side request throttling (500ms) to prevent spam
 
-### Kill-Tracking
-- **Spieler-Kills (PvP)** — inkl. Kill-Range-Tracking
-- **Zombie-Kills** — alle Infizierten
-- **Tier-Kills** — Wölfe, Bären und andere Tiere
-- **AI-Kills** — Expansion AI (eAI) Unterstützung
-- **Granaten-Kills** — Tracking des Werfers über `DayZPlayerImplementThrowing`
-- **Explosiv-Kills** — Tracking des Platzierers (Minen, C4 etc.)
-- **Fallen-Kills** — Tracking über `TrapBase`
-- **Fahrzeug-Kills** — Roadkills
-- **Kill-Ursachen-Erkennung** — Automatische Klassifizierung (Waffe, Unbewaffnet, Granate, Falle, etc.)
+### Kill Tracking
+- **Player kills (PvP)** — including kill range tracking
+- **Zombie kills** — all infected
+- **Animal kills** — wolves, bears, and other animals
+- **AI kills** — Expansion AI (eAI) support
+- **Grenade kills** — thrower tracking via `DayZPlayerImplementThrowing`
+- **Explosive kills** — placer tracking (mines, C4, etc.)
+- **Trap kills** — tracking via `TrapBase`
+- **Vehicle kills** — roadkills
+- **Kill cause detection** — automatic classification (weapon, unarmed, grenade, trap, etc.)
 
-### Reward-System
-- **Milestone-basierte Belohnungen** — konfigurierbare Meilensteine pro Kategorie
-- **Loot-Tabellen** — JSON-basierte Reward-Konfigurationen mit Spawn-Chancen
-- **Item-Attachments** — Rekursive Attachments mit eigenen Spawn-Chancen
-- **Quantitäts-/Gesundheitskontrolle** — Min/Max-Werte für Munition, Energie, Zustand
-- **Currency-Rewards** — Optionale Währungs-Belohnungen
+### Reward System
+- **Milestone-based rewards** — configurable milestones per category
+- **Loot tables** — JSON-based reward configurations with spawn chances
+- **Item attachments** — recursive attachments with individual spawn chances
+- **Quantity/health control** — min/max values for ammo, energy, condition
+- **Currency rewards** — optional currency rewards
 
-### Zonen-Integration
-- **NinjinsPvPPvE Kompatibilität** — vollständige Integration mit dem PvP/PvE-Zonen-System
-- **Zonen-basiertes Kill-Tracking** — Kills nur in bestimmten Zonen-Typen tracken
-- **Kill-Ausschlüsse pro Zone** — Bestimmte Kill-Typen in bestimmten Zonen ausschließen
-- **Zonen-Name-Matching** — Wildcard-Matching für Zonennamen (z.B. `FlagPvPZone_*`)
+### Zone Integration
+- **NinjinsPvPPvE compatibility** — full integration with the PvP/PvE zone system
+- **Zone-based kill tracking** — track kills only in specific zone types
+- **Per-zone kill exclusions** — exclude certain kill types in specific zones
+- **Zone name matching** — wildcard matching for zone names (e.g. `FlagPvPZone_*`)
 
 ---
 
-## 📦 Abhängigkeiten
+## Dependencies
 
-| Mod | Erforderlich | Hinweis |
+| Mod | Required | Note |
 |-----|:---:|---------|
 | **DayZ Standalone** | ✅ | Version 1.29+ |
-| **DZ_Data** (Vanilla) | ✅ | Basis-Addon |
-| **[Community Framework (CF)](https://steamcommunity.com/sharedfiles/filedetails/?id=1559212036)** | ✅ | Für RPC-Manager, JSON-Laden, Verzeichnis-Operationen |
-| **[NinjinsPvPPvE](https://github.com/Psyern)** | ❌ | Optional — für Zonen-Integration (PvP/PvE/SafeZone/Raid-Zonen) |
-| **[DayZ Expansion AI (eAI)](https://steamcommunity.com/sharedfiles/filedetails/?id=2792982069)** | ❌ | Optional — für AI-Kill-Tracking |
+| **DZ_Data** (Vanilla) | ✅ | Base addon |
+| **[Community Framework (CF)](https://steamcommunity.com/sharedfiles/filedetails/?id=1559212036)** | ✅ | For RPC manager, JSON loading, directory operations |
+| **[NinjinsPvPPvE](https://github.com/Psyern)** | ❌ | Optional — for zone integration (PvP/PvE/SafeZone/Raid zones) |
+| **[DayZ Expansion AI (eAI)](https://steamcommunity.com/sharedfiles/filedetails/?id=2792982069)** | ❌ | Optional — for AI kill tracking |
 
 ---
 
-## 🚀 Installation
+## Installation
 
-### Server-seitige Installation
+### Server-Side Installation
 
-1. **Mod-Ordner kopieren:**
+1. **Copy the mod folder:**
    ```
    Ninjins_LeaderBoard/
    ```
-   in den DayZ-Server-Root-Ordner kopieren.
+   into the DayZ server root directory.
 
-2. **Server-Startparameter erweitern:**
+2. **Extend server startup parameters:**
    ```
    -mod=@CF;@Ninjins_LeaderBoard
    ```
-   > Falls NinjinsPvPPvE verwendet wird:
+   > If NinjinsPvPPvE is used:
    > ```
    > -mod=@CF;@NinjinsPvPPvE;@Ninjins_LeaderBoard
    > ```
 
-3. **Server starten** — Konfigurationsdateien werden automatisch unter `$profile:Ninjins_Tracking_Mod\Data\` erstellt.
+3. **Start the server** — configuration files will be automatically created under `$profile:Ninjins_Tracking_Mod\Data\`.
 
-4. **Konfigurationen anpassen** und Server neu starten.
+4. **Adjust configurations** and restart the server.
 
-### Client-seitige Installation
+### Client-Side Installation
 
-1. **Mod abonnieren** (Steam Workshop) oder Mod-Ordner in den DayZ-Client-Ordner kopieren.
-2. **Mod aktivieren** im DayZ Launcher.
+1. **Subscribe** (Steam Workshop) or copy the mod folder into the DayZ client directory.
+2. **Activate the mod** in the DayZ Launcher.
 
 ---
 
-## ⚙️ Konfiguration
+## Configuration
 
-Alle Konfigurationsdateien werden beim ersten Serverstart automatisch generiert unter:
+All configuration files are automatically generated on first server start at:
 ```
-<Server-Profil>/Ninjins_Tracking_Mod/Data/
+<Server Profile>/Ninjins_Tracking_Mod/Data/
 ```
 
-### Hauptkonfiguration (`LeaderBoardConfig.json`)
+### Main Configuration (`LeaderBoardConfig.json`)
 
-| Parameter | Typ | Standard | Beschreibung |
-|-----------|-----|----------|--------------|
-| `AdminIDs` | `string[]` | `[]` | Steam64-IDs der Admins |
-| `DeletePlayerFilesOlderThanDays` | `int` | `0` | Auto-Cleanup inaktiver Spieler (0 = deaktiviert) |
-| `UseUTCForDates` | `bool` | `false` | UTC-Zeitzone für Datumsstempel verwenden |
-| `EnableRewardSystem` | `bool` | `false` | Milestone-Reward-System aktivieren |
-| `DisablePVPLeaderboard` | `bool` | `false` | PvP-Leaderboard deaktivieren |
-| `DisablePVELeaderboard` | `bool` | `false` | PvE-Leaderboard deaktivieren |
-| `MaxPVEPlayersDisplay` | `int` | `10` | Max. angezeigte Spieler im PvE-Leaderboard (max. 100) |
-| `MaxPVPPlayersDisplay` | `int` | `24` | Max. angezeigte Spieler im PvP-Leaderboard (max. 100) |
-| `ShowPlayerOnlineStatusPVE` | `bool` | `true` | Online-Status im PvE-Leaderboard anzeigen |
-| `ShowPlayerOnlineStatusPVP` | `bool` | `true` | Online-Status im PvP-Leaderboard anzeigen |
-| `SurvivorIconPathMale` | `string` | `"...male.edds"` | Pfad zum männlichen Survivor-Icon |
-| `SurvivorIconPathFemale` | `string` | `"...female.edds"` | Pfad zum weiblichen Survivor-Icon |
-| `EnableWebExport` | `bool` | `true` | Exportiert die Leaderboard-Daten als JSON für Webseiten |
-| `WebExportFileName` | `string` | `"LeaderboardWebExport.json"` | Dateiname der Web-Export-JSON unter `Data/` |
-| `WebExportIncludePlayerIDs` | `bool` | `false` | Gibt Steam64-IDs im Export frei |
-| `WebExportMaxPlayers` | `int` | `100` | Max. Anzahl exportierter Spieler je PvE-/PvP-Liste |
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `AdminIDs` | `string[]` | `[]` | Steam64 IDs of admins |
+| `DeletePlayerFilesOlderThanDays` | `int` | `0` | Auto-cleanup of inactive players (0 = disabled) |
+| `UseUTCForDates` | `bool` | `false` | Use UTC timezone for date stamps |
+| `EnableRewardSystem` | `bool` | `false` | Enable milestone reward system |
+| `DisablePVPLeaderboard` | `bool` | `false` | Disable PvP leaderboard |
+| `DisablePVELeaderboard` | `bool` | `false` | Disable PvE leaderboard |
+| `MaxPVEPlayersDisplay` | `int` | `10` | Max. players shown in PvE leaderboard (max. 100) |
+| `MaxPVPPlayersDisplay` | `int` | `24` | Max. players shown in PvP leaderboard (max. 100) |
+| `ShowPlayerOnlineStatusPVE` | `bool` | `true` | Show online status in PvE leaderboard |
+| `ShowPlayerOnlineStatusPVP` | `bool` | `true` | Show online status in PvP leaderboard |
+| `SurvivorIconPathMale` | `string` | `"...male.edds"` | Path to male survivor icon |
+| `SurvivorIconPathFemale` | `string` | `"...female.edds"` | Path to female survivor icon |
+| `EnableWebExport` | `bool` | `true` | Exports leaderboard data as JSON for websites |
+| `WebExportFileName` | `string` | `"LeaderboardWebExport.json"` | Filename of the web export JSON under `Data/` |
+| `WebExportIncludePlayerIDs` | `bool` | `false` | Include Steam64 IDs in the export |
+| `WebExportMaxPlayers` | `int` | `100` | Max. number of exported players per PvE/PvP list |
 
-#### Kill/Death-Tracking deaktivieren
+#### Disabling Kill/Death Tracking
 
-| Parameter | Beschreibung |
-|-----------|--------------|
-| `DisableDeathBySuicide` | Tode durch Selbstmord ignorieren |
-| `DisableDeathByGrenade` | Tode durch Granaten ignorieren |
-| `DisableDeathByTrap` | Tode durch Fallen ignorieren |
-| `DisableDeathByZombie` | Tode durch Zombies ignorieren |
-| `DisableDeathByAnimal` | Tode durch Tiere ignorieren |
-| `DisableDeathByAI` | Tode durch AI ignorieren |
-| `DisableDeathByCar` | Tode durch Fahrzeuge ignorieren |
-| `DisableDeathByWeapon` | Tode durch Waffen ignorieren |
-| `DisableDeathByUnarmed` | Tode durch Unbewaffnete ignorieren |
-| `DisableDeathByUnknown` | Tode durch Unbekanntes ignorieren |
-| `DisableKillByGrenade` | Granaten-Kills ignorieren |
-| `DisableKillByTrap` | Fallen-Kills ignorieren |
-| `DisableKillByAnimal` | Tier-Kills ignorieren |
-| `DisableKillByZombie` | Zombie-Kills ignorieren |
-| `DisableKillByCar` | Fahrzeug-Kills ignorieren |
-| `DisableKillByWeapon` | Waffen-Kills ignorieren |
-| `DisableKillByUnarmed` | Unbewaffnete Kills ignorieren |
-| `DisableKillByUnknown` | Unbekannte Kills ignorieren |
-| `DisableKillByUnconsciousSuicide` | Bewusstlos-Selbstmord Kills ignorieren |
+| Parameter | Description |
+|-----------|-------------|
+| `DisableDeathBySuicide` | Ignore deaths by suicide |
+| `DisableDeathByGrenade` | Ignore deaths by grenades |
+| `DisableDeathByTrap` | Ignore deaths by traps |
+| `DisableDeathByZombie` | Ignore deaths by zombies |
+| `DisableDeathByAnimal` | Ignore deaths by animals |
+| `DisableDeathByAI` | Ignore deaths by AI |
+| `DisableDeathByCar` | Ignore deaths by vehicles |
+| `DisableDeathByWeapon` | Ignore deaths by weapons |
+| `DisableDeathByUnarmed` | Ignore deaths by unarmed |
+| `DisableDeathByUnknown` | Ignore deaths by unknown causes |
+| `DisableKillByGrenade` | Ignore grenade kills |
+| `DisableKillByTrap` | Ignore trap kills |
+| `DisableKillByAnimal` | Ignore animal kills |
+| `DisableKillByZombie` | Ignore zombie kills |
+| `DisableKillByCar` | Ignore vehicle kills |
+| `DisableKillByWeapon` | Ignore weapon kills |
+| `DisableKillByUnarmed` | Ignore unarmed kills |
+| `DisableKillByUnknown` | Ignore unknown kills |
+| `DisableKillByUnconsciousSuicide` | Ignore unconscious suicide kills |
 
-#### Zonen-Konfiguration
+#### Zone Configuration
 
-| Parameter | Typ | Beschreibung |
-|-----------|-----|--------------|
-| `TrackPVEKillsInZoneTypes` | `string[]` | In welchen Zonen-Typen PvE-Kills getrackt werden (`"everywhere"`, `"pvp"`, `"pve"`, `"visual"`, `"raid"`) |
-| `ExcludePVPKillWhenBothInPVE` | `bool` | PvP-Kills ignorieren wenn beide Spieler in PvE-Zone |
-| `EnableZoneKillExclusions` | `bool` | Zonen-basierte Kill-Ausschlüsse aktivieren |
-| `ExcludeKillsInZones` | `array` | Liste von Ausschluss-Regeln (siehe unten) |
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `TrackPVEKillsInZoneTypes` | `string[]` | Which zone types to track PvE kills in (`"everywhere"`, `"pvp"`, `"pve"`, `"visual"`, `"raid"`) |
+| `ExcludePVPKillWhenBothInPVE` | `bool` | Ignore PvP kills when both players are in a PvE zone |
+| `EnableZoneKillExclusions` | `bool` | Enable zone-based kill exclusions |
+| `ExcludeKillsInZones` | `array` | List of exclusion rules (see below) |
 
-**Beispiel für Zonen-Ausschlüsse:**
+**Example zone exclusions:**
 ```json
 {
     "ExcludeKillsInZones": [
@@ -206,17 +208,17 @@ Alle Konfigurationsdateien werden beim ersten Serverstart automatisch generiert 
 }
 ```
 
-#### Web-Export für Webseite
+#### Web Export
 
-Wenn `EnableWebExport` aktiv ist, schreibt der Server nach Änderungen und beim Start automatisch eine JSON-Datei nach:
+When `EnableWebExport` is active, the server automatically writes a JSON file after changes and on startup to:
 
 ```
 $profile:Ninjins_Tracking_Mod/Data/LeaderboardWebExport.json
 ```
 
-Diese Datei kann von einer Webseite, einem API-Proxy oder einem Cron-/Sync-Job eingelesen werden.
+This file can be read by a website, API proxy, or a cron/sync job.
 
-**Beispiel:**
+**Example:**
 ```json
 {
     "generatedAt": "2026-03-16 03:10:00",
@@ -241,9 +243,9 @@ Diese Datei kann von einer Webseite, einem API-Proxy oder einem Cron-/Sync-Job e
 
 ---
 
-### PvE-Kategorien (`PVE_Categories.json`)
+### PvE Categories (`PVE_Categories.json`)
 
-Definiert die Kill-Kategorien für das PvE-Leaderboard.
+Defines the kill categories for the PvE leaderboard.
 
 ```json
 {
@@ -263,21 +265,21 @@ Definiert die Kill-Kategorien für das PvE-Leaderboard.
 }
 ```
 
-**ClassNames-Format:** `"ClassName:BasePoints:Multiplier"`
-- `ClassName` — DayZ-Klassenname (unterstützt Basis-Klassen-Matching)
-- `BasePoints` — Punkte pro Kill
-- `Multiplier` — Multiplikator (Standard: 1)
+**ClassNames format:** `"ClassName:BasePoints:Multiplier"`
+- `ClassName` — DayZ class name (supports base class matching)
+- `BasePoints` — points per kill
+- `Multiplier` — multiplier (default: 1)
 
-**Matching-Logik:**
-1. Exaktes Matching: `className == categoryClassName`
-2. Prefix-Matching: `eAI_*` für alle eAI-Klassen
-3. Unterstrich-Prefix: `Animal_CanisLupus_*`
-4. Entity-IsKindOf-Check (Runtime)
-5. CfgVehicles Config-Hierarchie-Check
+**Matching logic:**
+1. Exact match: `className == categoryClassName`
+2. Prefix match: `eAI_*` for all eAI classes
+3. Underscore prefix: `Animal_CanisLupus_*`
+4. Entity IsKindOf check (runtime)
+5. CfgVehicles config hierarchy check
 
 ---
 
-### PvP-Kategorien (`PVP_Categories.json`)
+### PvP Categories (`PVP_Categories.json`)
 
 ```json
 {
@@ -294,7 +296,7 @@ Definiert die Kill-Kategorien für das PvE-Leaderboard.
 
 ---
 
-### Reward-System (`TrackingModRewardConfig.json`)
+### Reward System (`TrackingModRewardConfig.json`)
 
 ```json
 {
@@ -321,7 +323,7 @@ Definiert die Kill-Kategorien für das PvE-Leaderboard.
 }
 ```
 
-**Reward-Datei Struktur** (z.B. `Wolfes100.json`):
+**Reward file structure** (e.g. `Wolfes100.json`):
 ```json
 {
     "RewardItems": [
@@ -366,61 +368,61 @@ Definiert die Kill-Kategorien für das PvE-Leaderboard.
 
 ---
 
-### Logger-Konfiguration
+### Logger Configuration
 
-#### Server-Logger (`$profile:Ninjins_Tracking_Mod/LoggerConfig.json`)
+#### Server Logger (`$profile:Ninjins_Tracking_Mod/LoggerConfig.json`)
 ```json
 {
     "Level": 4
 }
 ```
 
-#### Client-Logger (`$profile:Ninjins_LeaderBoard/LoggerConfig.json`)
+#### Client Logger (`$profile:Ninjins_LeaderBoard/LoggerConfig.json`)
 ```json
 {
     "Level": 6
 }
 ```
 
-**Log-Level:**
-| Level | Beschreibung |
+**Log levels:**
+| Level | Description |
 |-------|-------------|
-| 0 | Aus |
+| 0 | Off |
 | 1 | Critical |
 | 2 | Error |
 | 3 | Warning |
-| 4 | Info (Standard Server) |
+| 4 | Info (server default) |
 | 5 | Debug |
-| 6 | Trace (Standard Client) |
+| 6 | Trace (client default) |
 
 ---
 
-## ⌨️ Tastenbelegung
+## Key Bindings
 
-| Taste | Aktion |
-|-------|--------|
-| **F5** | PvE-Leaderboard öffnen/schließen |
-| **F6** | PvP-Leaderboard öffnen/schließen |
+| Key | Action |
+|-----|--------|
+| **F5** | Open/close PvE leaderboard |
+| **F6** | Open/close PvP leaderboard |
 
-Die Tastenbelegung kann im Spiel unter **Optionen → Steuerung → Tracking Mod** angepasst werden.
+Key bindings can be changed in-game under **Options → Controls → Tracking Mod**.
 
 ---
 
-## 📁 Projektstruktur
+## Project Structure
 
 ```
 Ninjins_LeaderBoard/
-├── config.cpp                          # Mod-Definition (CfgPatches, CfgMods)
-├── stringtable.csv                     # Lokalisierung (EN)
+├── config.cpp                          # Mod definition (CfgPatches, CfgMods)
+├── stringtable.csv                     # Localization (EN)
 │
 ├── data/
-│   └── modded_inputs.xml               # Tastenbelegung (F5=PvE, F6=PvP)
+│   └── modded_inputs.xml               # Key bindings (F5=PvE, F6=PvP)
 │
 ├── gui/
 │   ├── icons/
 │   │   └── survivor/
-│   │       ├── male.edds / male.png    # Männlicher Survivor-Icon
-│   │       └── female.png              # Weiblicher Survivor-Icon
+│   │       ├── male.edds / male.png    # Male survivor icon
+│   │       └── female.png              # Female survivor icon
 │   └── layouts/
 │       ├── PvE/
 │       │   ├── trackingModLeaderboard_mvc.layout
@@ -431,167 +433,167 @@ Ninjins_LeaderBoard/
 │           └── trackingModPvPPlayerEntry_mvc.layout
 │
 ├── scripts/
-│   ├── 3_Game/                         # Game-Script-Modul
+│   ├── 3_Game/                         # Game script module
 │   │   ├── General Configs/
 │   │   │   ├── Config/
-│   │   │   │   ├── TrackingModConfig.c         # Hauptkonfiguration
-│   │   │   │   ├── TrackingModRewardConfig.c   # Reward-Konfiguration
-│   │   │   │   ├── PVECategoryConfig.c         # PvE-Kategorien
-│   │   │   │   ├── PVPCategoryConfig.c         # PvP-Kategorien
-│   │   │   │   └── DeathCategoryConfig.c       # Todes-Kategorien
+│   │   │   │   ├── TrackingModConfig.c         # Main configuration
+│   │   │   │   ├── TrackingModRewardConfig.c   # Reward configuration
+│   │   │   │   ├── PVECategoryConfig.c         # PvE categories
+│   │   │   │   ├── PVPCategoryConfig.c         # PvP categories
+│   │   │   │   └── DeathCategoryConfig.c       # Death categories
 │   │   │   ├── Data/
-│   │   │   │   ├── Ninjins_Tracking_Mod_Data.c # Spielerdaten (PlayerDeathData)
-│   │   │   │   └── TrackingModLeaderboardData.c# Leaderboard-Datenstrukturen
+│   │   │   │   ├── Ninjins_Tracking_Mod_Data.c # Player data (PlayerDeathData)
+│   │   │   │   └── TrackingModLeaderboardData.c# Leaderboard data structures
 │   │   │   ├── Rewards/
-│   │   │   │   ├── TrackingModMilestoneHelper.c      # Milestone-Berechnung
-│   │   │   │   └── TrackingModMilestoneRewardLoader.c # Reward-Datei-Laden
+│   │   │   │   ├── TrackingModMilestoneHelper.c      # Milestone calculation
+│   │   │   │   └── TrackingModMilestoneRewardLoader.c # Reward file loading
 │   │   │   └── Utils/
-│   │   │       ├── TrackingModLogger.c         # Server-Logger (TrackingMod)
-│   │   │       └── TrackingModZoneUtils.c      # Zonen-Hilfsfunktionen
+│   │   │       ├── TrackingModLogger.c         # Server logger (TrackingMod)
+│   │   │       └── TrackingModZoneUtils.c      # Zone utility functions
 │   │   └── TrackingModUI/
-│   │       ├── TrackingModLeaderboardData.c    # Shared Datenklassen (Client/Server)
-│   │       └── TrackingModLogger.c             # Client-Logger (TrackingModUI)
+│   │       ├── TrackingModLeaderboardData.c    # Shared data classes (client/server)
+│   │       └── TrackingModLogger.c             # Client logger (TrackingModUI)
 │   │
-│   ├── 4_World/                        # World-Script-Modul
-│   │   ├── TrackingModRewardHelper.c   # Reward-Vergabe & Item-Spawning
+│   ├── 4_World/                        # World script module
+│   │   ├── TrackingModRewardHelper.c   # Reward distribution & item spawning
 │   │   ├── Zone Related/
-│   │   │   └── TrackingModZoneHandler.c# Zonen-Event-Callbacks
+│   │   │   └── TrackingModZoneHandler.c# Zone event callbacks
 │   │   └── entities/
 │   │       ├── creatures/
-│   │       │   ├── TrackingMod_EntityHelper.c  # Entity-Matching-Helfer
+│   │       │   ├── TrackingMod_EntityHelper.c  # Entity matching helper
 │   │       │   ├── ai/
-│   │       │   │   └── eAIBase.c               # Expansion AI Kill-Tracking
+│   │       │   │   └── eAIBase.c               # Expansion AI kill tracking
 │   │       │   ├── animals/
-│   │       │   │   └── AnimalBase.c            # Tier-Kill-Tracking
+│   │       │   │   └── AnimalBase.c            # Animal kill tracking
 │   │       │   └── infected/
-│   │       │       └── ZombieBase.c            # Zombie-Kill-Tracking
+│   │       │       └── ZombieBase.c            # Zombie kill tracking
 │   │       ├── itembase/
-│   │       │   ├── ExplosivesBase.c            # Explosiv-Placer-Tracking
-│   │       │   ├── Grenade_Base.c              # Granaten-Werfer-Tracking
-│   │       │   └── TrapBase.c                  # Fallen-Placer-Tracking
+│   │       │   ├── ExplosivesBase.c            # Explosive placer tracking
+│   │       │   ├── Grenade_Base.c              # Grenade thrower tracking
+│   │       │   └── TrapBase.c                  # Trap placer tracking
 │   │       ├── manbase/
-│   │       │   └── PlayerBase.c                # Spieler-Events & Kill-Tracking
-│   │       └── DayZPlayerImplementThrowing.c   # Granaten-Werfer-Zuordnung
+│   │       │   └── PlayerBase.c                # Player events & kill tracking
+│   │       └── DayZPlayerImplementThrowing.c   # Grenade thrower assignment
 │   │
-│   └── 5_Mission/                      # Mission-Script-Modul
-│       ├── MissionServer.c             # Server-Logik, RPC-Handler, Init
+│   └── 5_Mission/                      # Mission script module
+│       ├── MissionServer.c             # Server logic, RPC handler, init
 │       └── TrackingModUI/
-│           ├── TrackingModLeaderboardInputHandler.c  # Input & RPC-Client
-│           ├── TrackingModKillCategory.c             # Kill-Kategorie UI-Widget
-│           ├── TrackingModKillCategoryController.c   # Kill-Kategorie Controller
+│           ├── TrackingModLeaderboardInputHandler.c  # Input & RPC client
+│           ├── TrackingModKillCategory.c             # Kill category UI widget
+│           ├── TrackingModKillCategoryController.c   # Kill category controller
 │           ├── PvE/
-│           │   ├── TrackingModLeaderboardMenu.c      # PvE-Leaderboard-Menü
-│           │   ├── TrackingModLeaderboardController.c # PvE-Controller
-│           │   ├── TrackingModPlayerEntry.c          # PvE-Spieler-Eintrag
-│           │   └── TrackingModPlayerEntryController.c # PvE-Eintrag-Controller
+│           │   ├── TrackingModLeaderboardMenu.c      # PvE leaderboard menu
+│           │   ├── TrackingModLeaderboardController.c # PvE controller
+│           │   ├── TrackingModPlayerEntry.c          # PvE player entry
+│           │   └── TrackingModPlayerEntryController.c # PvE entry controller
 │           └── PvP/
-│               ├── TrackingModPvPLeaderboardMenu.c    # PvP-Leaderboard-Menü
-│               ├── TrackingModPvPLeaderboardController.c # PvP-Controller
-│               ├── TrackingModPvPPlayerEntry.c        # PvP-Spieler-Eintrag
-│               └── TrackingModPvPPlayerEntryController.c # PvP-Eintrag-Controller
+│               ├── TrackingModPvPLeaderboardMenu.c    # PvP leaderboard menu
+│               ├── TrackingModPvPLeaderboardController.c # PvP controller
+│               ├── TrackingModPvPPlayerEntry.c        # PvP player entry
+│               └── TrackingModPvPPlayerEntryController.c # PvP entry controller
 │
 └── todo/
-    └── Class_Renaming_Analysis.md      # Analyse für Klassen-Umbenennung
+    └── Class_Renaming_Analysis.md      # Analysis for class renaming
 ```
 
 ---
 
-## 🔧 Technische Details
+## Technical Details
 
-### Script-Module
+### Script Modules
 
-Die Mod nutzt das DayZ Enforce-Script-System mit drei Modulen:
+The mod uses the DayZ Enforce Script system with three modules:
 
-| Modul | Pfad | Beschreibung |
-|-------|------|--------------|
-| **3_Game** | `scripts/3_Game/` | Konfigurationen, Datenstrukturen, Logger, Utilities |
-| **4_World** | `scripts/4_World/` | Entity-Modding, Kill-Tracking, Zonen-Handler, Rewards |
-| **5_Mission** | `scripts/5_Mission/` | Server-Init, RPC-Handler, UI/Menüs, Input-Handler |
+| Module | Path | Description |
+|--------|------|-------------|
+| **3_Game** | `scripts/3_Game/` | Configurations, data structures, logger, utilities |
+| **4_World** | `scripts/4_World/` | Entity modding, kill tracking, zone handler, rewards |
+| **5_Mission** | `scripts/5_Mission/` | Server init, RPC handler, UI/menus, input handler |
 
-### Kill-Tracking-System
+### Kill Tracking System
 
-Das Kill-Tracking funktioniert über **modded DayZ-Basisklassen**:
+Kill tracking works via **modded DayZ base classes**:
 
-| Klasse | Tracking-Methode | Kill-Typ |
-|--------|-----------------|----------|
-| `PlayerBase` | `EEHitBy()`, `EEKilled()` | PvP-Kills, Tode |
-| `ZombieBase` | `EEKilled()` | Zombie-Kills |
-| `AnimalBase` | `EEKilled()`, `EEOnDamageCalculated()` | Tier-Kills |
-| `eAIBase` | `EEKilled()`, `EEOnDamageCalculated()` | AI-Kills |
-| `Grenade_Base` | `EEOnDamageCalculated()` | Granaten-Zuordnung |
-| `ExplosivesBase` | `OnPlacementComplete()` | Explosiv-Zuordnung |
-| `TrapBase` | `OnPlacementComplete()` | Fallen-Zuordnung |
-| `DayZPlayerImplementThrowing` | `HandleThrowing()` | Werfer-Zuordnung |
+| Class | Tracking Method | Kill Type |
+|-------|----------------|-----------|
+| `PlayerBase` | `EEHitBy()`, `EEKilled()` | PvP kills, deaths |
+| `ZombieBase` | `EEKilled()` | Zombie kills |
+| `AnimalBase` | `EEKilled()`, `EEOnDamageCalculated()` | Animal kills |
+| `eAIBase` | `EEKilled()`, `EEOnDamageCalculated()` | AI kills |
+| `Grenade_Base` | `EEOnDamageCalculated()` | Grenade attribution |
+| `ExplosivesBase` | `OnPlacementComplete()` | Explosive attribution |
+| `TrapBase` | `OnPlacementComplete()` | Trap attribution |
+| `DayZPlayerImplementThrowing` | `HandleThrowing()` | Thrower attribution |
 
-**Kill-Ursachen (KillCause):**
+**Kill Causes (KillCause):**
 
-| ID | Ursache |
-|----|---------|
-| 0 | Granate |
-| 1 | Falle |
-| 2 | Tier |
+| ID | Cause |
+|----|-------|
+| 0 | Grenade |
+| 1 | Trap |
+| 2 | Animal |
 | 3 | Zombie |
-| 4 | Fahrzeug |
-| 5 | Waffe |
-| 6 | Unbewaffnet |
-| 7 | Unbekannt |
-| 8 | Bewusstlos-Selbstmord |
+| 4 | Vehicle |
+| 5 | Weapon |
+| 6 | Unarmed |
+| 7 | Unknown |
+| 8 | Unconscious suicide |
 
-### Punkte-System
+### Points System
 
-- **PvE-Punkte:** `Σ (KillsProKategorie × BasePoints × Multiplier) - (Deaths × DeathPenaltyPoints)`
-- **PvP-Punkte:** `Σ (KillsProKategorie × BasePoints × Multiplier) - (Deaths × PVPDeathPenaltyPoints)`
-- Punkte können nicht unter 0 fallen
-- BasePoints und Multiplier werden über das `ClassName:BasePoints:Multiplier`-Format in der Kategorie-Config definiert
+- **PvE points:** `Σ (KillsPerCategory × BasePoints × Multiplier) - (Deaths × DeathPenaltyPoints)`
+- **PvP points:** `Σ (KillsPerCategory × BasePoints × Multiplier) - (Deaths × PVPDeathPenaltyPoints)`
+- Points cannot fall below 0
+- BasePoints and Multiplier are defined via the `ClassName:BasePoints:Multiplier` format in the category config
 
-### Reward/Milestone-System
+### Reward/Milestone System
 
-1. **Milestones** werden pro Kategorie definiert (z.B. Wolfes: 100, 200, 300 Kills)
-2. Erreicht ein Spieler einen Meilenstein, wird dieser in `AvailableMilestones` gespeichert
-3. Spieler können Rewards über das Leaderboard-UI **claimen**
-4. Rewards werden aus JSON-Dateien geladen und dem Spieler-Inventar hinzugefügt
-5. **Loot-Sektionen** haben eigene Spawn-Chancen und ItemsMin/Max
-6. **Attachments** werden rekursiv verarbeitet (verschachtelte Attachments möglich)
-7. **Item-Eigenschaften** (Gesundheit, Menge, Munition, Energie) sind konfigurierbar
+1. **Milestones** are defined per category (e.g. Wolfes: 100, 200, 300 kills)
+2. When a player reaches a milestone, it is saved in `AvailableMilestones`
+3. Players can **claim** rewards via the leaderboard UI
+4. Rewards are loaded from JSON files and added to the player's inventory
+5. **Loot sections** have individual spawn chances and ItemsMin/Max
+6. **Attachments** are processed recursively (nested attachments possible)
+7. **Item properties** (health, quantity, ammo, energy) are configurable
 
-### Zonen-Integration (NinjinsPvPPvE)
+### Zone Integration (NinjinsPvPPvE)
 
-Bei aktivierter NinjinsPvPPvE-Mod (`#ifdef NinjinsPvPPvE`):
+With the NinjinsPvPPvE mod enabled (`#ifdef NinjinsPvPPvE`):
 
-- **`TrackingModZoneHandler`** — registriert sich als `PlayerStateChangeCallback` und `ZoneEventCallback`
-- **`TrackingModZoneUtils`** — verwaltet Spieler-Zonen-Status in Memory-Maps
-- **Zonen-Typen:** `pvp`, `pve`, `visual`, `raid`, `safezone`
-- **Kill-Ausschlüsse** können pro Zone konfiguriert werden
-- **Zonennamen-Matching** unterstützt Wildcard-Prefixe (z.B. `FlagPvPZone_`)
+- **`TrackingModZoneHandler`** — registers as `PlayerStateChangeCallback` and `ZoneEventCallback`
+- **`TrackingModZoneUtils`** — manages player zone status in memory maps
+- **Zone types:** `pvp`, `pve`, `visual`, `raid`, `safezone`
+- **Kill exclusions** can be configured per zone
+- **Zone name matching** supports wildcard prefixes (e.g. `FlagPvPZone_`)
 
-### Daten-Speicherung
+### Data Storage
 
 ```
 $profile:Ninjins_Tracking_Mod/
 ├── Data/
-│   ├── LeaderBoardConfig.json          # Hauptkonfiguration
-│   ├── PVE_Categories.json             # PvE-Kategorien
-│   ├── PVP_Categories.json             # PvP-Kategorien
-│   ├── TrackingModRewardConfig.json    # Reward-Konfiguration
-│   ├── LeaderboardWebExport.json       # Web-Export für externe Webseiten/API-Bridge
+│   ├── LeaderBoardConfig.json          # Main configuration
+│   ├── PVE_Categories.json             # PvE categories
+│   ├── PVP_Categories.json             # PvP categories
+│   ├── TrackingModRewardConfig.json    # Reward configuration
+│   ├── LeaderboardWebExport.json       # Web export for external websites/API bridge
 │   ├── Players/
-│   │   ├── <SteamID64>.json            # Individuelle Spielerdaten
+│   │   ├── <SteamID64>.json            # Individual player data
 │   │   └── ...
 │   └── RewardSystem/
-│       ├── Wolfes100.json              # Reward-Dateien
+│       ├── Wolfes100.json              # Reward files
 │       ├── Players10.json
 │       └── ...
 ├── Logging/
 │   └── Logs/
-│       └── TrackingMod_<Datum>.log     # Server-Logs
-└── LoggerConfig.json                   # Server-Logger-Config
+│       └── TrackingMod_<Date>.log      # Server logs
+└── LoggerConfig.json                   # Server logger config
 ```
 
-**Spielerdaten (`<SteamID64>.json`):**
+**Player data (`<SteamID64>.json`):**
 ```json
 {
     "PlayerID": "76561198...",
-    "PlayerName": "Spielername",
+    "PlayerName": "PlayerName",
     "LastDeathPosition": [1234.5, 100.0, 5678.9],
     "LastKillerName": "Unknown",
     "LastKillerType": "Unknown",
@@ -608,108 +610,108 @@ $profile:Ninjins_Tracking_Mod/
 }
 ```
 
-### RPC-Kommunikation
+### RPC Communication
 
-Die Mod nutzt den **Community Framework RPC-Manager** für Client-Server-Kommunikation:
+The mod uses the **Community Framework RPC Manager** for client-server communication:
 
-| RPC-Name | Richtung | Beschreibung |
-|----------|----------|--------------|
-| `RequestTrackingModLeaderboard` | Client → Server | Leaderboard-Daten anfordern (mit Page-Nummer) |
-| `ReceiveTrackingModLeaderboard` | Server → Client | Leaderboard-Daten senden |
-| `ClaimTrackingModReward` | Client → Server | Milestone-Reward einfordern |
-| `ReceiveTrackingModRewardClaim` | Server → Client | Reward-Claim-Ergebnis |
-| `ReceivePlayerDataUpdate` | Server → Client | Spielerdaten-Update |
+| RPC Name | Direction | Description |
+|----------|-----------|-------------|
+| `RequestTrackingModLeaderboard` | Client → Server | Request leaderboard data (with page number) |
+| `ReceiveTrackingModLeaderboard` | Server → Client | Send leaderboard data |
+| `ClaimTrackingModReward` | Client → Server | Claim milestone reward |
+| `ReceiveTrackingModRewardClaim` | Server → Client | Reward claim result |
+| `ReceivePlayerDataUpdate` | Server → Client | Player data update |
 
-### Web-Schnittstelle
+### Web Interface
 
-- Es gibt keinen eingebauten HTTP-Server im Mod.
-- Stattdessen erzeugt der Server eine maschinenlesbare JSON-Datei für externe Web-Anbindungen.
-- Empfohlener Betrieb: Webserver oder kleines Backend liest `LeaderboardWebExport.json` aus dem Server-Profil und liefert sie an die Webseite aus.
+- There is no built-in HTTP server in the mod.
+- Instead, the server generates a machine-readable JSON file for external web integration.
+- Recommended setup: a web server or small backend reads `LeaderboardWebExport.json` from the server profile and serves it to the website.
 
-### UI-System (MVC)
+### UI System (MVC)
 
-Das UI basiert auf dem **Model-View-Controller (MVC)**-Pattern:
+The UI is based on the **Model-View-Controller (MVC)** pattern:
 
-- **Layouts** (`.layout`) — XML-basierte UI-Definitionen im `gui/layouts/`-Ordner
-- **Menu-Klassen** — `ScriptViewMenu`-basierte Menü-Klassen
-- **Controller** — Daten-Binding via Controller-Klassen
-- **Page-Caching** — Client-seitiges Caching von Leaderboard-Seiten für schnelle Navigation
+- **Layouts** (`.layout`) — XML-based UI definitions in the `gui/layouts/` folder
+- **Menu classes** — `ScriptViewMenu`-based menu classes
+- **Controllers** — data binding via controller classes
+- **Page caching** — client-side caching of leaderboard pages for fast navigation
 
 ---
 
-## 📂 Serverseitige Dateien
+## Server-Side Files
 
-Beim ersten Start werden folgende Dateien/Ordner automatisch erstellt:
+The following files/folders are automatically created on first start:
 
-| Datei/Ordner | Beschreibung |
+| File/Folder | Description |
 |-------------|-------------|
-| `$profile:Ninjins_Tracking_Mod/` | Root-Ordner |
-| `Data/LeaderBoardConfig.json` | Hauptkonfiguration |
-| `Data/PVE_Categories.json` | PvE-Kategorien (Standard: Zombies, Wolfes) |
-| `Data/PVP_Categories.json` | PvP-Kategorien (Standard: Players) |
-| `Data/TrackingModRewardConfig.json` | Reward-System-Konfiguration |
-| `Data/Players/` | Spieler-Datendateien |
-| `Data/RewardSystem/` | Reward-Konfigurationsdateien |
-| `Logging/Logs/` | Log-Dateien |
+| `$profile:Ninjins_Tracking_Mod/` | Root folder |
+| `Data/LeaderBoardConfig.json` | Main configuration |
+| `Data/PVE_Categories.json` | PvE categories (default: Zombies, Wolfes) |
+| `Data/PVP_Categories.json` | PvP categories (default: Players) |
+| `Data/TrackingModRewardConfig.json` | Reward system configuration |
+| `Data/Players/` | Player data files |
+| `Data/RewardSystem/` | Reward configuration files |
+| `Logging/Logs/` | Log files |
 
 ---
 
-## 🔗 Optionale Mod-Kompatibilität
+## Optional Mod Compatibility
 
 ### DayZ Expansion AI (`#ifdef EXPANSIONMODAI`)
-- Automatisches Tracking von eAI-Kills
-- `eAIBase`-Klasse wird gemoddet für Damage-Source-Tracking
-- eAI-Klassen werden über den `eAI_`-Prefix erkannt
+- Automatic tracking of eAI kills
+- `eAIBase` class is modded for damage source tracking
+- eAI classes are recognized via the `eAI_` prefix
 
 ### NinjinsPvPPvE (`#ifdef NinjinsPvPPvE`)
-- Zonen-basiertes Kill-Tracking und Ausschlüsse
-- `PlayerStateChangeCallback` für PvP/PvE-Zonen-Wechsel
-- `ZoneEventCallback` für Zonen-Ein-/Austritt mit Zonennamen
-- Kill-Validierung basierend auf Spieler-Zonen-Status
+- Zone-based kill tracking and exclusions
+- `PlayerStateChangeCallback` for PvP/PvE zone transitions
+- `ZoneEventCallback` for zone entry/exit with zone names
+- Kill validation based on player zone status
 
 ---
 
-## 🐛 Fehlerbehebung
+## Troubleshooting
 
-### Leaderboard öffnet sich nicht
-- Prüfe ob der **Community Framework (CF)** Mod geladen ist
-- Prüfe die DayZ-Client-Logs nach `[TrackingModUI]` Einträgen
-- Stelle sicher dass die Tastenbelegung nicht durch andere Mods überschrieben wird
+### Leaderboard does not open
+- Check whether the **Community Framework (CF)** mod is loaded
+- Check the DayZ client logs for `[TrackingModUI]` entries
+- Make sure the key binding is not overridden by another mod
 
-### Keine Kills werden getrackt
-- Prüfe die Server-Logs nach `[TrackingMod]` Einträgen
-- Prüfe ob die Kategorie-Configs (`PVE_Categories.json`, `PVP_Categories.json`) korrekt sind
-- Prüfe ob die Kill-Typen nicht in der `LeaderBoardConfig.json` deaktiviert sind
+### No kills are being tracked
+- Check the server logs for `[TrackingMod]` entries
+- Check whether the category configs (`PVE_Categories.json`, `PVP_Categories.json`) are correct
+- Check whether kill types are not disabled in `LeaderBoardConfig.json`
 
-### Rewards funktionieren nicht
-- Stelle sicher dass `EnableRewardSystem` in der Hauptconfig auf `true` steht
-- Prüfe ob die Reward-JSON-Dateien im `RewardSystem/`-Ordner existieren
-- Prüfe die Server-Logs nach `[TrackingModRewardHelper]` oder `[TrackingModMilestoneRewardLoader]` Einträgen
+### Rewards are not working
+- Make sure `EnableRewardSystem` is set to `true` in the main config
+- Check whether the reward JSON files exist in the `RewardSystem/` folder
+- Check the server logs for `[TrackingModRewardHelper]` or `[TrackingModMilestoneRewardLoader]` entries
 
-### Zonen-Integration funktioniert nicht
-- Stelle sicher dass **NinjinsPvPPvE** als Mod geladen ist
-- Prüfe ob `EnableZoneKillExclusions` auf `true` steht
-- Prüfe die Server-Logs nach "Zone callbacks registered with NinjinsPvPPvE"
+### Zone integration is not working
+- Make sure **NinjinsPvPPvE** is loaded as a mod
+- Check whether `EnableZoneKillExclusions` is set to `true`
+- Check the server logs for "Zone callbacks registered with NinjinsPvPPvE"
 
-### Log-Level erhöhen
+### Increasing the log level
 - Server: `$profile:Ninjins_Tracking_Mod/LoggerConfig.json` → `"Level": 6`
 - Client: `$profile:Ninjins_LeaderBoard/LoggerConfig.json` → `"Level": 6`
 
 ---
 
-## 👏 Credits
+## Credits
 
-| Rolle | Person |
-|-------|--------|
-| **Originaler Entwickler** | **Ninjin** |
-| **Aktueller Maintainer** | **Psyern** |
-
----
-
-## 📜 Lizenz
-
-Dieses Projekt ist ein Community-Mod für DayZ Standalone. Alle Rechte am Spiel DayZ liegen bei Bohemia Interactive.
+| Role | Person |
+|------|--------|
+| **Original Developer** | **Ninjin** |
+| **Current Maintainer** | **Psyern** |
 
 ---
 
-> **Fragen, Bugs oder Feature-Requests?** → [GitHub Issues](https://github.com/Psyern/Ninjins_Leaderboard/issues)
+## License
+
+This project is a community mod for DayZ Standalone. All rights to the game DayZ belong to Bohemia Interactive.
+
+---
+
+> **Questions, bugs or feature requests?** → [GitHub Issues](https://github.com/Psyern/Ninjins_Leaderboard/issues)
