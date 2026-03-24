@@ -145,6 +145,7 @@ class TrackingModConfig
 				config.WebExportMaxPlayers = 1;
 			if (config.WebExportMaxPlayers > 1000)
 				config.WebExportMaxPlayers = 1000;
+			config.SaveConfig();
 			Print("[TrackingMod] Config loaded from: " + TRACKING_MOD_CONFIG_FILE);
 			Print("[TrackingMod] Loaded values - MaxPVEPlayersDisplay: " + config.MaxPVEPlayersDisplay.ToString() + ", MaxPVPPlayersDisplay: " + config.MaxPVPPlayersDisplay.ToString() + ", ShowPlayerOnlineStatusPVE: " + config.ShowPlayerOnlineStatusPVE.ToString() + ", ShowPlayerOnlineStatusPVP: " + config.ShowPlayerOnlineStatusPVP.ToString());
 		}
