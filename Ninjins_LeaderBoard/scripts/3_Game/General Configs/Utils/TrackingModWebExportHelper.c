@@ -15,7 +15,7 @@ class PF_LeaderboardApi : PF_WebApiBase
 	{
 		PF_HttpArguments args = new PF_HttpArguments();
 		args.Add("api_key", m_ApiKey);
-		string endpoint = args.ToQuery("/receive");
+		string endpoint = args.ToQuery("/upload");
 
 		PF_Logger.Log("Sending leaderboard data to endpoint...");
 		Post(endpoint, jsonData);
