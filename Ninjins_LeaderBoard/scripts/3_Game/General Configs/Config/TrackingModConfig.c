@@ -83,7 +83,7 @@ class TrackingModConfig
 		ExcludeKillsInZones = new array<ref ZoneKillExclusion>();
 		EnableWebExport = true;
 		WebExportFileName = "LeaderboardWebExport.json";
-		WebExportIncludePlayerIDs = false;
+		WebExportIncludePlayerIDs = true;
 		WebExportMaxPlayers = 100;
 		WebExportIntervalSeconds = 300;
 		ZoneKillExclusion example1;
