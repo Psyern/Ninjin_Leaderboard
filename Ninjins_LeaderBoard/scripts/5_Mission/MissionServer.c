@@ -2,7 +2,7 @@ modded class MissionServer extends MissionBase
 {
 	protected ref map<string, int> m_LeaderboardRequestTimes;
 	protected const int LEADERBOARD_RATE_LIMIT_MS = 500;
-	#ifdef PSYERNS_FRAMEWORK
+	#ifdef Psyerns_Framework
 	protected float m_WebExportTimer;
 	protected float m_WebExportInterval;
 	protected bool m_WebExportEnabled;
@@ -49,7 +49,7 @@ modded class MissionServer extends MissionBase
 			#endif
 			TrackingMod.LogInfo("Server initialized - Directories checked/created, data loaded, categories initialized, config loaded");
 
-			#ifdef PSYERNS_FRAMEWORK
+			#ifdef Psyerns_Framework
 			m_WebExportEnabled = false;
 			m_WebExportTimer = 0;
 			m_WebExportInterval = 300;
@@ -66,7 +66,7 @@ modded class MissionServer extends MissionBase
 		}
 	}
 	
-	#ifdef PSYERNS_FRAMEWORK
+	#ifdef Psyerns_Framework
 	override void OnUpdate(float timeslice)
 	{
 		super.OnUpdate(timeslice);

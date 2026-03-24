@@ -1,4 +1,4 @@
-#ifdef PSYERNS_FRAMEWORK
+#ifdef Psyerns_Framework
 class PF_LeaderboardApi : PF_WebApiBase
 {
 	protected string m_ApiKey;
