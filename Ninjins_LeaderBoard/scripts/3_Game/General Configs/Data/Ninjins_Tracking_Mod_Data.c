@@ -26,7 +26,16 @@ class PlayerDeathData
 	string LastLoginDate;
 	ref map<string, ref array<int>> AvailableMilestones;
 	ref map<string, ref array<int>> ClaimedMilestones;
-	
+
+	// DME-WAR integration (populated from 4_World via #ifdef DME_War)
+	string WarFaction;
+	int WarAlignment;
+	int WarLevel;
+	int WarBossKills;
+
+	// Expansion Hardline integration (populated from 4_World via #ifdef EXPANSIONMODHARDLINE)
+	int HardlineReputation;
+
 	void PlayerDeathData()
 	{
 		PlayerID = "";
@@ -44,6 +53,11 @@ class PlayerDeathData
 		LastLoginDate = "";
 		AvailableMilestones = new map<string, ref array<int>>();
 		ClaimedMilestones = new map<string, ref array<int>>();
+		WarFaction = "";
+		WarAlignment = 0;
+		WarLevel = 0;
+		WarBossKills = 0;
+		HardlineReputation = 0;
 	}
 	
 	int GetPVPPoints()
@@ -1202,6 +1216,8 @@ class TrackingModData
 		exportData.disablePVPLeaderboard = g_TrackingModConfig.DisablePVPLeaderboard;
 		exportData.includePlayerIDs = includePlayerIDs;
 		exportData.exportPlayerLimit = playerLimit;
+		exportData.globalEastPoints = 0;
+		exportData.globalWestPoints = 0;
 		
 		categoryConfig = PVECategoryConfig.GetInstance();
 		if (categoryConfig)
@@ -1305,7 +1321,13 @@ class TrackingModData
 				exportPlayer.categoryLongestRanges.Set(key, value);
 			}
 		}
-		
+
+		exportPlayer.warFaction = playerData.WarFaction;
+		exportPlayer.warAlignment = playerData.WarAlignment;
+		exportPlayer.warLevel = playerData.WarLevel;
+		exportPlayer.warBossKills = playerData.WarBossKills;
+		exportPlayer.hardlineReputation = playerData.HardlineReputation;
+
 		return exportPlayer;
 	}
 	

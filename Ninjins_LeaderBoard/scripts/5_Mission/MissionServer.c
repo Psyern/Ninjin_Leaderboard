@@ -77,6 +77,7 @@ modded class MissionServer extends MissionBase
 			if (m_WebExportTimer >= m_WebExportInterval)
 			{
 				m_WebExportTimer = 0;
+				TrackingModWarHardlineSync.SyncAllPlayers();
 				TrackingModWebExportHelper.SendExport();
 			}
 		}
@@ -871,13 +872,15 @@ modded class MissionServer extends MissionBase
 			if (currencyMax < currencyMin)
 				currencyMax = currencyMin;
 			
-			if (!useSectionSystem)
+			bool hasCurrencyOnly = !useSectionSystem && currencyRewards && currencyRewards.Count() > 0;
+
+			if (!useSectionSystem && !hasCurrencyOnly)
 			{
-				TrackingMod.LogWarning("[ClaimTrackingModReward] Reward config has no sections: " + rewardConfigFileName);
+				TrackingMod.LogWarning("[ClaimTrackingModReward] Reward config has no sections and no currency: " + rewardConfigFileName);
 				response = new TrackingModRewardClaimResponse();
 				response.success = false;
 				response.remainingRewards = calculatedPendingRewards;
-				response.message = "Reward config has no sections";
+				response.message = "Reward config has no sections and no currency";
 				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 				return;
 			}
@@ -887,7 +890,13 @@ modded class MissionServer extends MissionBase
 		sectionSuccess = false;
 		maxSectionRetries = 10;
 		sectionRetryCount = 0;
-		
+
+		if (!useSectionSystem)
+		{
+			sectionSuccess = true;
+			TrackingMod.LogInfo("[ClaimTrackingModReward] Currency-only reward, skipping section selection");
+		}
+
 		while (!sectionSuccess && sectionRetryCount < maxSectionRetries)
 		{
 			sectionRetryCount++;
@@ -1021,18 +1030,25 @@ modded class MissionServer extends MissionBase
 		
 		if (!sectionSuccess && sectionRetryCount >= maxSectionRetries)
 		{
-			TrackingMod.LogCritical("[ClaimTrackingModReward] Failed to get a section with items after " + maxSectionRetries.ToString() + " retries! Not consuming reward.");
-			if (player && player.GetIdentity())
+			if (currencyRewards && currencyRewards.Count() > 0)
 			{
-				NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser("Failed to claim reward. Your inventory may be full. Please make space and try again."), "Ninjins_Tracking_Mod/gui/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
+				TrackingMod.LogWarning("[ClaimTrackingModReward] Section selection failed but currency rewards available — giving currency only");
 			}
-			calculatedPendingRewards = TrackingModMilestoneHelper.CalculatePendingRewards(playerData);
-			response = new TrackingModRewardClaimResponse();
-			response.success = false;
-			response.remainingRewards = calculatedPendingRewards;
-			response.message = "Failed to select reward section after retries";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
-			return;
+			else
+			{
+				TrackingMod.LogCritical("[ClaimTrackingModReward] Failed to get a section with items after " + maxSectionRetries.ToString() + " retries! Not consuming reward.");
+				if (player && player.GetIdentity())
+				{
+					NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser("Failed to claim reward. Your inventory may be full. Please make space and try again."), "Ninjins_Tracking_Mod/gui/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
+				}
+				calculatedPendingRewards = TrackingModMilestoneHelper.CalculatePendingRewards(playerData);
+				response = new TrackingModRewardClaimResponse();
+				response.success = false;
+				response.remainingRewards = calculatedPendingRewards;
+				response.message = "Failed to select reward section after retries";
+				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+				return;
+			}
 		}
 		
 		if (currencyRewards && currencyRewards.Count() > 0)

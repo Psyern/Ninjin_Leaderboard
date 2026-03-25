@@ -99,7 +99,16 @@ class TrackingModWebLeaderboardPlayerData
 	ref map<string, int> categoryKills;
 	ref map<string, int> categoryDeaths;
 	ref map<string, int> categoryLongestRanges;
-	
+
+	// DME-WAR fields
+	string warFaction;
+	int warAlignment;
+	int warLevel;
+	int warBossKills;
+
+	// Expansion Hardline field
+	int hardlineReputation;
+
 	void TrackingModWebLeaderboardPlayerData()
 	{
 		playerID = "";
@@ -116,6 +125,11 @@ class TrackingModWebLeaderboardPlayerData
 		categoryKills = new map<string, int>();
 		categoryDeaths = new map<string, int>();
 		categoryLongestRanges = new map<string, int>();
+		warFaction = "";
+		warAlignment = 0;
+		warLevel = 0;
+		warBossKills = 0;
+		hardlineReputation = 0;
 	}
 }
 
@@ -128,10 +142,12 @@ class TrackingModWebLeaderboardExport
 	bool disablePVELeaderboard;
 	bool includePlayerIDs;
 	int exportPlayerLimit;
+	int globalEastPoints;
+	int globalWestPoints;
 	ref array<ref TrackingModWebLeaderboardPlayerData> topPVEPlayers;
 	ref array<ref TrackingModWebLeaderboardPlayerData> topPVPPlayers;
 	ref map<string, string> categoryPreviews;
-	
+
 	void TrackingModWebLeaderboardExport()
 	{
 		generatedAt = "";
@@ -141,6 +157,8 @@ class TrackingModWebLeaderboardExport
 		disablePVELeaderboard = false;
 		includePlayerIDs = false;
 		exportPlayerLimit = 0;
+		globalEastPoints = 0;
+		globalWestPoints = 0;
 		topPVEPlayers = new array<ref TrackingModWebLeaderboardPlayerData>();
 		topPVPPlayers = new array<ref TrackingModWebLeaderboardPlayerData>();
 		categoryPreviews = new map<string, string>();
