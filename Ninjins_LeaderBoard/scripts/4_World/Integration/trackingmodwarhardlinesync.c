@@ -16,7 +16,7 @@ class TrackingModWarHardlineSync
 	protected static void SyncWarData(string plainId, PlayerDeathData playerData)
 	{
 		#ifdef DME_War
-		DMEW_PlayerState warState = DMEW_Storage.GetCached(plainId);
+		DMEW_PlayerState warState = DMEW_Storage.LoadOrCreate(plainId);
 		if (warState)
 		{
 			playerData.WarFaction = warState.Faction;
