@@ -55,6 +55,37 @@ body {
     display: none;
 }
 
+.toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 260px;
+    max-width: 420px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #fff;
+    color: #1f2937;
+    font-size: 0.9rem;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+}
+
 .tabs {
     display: flex;
     gap: 4px;
@@ -148,13 +179,66 @@ tr.rank-3 .rank { color: #92400e; }
     font-size: 0.9rem;
 }
 
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #fff;
+    border-top: 1px solid #f0f0f0;
+}
+
+.pagination-info {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.pagination-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.pagination-btn {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #374151;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background: #f9fafb;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
     .container { padding: 12px 8px; }
     .header { padding: 16px; }
     .header h1 { font-size: 1.2rem; }
     .header-stats { gap: 12px; font-size: 0.8rem; }
+    .toolbar { align-items: stretch; }
+    .search-box { min-width: 100%; max-width: none; }
     .tab { padding: 8px 16px; font-size: 0.85rem; }
     thead th, tbody td { padding: 8px 10px; font-size: 0.8rem; }
+    .pagination {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pagination-actions {
+        justify-content: stretch;
+    }
+
+    .pagination-btn {
+        flex: 1;
+    }
 }
 </style>
 </head>
@@ -171,7 +255,12 @@ tr.rank-3 .rank { color: #92400e; }
 
     <div class="error-banner" id="error-banner"></div>
 
-    <div class="tabs" id="tabs"></div>
+    <div class="toolbar">
+        <div class="tabs" id="tabs"></div>
+        <div class="search-box">
+            <input type="text" class="search-input" id="player-search" placeholder="Spieler suchen nach Name oder ID...">
+        </div>
+    </div>
 
     <div class="table-wrapper">
         <div class="loading" id="loading">Loading leaderboard data...</div>
@@ -179,6 +268,13 @@ tr.rank-3 .rank { color: #92400e; }
             <thead id="table-head"></thead>
             <tbody id="table-body"></tbody>
         </table>
+        <div class="pagination" id="pagination" style="display:none">
+            <div class="pagination-info" id="pagination-info"></div>
+            <div class="pagination-actions">
+                <button class="pagination-btn" id="pagination-prev">Zurück</button>
+                <button class="pagination-btn" id="pagination-next">Weiter</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -186,10 +282,12 @@ tr.rank-3 .rank { color: #92400e; }
 const CONFIG = {
     apiUrl: "./api/leaderboard.php",
     refreshInterval: 300000,
-    maxPlayers: 20
+    pageSize: 10
 };
 
 let currentTab = "pve";
+let currentPage = 1;
+let currentSearch = "";
 let leaderboardData = null;
 
 async function fetchData() {
@@ -247,7 +345,7 @@ function renderTabs() {
         const btn = document.createElement("button");
         btn.className = "tab" + (currentTab === "pve" ? " active" : "");
         btn.textContent = "PvE";
-        btn.onclick = function() { currentTab = "pve"; render(); };
+        btn.onclick = function() { currentTab = "pve"; currentPage = 1; render(); };
         container.appendChild(btn);
     }
 
@@ -255,7 +353,7 @@ function renderTabs() {
         const btn = document.createElement("button");
         btn.className = "tab" + (currentTab === "pvp" ? " active" : "");
         btn.textContent = "PvP";
-        btn.onclick = function() { currentTab = "pvp"; render(); };
+        btn.onclick = function() { currentTab = "pvp"; currentPage = 1; render(); };
         container.appendChild(btn);
     }
 }
@@ -263,7 +361,15 @@ function renderTabs() {
 function renderTable() {
     const d = leaderboardData;
     const players = currentTab === "pve" ? (d.topPVEPlayers || []) : (d.topPVPPlayers || []);
-    const limited = players.slice(0, CONFIG.maxPlayers);
+    const filteredPlayers = filterPlayers(players);
+    const totalPlayers = filteredPlayers.length;
+    const totalPages = Math.max(1, Math.ceil(totalPlayers / CONFIG.pageSize));
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+
+    const startIndex = (currentPage - 1) * CONFIG.pageSize;
+    const endIndex = startIndex + CONFIG.pageSize;
+    const limited = filteredPlayers.slice(startIndex, endIndex);
     const previews = d.categoryPreviews || {};
     const killCategories = Object.keys(previews);
 
@@ -280,7 +386,7 @@ function renderTable() {
     let bodyHtml = "";
     for (let idx = 0; idx < limited.length; idx++) {
         const p = limited[idx];
-        const rank = idx + 1;
+        const rank = startIndex + idx + 1;
         const rankClass = rank <= 3 ? " rank-" + rank : "";
         const pts = currentTab === "pve" ? (p.pvePoints || 0) : (p.pvpPoints || 0);
         const deaths = currentTab === "pve" ? (p.pveDeaths || 0) : (p.pvpDeaths || 0);
@@ -321,13 +427,63 @@ function renderTable() {
 
     if (limited.length === 0) {
         const cols = 6 + killCategories.length;
-        bodyHtml = '<tr><td colspan="' + cols + '" style="text-align:center;color:#999;padding:40px;">No players to display.</td></tr>';
+        const emptyText = currentSearch !== "" ? "Keine Spieler zur Suche gefunden." : "No players to display.";
+        bodyHtml = '<tr><td colspan="' + cols + '" style="text-align:center;color:#999;padding:40px;">' + emptyText + '</td></tr>';
     }
 
     tbody.innerHTML = bodyHtml;
 
     document.getElementById("loading").style.display = "none";
     document.getElementById("leaderboard-table").style.display = "table";
+    renderPagination(totalPlayers, totalPages, startIndex, limited.length);
+}
+
+function filterPlayers(players) {
+    const query = currentSearch.trim().toLowerCase();
+    if (query === "") return players;
+
+    return players.filter(function(player) {
+        const name = String(player.playerName || "").toLowerCase();
+        const playerId = String(player.playerID || "").toLowerCase();
+        const odolozId = String(player.odolozId || "").toLowerCase();
+        return name.indexOf(query) !== -1 || playerId.indexOf(query) !== -1 || odolozId.indexOf(query) !== -1;
+    });
+}
+
+function renderPagination(totalPlayers, totalPages, startIndex, visibleCount) {
+    const container = document.getElementById("pagination");
+    const info = document.getElementById("pagination-info");
+    const prev = document.getElementById("pagination-prev");
+    const next = document.getElementById("pagination-next");
+
+    if (totalPlayers <= CONFIG.pageSize) {
+        container.style.display = "none";
+        return;
+    }
+
+    const from = totalPlayers === 0 ? 0 : startIndex + 1;
+    const to = startIndex + visibleCount;
+
+    info.textContent = "Zeige " + from + "–" + to + " von " + totalPlayers + " Spielern · Seite " + currentPage + " / " + totalPages;
+
+    prev.disabled = currentPage <= 1;
+    next.disabled = currentPage >= totalPages;
+
+    prev.onclick = function() {
+        if (currentPage > 1) {
+            currentPage--;
+            renderTable();
+        }
+    };
+
+    next.onclick = function() {
+        if (currentPage < totalPages) {
+            currentPage++;
+            renderTable();
+        }
+    };
+
+    container.style.display = "flex";
 }
 
 function escHtml(str) {
@@ -339,6 +495,12 @@ function escHtml(str) {
 function formatNumber(n) {
     return Number(n).toLocaleString();
 }
+
+document.getElementById("player-search").addEventListener("input", function(event) {
+    currentSearch = event.target.value || "";
+    currentPage = 1;
+    renderTable();
+});
 
 fetchData();
 setInterval(fetchData, CONFIG.refreshInterval);
