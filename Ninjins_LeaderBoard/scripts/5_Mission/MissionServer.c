@@ -723,6 +723,8 @@ modded class MissionServer extends MissionBase
 		TrackingModMilestoneRewardConfig milestoneRewardConfig;
 		string milestoneStr;
 		bool spawnSuccess;
+		string rewardDisplayName;
+		string rewardNotificationText;
 		
 		if (!GetGame().IsDedicatedServer())
 			return;
@@ -890,6 +892,7 @@ modded class MissionServer extends MissionBase
 		sectionSuccess = false;
 		maxSectionRetries = 10;
 		sectionRetryCount = 0;
+		rewardDisplayName = "";
 
 		if (!useSectionSystem)
 		{
@@ -934,6 +937,10 @@ modded class MissionServer extends MissionBase
 			if (selectedSection)
 			{
 				section = selectedSection;
+				if (section.Name != "")
+				{
+					rewardDisplayName = section.Name;
+				}
 				sectionItemMin = section.ItemsMin;
 				sectionItemMax = section.ItemsMax;
 				if (sectionItemMin < 0)
@@ -1039,7 +1046,12 @@ modded class MissionServer extends MissionBase
 				TrackingMod.LogCritical("[ClaimTrackingModReward] Failed to get a section with items after " + maxSectionRetries.ToString() + " retries! Not consuming reward.");
 				if (player && player.GetIdentity())
 				{
-					NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser("Failed to claim reward. Your inventory may be full. Please make space and try again."), "Ninjins_Tracking_Mod/gui/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
+					rewardNotificationText = "Failed to claim reward. Your inventory may be full. Please make space and try again.";
+					if (rewardDisplayName != "")
+					{
+						rewardNotificationText = "Failed to claim reward \"" + rewardDisplayName + "\". Your inventory may be full. Please make space and try again.";
+					}
+					NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser(rewardNotificationText), "Ninjins_Tracking_Mod/gui/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
 				}
 				calculatedPendingRewards = TrackingModMilestoneHelper.CalculatePendingRewards(playerData);
 				response = new TrackingModRewardClaimResponse();
@@ -1068,7 +1080,12 @@ modded class MissionServer extends MissionBase
 		
 		if (player && player.GetIdentity())
 		{
-			NotificationSystem.Create(new StringLocaliser("Reward Claimed"), new StringLocaliser("Reward items have been added to your inventory."), "Ninjins_Tracking_Mod/gui/success.edds", ARGB(255, 0, 255, 0), 3.0, player.GetIdentity());
+			rewardNotificationText = "Reward items have been added to your inventory.";
+			if (rewardDisplayName != "")
+			{
+				rewardNotificationText = "Reward \"" + rewardDisplayName + "\" has been added to your inventory.";
+			}
+			NotificationSystem.Create(new StringLocaliser("Reward Claimed"), new StringLocaliser(rewardNotificationText), "Ninjins_Tracking_Mod/gui/success.edds", ARGB(255, 0, 255, 0), 3.0, player.GetIdentity());
 		}
 		
 		response = new TrackingModRewardClaimResponse();

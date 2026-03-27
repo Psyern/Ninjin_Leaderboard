@@ -78,6 +78,7 @@
 - **Item attachments** — recursive attachments with individual spawn chances
 - **Quantity/health control** — min/max values for ammo, energy, condition
 - **Currency rewards** — optional currency rewards
+- **Named reward notifications** — claim success/failure notifications show the reward `Name` from the reward file
 
 ### Zone Integration
 - **NinjinsPvPPvE compatibility** — full integration with the PvP/PvE zone system
@@ -366,6 +367,8 @@ Defines the kill categories for the PvE leaderboard.
 }
 ```
 
+`Name` is used as the in-game reward name shown in the claim notification.
+
 ---
 
 ### Logger Configuration
@@ -555,6 +558,7 @@ Kill tracking works via **modded DayZ base classes**:
 5. **Loot sections** have individual spawn chances and ItemsMin/Max
 6. **Attachments** are processed recursively (nested attachments possible)
 7. **Item properties** (health, quantity, ammo, energy) are configurable
+8. The reward section `Name` is shown to the player in reward claim notifications
 
 ### Zone Integration (NinjinsPvPPvE)
 
