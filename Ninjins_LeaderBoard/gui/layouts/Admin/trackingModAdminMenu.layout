@@ -1,0 +1,1364 @@
+FrameWidgetClass TrackingModAdminMenu {
+ visible 1
+ clipchildren 0
+ ignorepointer 1
+ position 0 0
+ size 1 1
+ halign center_ref
+ valign center_ref
+ hexactpos 0
+ vexactpos 0
+ hexactsize 0
+ vexactsize 0
+ scriptclass "TrackingModAdminMenuController"
+ {
+  PanelWidgetClass menu_content {
+   visible 1
+   ignorepointer 1
+   position 0 0
+   size 0.8 0.8
+   halign center_ref
+   valign center_ref
+   hexactpos 0
+   vexactpos 0
+   hexactsize 0
+   vexactsize 0
+   priority 1
+   "no focus" 1
+   {
+    PanelWidgetClass menu_panel {
+     visible 1
+     ignorepointer 1
+     color 0.08 0.08 0.08 0.97
+     position 0 0
+     size 1 1
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     vexactsize 0
+     priority 1
+     style DayZDefaultPanel
+     "no focus" 1
+     {
+      PanelWidgetClass titlebar {
+       visible 1
+       clipchildren 1
+       ignorepointer 0
+       color 0.12 0.12 0.12 1
+       position 0 0
+       size 1 70
+       halign center_ref
+       hexactpos 1
+       vexactpos 1
+       hexactsize 0
+       vexactsize 1
+       style DayZDefaultPanel
+       {
+        PanelWidgetClass titlebar_accent {
+         visible 1
+         ignorepointer 1
+         color 1 0.5 0 1
+         position 0 68
+         size 1 2
+         halign center_ref
+         hexactpos 0
+         vexactpos 1
+         hexactsize 0
+         vexactsize 1
+         style DayZDefaultPanel
+        }
+        TextWidgetClass title {
+         clipchildren 0
+         ignorepointer 1
+         color 1 0.5 0 1
+         position 0.02 5
+         size 0.6 25
+         hexactpos 0
+         vexactpos 1
+         hexactsize 0
+         vexactsize 1
+         style Normal
+         text "Tracking Mod - Admin Einstellungen"
+         font "gui/fonts/metronbook22"
+         "bold text" 1
+         "text valign" center
+        }
+        PanelWidgetClass info_bar {
+         visible 1
+         clipchildren 1
+         ignorepointer 1
+         color 0.16 0.16 0.16 0.95
+         position 0 35
+         size 1 30
+         hexactpos 0
+         vexactpos 1
+         hexactsize 0
+         vexactsize 1
+         style DayZDefaultPanel
+         {
+          TextWidgetClass admin_info_text {
+           visible 1
+           clipchildren 0
+           ignorepointer 1
+           color 0.85 0.85 0.85 1
+           position 0.02 0
+           size 0.42 1
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           scriptclass "ViewBinding"
+           text "Nur fuer Server-Admins"
+           font "gui/fonts/metronbook16"
+           "text valign" center
+           {
+            ScriptParamsClass {
+             Binding_Name "AdminInfoText"
+            }
+           }
+          }
+          TextWidgetClass current_tab_label {
+           visible 1
+           clipchildren 0
+           ignorepointer 1
+           color 1 1 1 1
+           position 0.7 0
+           size 0.28 1
+           halign right_ref
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           scriptclass "ViewBinding"
+           text "Allgemein"
+           font "gui/fonts/metronbook16"
+           "text halign" right
+           "text valign" center
+           {
+            ScriptParamsClass {
+             Binding_Name "CurrentTabLabel"
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+      PanelWidgetClass main_frame {
+       visible 1
+       clipchildren 1
+       ignorepointer 1
+       position 0 0.1
+       size 1 0.9
+       hexactpos 0
+       vexactpos 0
+       hexactsize 0
+       vexactsize 0
+       "no focus" 1
+       {
+        PanelWidgetClass tab_bar {
+         visible 1
+         color 0.08 0.08 0.08 1
+         position 0 0
+         size 1 45
+         hexactpos 0
+         vexactpos 1
+         hexactsize 0
+         vexactsize 1
+         style DayZDefaultPanel
+         {
+          ButtonWidgetClass btn_tab_general {
+           visible 1
+           color 1 0.5 0 1
+           position 0.01 0.08
+           size 0.12 0.84
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           style Editor
+           text "Allgemein"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickTabGeneral"
+            }
+           }
+          }
+          ButtonWidgetClass btn_tab_pve {
+           visible 1
+           color 0.3 0.3 0.3 1
+           position 0.14 0.08
+           size 0.1 0.84
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           style Editor
+           text "PvE"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickTabPvE"
+            }
+           }
+          }
+          ButtonWidgetClass btn_tab_pvp {
+           visible 1
+           color 0.3 0.3 0.3 1
+           position 0.25 0.08
+           size 0.1 0.84
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           style Editor
+           text "PvP"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickTabPvP"
+            }
+           }
+          }
+          ButtonWidgetClass btn_tab_milestones {
+           visible 1
+           color 0.3 0.3 0.3 1
+           position 0.36 0.08
+           size 0.14 0.84
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           style Editor
+           text "Milestones"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickTabMilestones"
+            }
+           }
+          }
+          ButtonWidgetClass btn_tab_rewards {
+           visible 1
+           color 0.3 0.3 0.3 1
+           position 0.51 0.08
+           size 0.12 0.84
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           style Editor
+           text "Rewards"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickTabRewards"
+            }
+           }
+          }
+         }
+        }
+        PanelWidgetClass content_container {
+         visible 1
+         color 0.12 0.12 0.12 0.98
+         position 0 50
+         size 1 0.82
+         hexactpos 0
+         vexactpos 1
+         hexactsize 0
+         vexactsize 0
+         style DayZDefaultPanel
+         {
+          PanelWidgetClass tab_general_panel {
+           visible 1
+           position 0.01 0.01
+           size 0.98 0.98
+           {
+            ScrollWidgetClass general_scroll {
+             visible 1
+             clipchildren 1
+             ignorepointer 0
+             color 1 1 1 0
+             position 0 0
+             size 1 1
+             style blank
+             "Scrollbar V" 1
+             {
+              PanelWidgetClass general_content {
+               visible 1
+               ignorepointer 1
+               position 0 0
+               size 1 920
+               hexactpos 0
+               vexactpos 0
+               hexactsize 0
+               vexactsize 1
+               {
+                PanelWidgetClass general_left_column {
+                 visible 1
+                 color 0 0 0 0
+                 position 0 0
+                 size 0.49 1
+                 {
+                  PanelWidgetClass admin_management_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0
+                   size 0.98 0.16
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass admin_management_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.04
+                     size 0.96 0.14
+                     text "Admin-Verwaltung"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    TextListboxWidgetClass admin_ids_list {
+                     position 0.02 0.22
+                     size 0.6 0.52
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                    EditBoxWidgetClass edit_admin_id {
+                     position 0.64 0.22
+                     size 0.32 0.16
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                    ButtonWidgetClass btn_add_admin_id {
+                     color 0 0.8 0 1
+                     position 0.64 0.44
+                     size 0.15 0.16
+                     style Editor
+                     text "Hinzufuegen"
+                     font "gui/fonts/metronbook14"
+                     {
+                      ScriptParamsClass {
+                       Relay_Command "OnClickAddAdminId"
+                      }
+                     }
+                    }
+                    ButtonWidgetClass btn_remove_admin_id {
+                     color 0.8 0 0 1
+                     position 0.81 0.44
+                     size 0.15 0.16
+                     style Editor
+                     text "Entfernen"
+                     font "gui/fonts/metronbook14"
+                     {
+                      ScriptParamsClass {
+                       Relay_Command "OnClickRemoveAdminId"
+                      }
+                     }
+                    }
+                   }
+                  }
+                  PanelWidgetClass leaderboard_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0.18
+                   size 0.98 0.18
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass leaderboard_group_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.04
+                     size 0.96 0.12
+                     text "Leaderboard"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    CheckBoxWidgetClass check_enable_pve {
+                     position 0.02 0.22
+                     size 0.44 0.14
+                     text "PvE Leaderboard aktiv"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_enable_pvp {
+                     position 0.5 0.22
+                     size 0.44 0.14
+                     text "PvP Leaderboard aktiv"
+                     font "gui/fonts/metronbook14"
+                    }
+                    TextWidgetClass label_max_pve {
+                     position 0.02 0.44
+                     size 0.34 0.12
+                     text "Max PvE Spieler"
+                     font "gui/fonts/metronbook14"
+                     "text valign" center
+                    }
+                    EditBoxWidgetClass edit_max_pve {
+                     position 0.36 0.44
+                     size 0.12 0.12
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                    TextWidgetClass label_max_pvp {
+                     position 0.52 0.44
+                     size 0.28 0.12
+                     text "Max PvP Spieler"
+                     font "gui/fonts/metronbook14"
+                     "text valign" center
+                    }
+                    EditBoxWidgetClass edit_max_pvp {
+                     position 0.82 0.44
+                     size 0.12 0.12
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_show_online_pve {
+                     position 0.02 0.66
+                     size 0.44 0.14
+                     text "Online-Status PvE"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_show_online_pvp {
+                     position 0.5 0.66
+                     size 0.44 0.14
+                     text "Online-Status PvP"
+                     font "gui/fonts/metronbook14"
+                    }
+                   }
+                  }
+                  PanelWidgetClass playerdata_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0.38
+                   size 0.98 0.12
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass playerdata_group_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.08
+                     size 0.96 0.18
+                     text "Spielerdaten"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    TextWidgetClass label_delete_days {
+                     position 0.02 0.44
+                     size 0.46 0.18
+                     text "Loeschen nach X Tagen"
+                     font "gui/fonts/metronbook14"
+                     "text valign" center
+                    }
+                    EditBoxWidgetClass edit_delete_days {
+                     position 0.48 0.44
+                     size 0.14 0.18
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_use_utc {
+                     position 0.66 0.44
+                     size 0.28 0.18
+                     text "UTC verwenden"
+                     font "gui/fonts/metronbook14"
+                    }
+                   }
+                  }
+                  PanelWidgetClass rewardsystem_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0.52
+                   size 0.98 0.1
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass rewardsystem_group_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.12
+                     size 0.96 0.2
+                     text "Reward-System"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    CheckBoxWidgetClass check_enable_rewardsystem {
+                     position 0.02 0.46
+                     size 0.5 0.2
+                     text "Reward-System aktivieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                   }
+                  }
+                  PanelWidgetClass webexport_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0.64
+                   size 0.98 0.18
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass webexport_group_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.04
+                     size 0.96 0.12
+                     text "Web-Export"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    CheckBoxWidgetClass check_enable_webexport {
+                     position 0.02 0.22
+                     size 0.4 0.14
+                     text "Web-Export aktiv"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_show_playerids_export {
+                     position 0.5 0.22
+                     size 0.42 0.14
+                     text "Spieler-IDs anzeigen"
+                     font "gui/fonts/metronbook14"
+                    }
+                    TextWidgetClass label_export_interval {
+                     position 0.02 0.48
+                     size 0.34 0.12
+                     text "Intervall (Sek.)"
+                     font "gui/fonts/metronbook14"
+                     "text valign" center
+                    }
+                    EditBoxWidgetClass edit_export_interval {
+                     position 0.36 0.48
+                     size 0.12 0.12
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                    TextWidgetClass label_export_players {
+                     position 0.52 0.48
+                     size 0.24 0.12
+                     text "Max Spieler"
+                     font "gui/fonts/metronbook14"
+                     "text valign" center
+                    }
+                    EditBoxWidgetClass edit_export_players {
+                     position 0.8 0.48
+                     size 0.12 0.12
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                   }
+                  }
+                 }
+                }
+                PanelWidgetClass general_right_column {
+                 visible 1
+                 color 0 0 0 0
+                 position 0.5 0
+                 size 0.49 1
+                 {
+                  PanelWidgetClass death_filter_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0
+                   size 0.98 0.22
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass death_filter_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.04
+                     size 0.96 0.12
+                     text "Death-Tracking Filter"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    CheckBoxWidgetClass check_death_suicide {
+                     position 0.02 0.22
+                     size 0.28 0.12
+                     text "Suicide ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_grenade {
+                     position 0.34 0.22
+                     size 0.28 0.12
+                     text "Grenade ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_trap {
+                     position 0.66 0.22
+                     size 0.28 0.12
+                     text "Trap ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_zombie {
+                     position 0.02 0.4
+                     size 0.28 0.12
+                     text "Zombie ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_animal {
+                     position 0.34 0.4
+                     size 0.28 0.12
+                     text "Animal ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_ai {
+                     position 0.66 0.4
+                     size 0.28 0.12
+                     text "AI ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_car {
+                     position 0.02 0.58
+                     size 0.28 0.12
+                     text "Car ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_weapon {
+                     position 0.34 0.58
+                     size 0.28 0.12
+                     text "Weapon ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_unarmed {
+                     position 0.66 0.58
+                     size 0.28 0.12
+                     text "Unarmed ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_death_unknown {
+                     position 0.02 0.76
+                     size 0.28 0.12
+                     text "Unknown ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                   }
+                  }
+                  PanelWidgetClass kill_filter_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0.24
+                   size 0.98 0.18
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass kill_filter_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.04
+                     size 0.96 0.12
+                     text "Kill-Tracking Filter"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    CheckBoxWidgetClass check_kill_grenade {
+                     position 0.02 0.24
+                     size 0.28 0.12
+                     text "Grenade ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_trap {
+                     position 0.34 0.24
+                     size 0.28 0.12
+                     text "Trap ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_animal {
+                     position 0.66 0.24
+                     size 0.28 0.12
+                     text "Animal ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_zombie {
+                     position 0.02 0.46
+                     size 0.28 0.12
+                     text "Zombie ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_car {
+                     position 0.34 0.46
+                     size 0.28 0.12
+                     text "Car ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_weapon {
+                     position 0.66 0.46
+                     size 0.28 0.12
+                     text "Weapon ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_unarmed {
+                     position 0.02 0.68
+                     size 0.28 0.12
+                     text "Unarmed ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_unknown {
+                     position 0.34 0.68
+                     size 0.28 0.12
+                     text "Unknown ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                    CheckBoxWidgetClass check_kill_unconscious {
+                     position 0.66 0.68
+                     size 0.3 0.12
+                     text "Unconscious ignorieren"
+                     font "gui/fonts/metronbook14"
+                    }
+                   }
+                  }
+                  PanelWidgetClass zone_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0.44
+                   size 0.98 0.2
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass zone_group_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.04
+                     size 0.96 0.12
+                     text "Zonen-Einstellungen"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    CheckBoxWidgetClass check_exclude_pvp_in_pve {
+                     position 0.02 0.24
+                     size 0.92 0.12
+                     text "PvP-Kill ausschliessen wenn beide in PvE-Zone"
+                     font "gui/fonts/metronbook14"
+                    }
+                    TextWidgetClass zone_types_label {
+                     position 0.02 0.46
+                     size 0.5 0.1
+                     text "PvE-Kills zaehlen in Zonentypen"
+                     font "gui/fonts/metronbook14"
+                     "text valign" center
+                    }
+                    TextListboxWidgetClass zone_types_list {
+                     position 0.02 0.58
+                     size 0.92 0.26
+                     style Default
+                     font "gui/fonts/metronbook14"
+                    }
+                   }
+                  }
+                  PanelWidgetClass notes_group {
+                   visible 1
+                   color 0.1 0.1 0.1 0.8
+                   position 0 0.66
+                   size 0.98 0.16
+                   style DayZDefaultPanel
+                   {
+                    TextWidgetClass notes_title {
+                     color 1 0.7 0.3 1
+                     position 0.02 0.04
+                     size 0.96 0.12
+                     text "Hinweis"
+                     font "gui/fonts/metronbook16"
+                     "bold text" 1
+                    }
+                    TextWidgetClass notes_text {
+                     color 0.85 0.85 0.85 1
+                     position 0.02 0.24
+                     size 0.94 0.52
+                     text "Dieses Menue bildet das neue In-Game-Admin-Design ab. Schreib-RPCs, Validierung und Live-Reload koennen nun schrittweise auf diese UI aufgesetzt werden."
+                     font "gui/fonts/metronbook14"
+                     multiline 1
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+          }
+          PanelWidgetClass tab_pve_panel {
+           visible 0
+           position 0.01 0.01
+           size 0.98 0.98
+           {
+            PanelWidgetClass pve_top_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0
+             size 1 0.12
+             style DayZDefaultPanel
+             {
+              TextWidgetClass pve_top_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.12
+               size 0.4 0.2
+               text "PvE-Konfiguration"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextWidgetClass pve_penalty_label {
+               position 0.02 0.5
+               size 0.3 0.18
+               text "Death Penalty"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_pve_penalty {
+               position 0.33 0.5
+               size 0.12 0.18
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_add_pve_category {
+               color 0 0.8 0 1
+               position 0.73 0.42
+               size 0.25 0.24
+               style Editor
+               text "Neue Kategorie"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass pve_list_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0.14
+             size 0.38 0.84
+             style DayZDefaultPanel
+             {
+              TextWidgetClass pve_list_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "Kategorien"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextListboxWidgetClass pve_categories_list {
+               position 0.02 0.11
+               size 0.96 0.87
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass pve_editor_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0.4 0.14
+             size 0.6 0.84
+             style DayZDefaultPanel
+             {
+              TextWidgetClass pve_editor_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "Kategorie-Editor"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextWidgetClass pve_category_id_label {
+               position 0.02 0.12
+               size 0.24 0.05
+               text "CategoryID"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_pve_category_id {
+               position 0.28 0.12
+               size 0.3 0.05
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              TextWidgetClass pve_preview_label {
+               position 0.02 0.2
+               size 0.24 0.05
+               text "ClassNamePreview"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_pve_preview {
+               position 0.28 0.2
+               size 0.55 0.05
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              TextWidgetClass pve_entries_title {
+               color 0.85 0.85 0.85 1
+               position 0.02 0.3
+               size 0.96 0.05
+               text "ClassNames / Punkte / Multiplier"
+               font "gui/fonts/metronbook14"
+               "bold text" 1
+              }
+              TextListboxWidgetClass pve_entries_list {
+               position 0.02 0.37
+               size 0.96 0.48
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_add_pve_entry {
+               color 0 0.8 0 1
+               position 0.02 0.88
+               size 0.3 0.07
+               style Editor
+               text "Classname hinzufuegen"
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_delete_pve_category {
+               color 0.8 0 0 1
+               position 0.68 0.88
+               size 0.3 0.07
+               style Editor
+               text "Kategorie loeschen"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+           }
+          }
+          PanelWidgetClass tab_pvp_panel {
+           visible 0
+           position 0.01 0.01
+           size 0.98 0.98
+           {
+            PanelWidgetClass pvp_top_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0
+             size 1 0.12
+             style DayZDefaultPanel
+             {
+              TextWidgetClass pvp_top_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.12
+               size 0.4 0.2
+               text "PvP-Konfiguration"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextWidgetClass pvp_penalty_label {
+               position 0.02 0.5
+               size 0.3 0.18
+               text "Death Penalty"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_pvp_penalty {
+               position 0.33 0.5
+               size 0.12 0.18
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_add_pvp_category {
+               color 0 0.8 0 1
+               position 0.73 0.42
+               size 0.25 0.24
+               style Editor
+               text "Neue Kategorie"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass pvp_list_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0.14
+             size 0.38 0.84
+             style DayZDefaultPanel
+             {
+              TextWidgetClass pvp_list_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "Kategorien"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextListboxWidgetClass pvp_categories_list {
+               position 0.02 0.11
+               size 0.96 0.87
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass pvp_editor_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0.4 0.14
+             size 0.6 0.84
+             style DayZDefaultPanel
+             {
+              TextWidgetClass pvp_editor_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "Kategorie-Editor"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextWidgetClass pvp_category_id_label {
+               position 0.02 0.12
+               size 0.24 0.05
+               text "CategoryID"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_pvp_category_id {
+               position 0.28 0.12
+               size 0.3 0.05
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              TextWidgetClass pvp_entries_title {
+               color 0.85 0.85 0.85 1
+               position 0.02 0.24
+               size 0.96 0.05
+               text "ClassNames / Punkte / Multiplier"
+               font "gui/fonts/metronbook14"
+               "bold text" 1
+              }
+              TextListboxWidgetClass pvp_entries_list {
+               position 0.02 0.31
+               size 0.96 0.54
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_add_pvp_entry {
+               color 0 0.8 0 1
+               position 0.02 0.88
+               size 0.3 0.07
+               style Editor
+               text "Classname hinzufuegen"
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_delete_pvp_category {
+               color 0.8 0 0 1
+               position 0.68 0.88
+               size 0.3 0.07
+               style Editor
+               text "Kategorie loeschen"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+           }
+          }
+          PanelWidgetClass tab_milestones_panel {
+           visible 0
+           position 0.01 0.01
+           size 0.98 0.98
+           {
+            PanelWidgetClass milestones_top_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0
+             size 1 0.14
+             style DayZDefaultPanel
+             {
+              TextWidgetClass milestones_top_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.14
+               size 0.42 0.16
+               text "Milestone-Rewards"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              CheckBoxWidgetClass check_enable_milestones {
+               position 0.02 0.48
+               size 0.3 0.18
+               text "Milestones aktiv"
+               font "gui/fonts/metronbook14"
+              }
+              TextWidgetClass reward_folder_label {
+               position 0.34 0.48
+               size 0.18 0.18
+               text "Config-Ordner"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_reward_folder {
+               position 0.52 0.48
+               size 0.44 0.18
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass milestones_pve_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0.16
+             size 0.49 0.82
+             style DayZDefaultPanel
+             {
+              TextWidgetClass milestones_pve_title {
+               color 0.2 0.8 0.5 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "PvE Milestones"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextListboxWidgetClass milestones_pve_list {
+               position 0.02 0.11
+               size 0.96 0.8
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_add_pve_milestone {
+               color 0 0.8 0 1
+               position 0.02 0.92
+               size 0.4 0.06
+               style Editor
+               text "Stufe hinzufuegen"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass milestones_pvp_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0.51 0.16
+             size 0.49 0.82
+             style DayZDefaultPanel
+             {
+              TextWidgetClass milestones_pvp_title {
+               color 0.9 0.2 0.2 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "PvP Milestones"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextListboxWidgetClass milestones_pvp_list {
+               position 0.02 0.11
+               size 0.96 0.8
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_add_pvp_milestone {
+               color 0 0.8 0 1
+               position 0.02 0.92
+               size 0.4 0.06
+               style Editor
+               text "Stufe hinzufuegen"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+           }
+          }
+          PanelWidgetClass tab_rewards_panel {
+           visible 0
+           position 0.01 0.01
+           size 0.98 0.98
+           {
+            PanelWidgetClass rewards_sidebar {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0
+             size 0.3 1
+             style DayZDefaultPanel
+             {
+              TextWidgetClass rewards_sidebar_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "Reward-Dateien"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              EditBoxWidgetClass rewards_search_box {
+               position 0.02 0.11
+               size 0.96 0.06
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              TextListboxWidgetClass rewards_file_list {
+               position 0.02 0.19
+               size 0.96 0.63
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_create_reward_file {
+               color 0 0.8 0 1
+               position 0.02 0.85
+               size 0.96 0.06
+               style Editor
+               text "Neue Reward-Datei erstellen"
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_delete_reward_file {
+               color 0.8 0 0 1
+               position 0.02 0.93
+               size 0.96 0.05
+               style Editor
+               text "Reward-Datei loeschen"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass rewards_editor {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0.32 0
+             size 0.68 1
+             style DayZDefaultPanel
+             {
+              TextWidgetClass rewards_editor_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.03
+               size 0.96 0.06
+               text "Reward-Editor"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              PanelWidgetClass reward_items_group {
+               visible 1
+               color 0.08 0.08 0.08 0.9
+               position 0.02 0.11
+               size 0.96 0.53
+               style DayZDefaultPanel
+               {
+                TextWidgetClass reward_items_title {
+                 color 0.85 0.85 0.85 1
+                 position 0.02 0.04
+                 size 0.96 0.08
+                 text "Loot-Sektionen (RewardItems)"
+                 font "gui/fonts/metronbook16"
+                 "bold text" 1
+                }
+                TextListboxWidgetClass reward_sections_list {
+                 position 0.02 0.16
+                 size 0.96 0.68
+                 style Default
+                 font "gui/fonts/metronbook14"
+                }
+                ButtonWidgetClass btn_add_reward_section {
+                 color 0 0.8 0 1
+                 position 0.02 0.87
+                 size 0.3 0.08
+                 style Editor
+                 text "Sektion hinzufuegen"
+                 font "gui/fonts/metronbook14"
+                }
+               }
+              }
+              PanelWidgetClass currency_group {
+               visible 1
+               color 0.08 0.08 0.08 0.9
+               position 0.02 0.67
+               size 0.96 0.23
+               style DayZDefaultPanel
+               {
+                TextWidgetClass currency_group_title {
+                 color 0.85 0.85 0.85 1
+                 position 0.02 0.08
+                 size 0.96 0.16
+                 text "Waehrung (CurrencyRewards)"
+                 font "gui/fonts/metronbook16"
+                 "bold text" 1
+                }
+                TextWidgetClass currency_min_label {
+                 position 0.02 0.36
+                 size 0.16 0.16
+                 text "Min"
+                 font "gui/fonts/metronbook14"
+                 "text valign" center
+                }
+                EditBoxWidgetClass edit_currency_min {
+                 position 0.18 0.36
+                 size 0.12 0.16
+                 style Default
+                 font "gui/fonts/metronbook14"
+                }
+                TextWidgetClass currency_max_label {
+                 position 0.34 0.36
+                 size 0.16 0.16
+                 text "Max"
+                 font "gui/fonts/metronbook14"
+                 "text valign" center
+                }
+                EditBoxWidgetClass edit_currency_max {
+                 position 0.5 0.36
+                 size 0.12 0.16
+                 style Default
+                 font "gui/fonts/metronbook14"
+                }
+                ButtonWidgetClass btn_add_currency {
+                 color 0 0.8 0 1
+                 position 0.68 0.32
+                 size 0.28 0.22
+                 style Editor
+                 text "Waehrung hinzufuegen"
+                 font "gui/fonts/metronbook14"
+                }
+               }
+              }
+              ButtonWidgetClass btn_test_reward_spawn {
+               color 0.2 0.6 0.8 1
+               position 0.56 0.93
+               size 0.42 0.05
+               style Editor
+               text "Test-Reward an mich vergeben"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+        PanelWidgetClass footer_bar {
+         visible 1
+         color 0.08 0.08 0.08 1
+         position 0 0.93
+         size 1 0.07
+         hexactpos 0
+         vexactpos 0
+         hexactsize 0
+         vexactsize 0
+         style DayZDefaultPanel
+         {
+          TextWidgetClass status_text {
+           visible 1
+           clipchildren 0
+           ignorepointer 1
+           color 0.8 0.8 0.8 1
+           position 0.02 0.18
+           size 0.5 0.64
+           scriptclass "ViewBinding"
+           text "UI-Design bereit. Datenanbindung folgt."
+           font "gui/fonts/metronbook14"
+           "text valign" center
+           {
+            ScriptParamsClass {
+             Binding_Name "StatusText"
+            }
+           }
+          }
+          ButtonWidgetClass btn_save_apply {
+           visible 1
+           color 0.102 1 0 1
+           position 0.62 0.15
+           size 0.18 0.7
+           style Editor
+           text "Speichern & Anwenden"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickSaveApply"
+            }
+           }
+          }
+          ButtonWidgetClass btn_close_admin {
+           visible 1
+           color 0.8 0 0 1
+           position 0.82 0.15
+           size 0.16 0.7
+           style Editor
+           text "Schliessen"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickCloseAdmin"
+            }
+           }
+          }
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

@@ -7,6 +7,7 @@ class TrackingModLeaderboardMenu: ScriptViewMenu
 	protected ref map<int, ref TrackingModLeaderboardData> m_PageCache;
 	protected int m_NextPreloadPage;
 	protected int m_MaxPreloadPage;
+	protected ButtonWidget m_SettingsButton;
 	
 	void TrackingModLeaderboardMenu()
 	{
@@ -27,8 +28,18 @@ class TrackingModLeaderboardMenu: ScriptViewMenu
 	override void OnWidgetScriptInit(Widget w)
 	{
 		super.OnWidgetScriptInit(w);
+		InitializeWidgets();
 		LockControls();
 		SetFocus(GetLayoutRoot());
+	}
+
+	protected void InitializeWidgets()
+	{
+		if (!GetLayoutRoot())
+			return;
+
+		m_SettingsButton = ButtonWidget.Cast(GetLayoutRoot().FindAnyWidget("settings_button"));
+		UpdateSettingsButtonVisibility();
 	}
 	
 	void SetLeaderboardData(TrackingModLeaderboardData data)
@@ -49,6 +60,7 @@ class TrackingModLeaderboardMenu: ScriptViewMenu
 		{
 			m_LeaderboardData = data;
 			LoadPlayers();
+			UpdateSettingsButtonVisibility();
 			
 			if (pageNumber == 1 && data.totalPages > 1)
 			{
@@ -271,6 +283,35 @@ class TrackingModLeaderboardMenu: ScriptViewMenu
 		maxPage = Math.Min(4, m_LeaderboardData.totalPages);
 		if (maxPage > 0)
 			RequestPage(maxPage);
+	}
+
+	void UpdateSettingsButtonVisibility()
+	{
+		if (!m_SettingsButton)
+			return;
+
+		if (!m_LeaderboardData)
+		{
+			m_SettingsButton.Show(false);
+			return;
+		}
+
+		m_SettingsButton.Show(m_LeaderboardData.isAdmin);
+	}
+
+	void OnClickSettings()
+	{
+		TrackingModAdminMenu adminMenu;
+
+		if (!m_LeaderboardData || !m_LeaderboardData.isAdmin)
+			return;
+
+		adminMenu = new TrackingModAdminMenu();
+		if (adminMenu)
+			adminMenu.SetLeaderboardData(m_LeaderboardData);
+
+		ClearCache();
+		Close();
 	}
 	
 	

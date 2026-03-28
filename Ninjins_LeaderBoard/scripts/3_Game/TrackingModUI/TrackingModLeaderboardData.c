@@ -34,6 +34,7 @@ class TrackingModLeaderboardPlayerData
 class TrackingModLeaderboardData
 {
 	int playerOnlineCounter;
+	bool isAdmin;
 	bool showPlayerOnlineStatusPVE;
 	bool showPlayerOnlineStatusPVP;
 	bool disablePVPLeaderboard;
@@ -52,6 +53,7 @@ class TrackingModLeaderboardData
 	void TrackingModLeaderboardData()
 	{
 		playerOnlineCounter = 0;
+		isAdmin = false;
 		showPlayerOnlineStatusPVE = true;
 		showPlayerOnlineStatusPVP = true;
 		disablePVPLeaderboard = false;

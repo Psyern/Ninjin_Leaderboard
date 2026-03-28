@@ -39,6 +39,8 @@ modded class MissionServer extends MissionBase
 			
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", this, SingleplayerExecutionType.Server);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ClaimTrackingModReward", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestAdminConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "SaveAdminConfig", this, SingleplayerExecutionType.Server);
 			
 			#ifdef NinjinsPvPPvE
 			stateHandler = new TrackingModZoneHandler();
@@ -83,6 +85,215 @@ modded class MissionServer extends MissionBase
 		}
 	}
 	#endif
+
+	protected bool IsSenderTrackingModAdmin(PlayerIdentity sender)
+	{
+		if (!sender || !g_TrackingModConfig)
+			return false;
+
+		return g_TrackingModConfig.IsAdmin(sender.GetPlainId());
+	}
+
+	protected TrackingModGeneralAdminData BuildGeneralAdminData()
+	{
+		TrackingModGeneralAdminData data;
+		int i;
+
+		data = new TrackingModGeneralAdminData();
+		if (!g_TrackingModConfig)
+			return data;
+
+		if (g_TrackingModConfig.AdminIDs)
+		{
+			for (i = 0; i < g_TrackingModConfig.AdminIDs.Count(); i++)
+			{
+				data.AdminIDs.Insert(g_TrackingModConfig.AdminIDs.Get(i));
+			}
+		}
+
+		data.DeletePlayerFilesOlderThanDays = g_TrackingModConfig.DeletePlayerFilesOlderThanDays;
+		data.UseUTCForDates = g_TrackingModConfig.UseUTCForDates;
+		data.EnableRewardSystem = g_TrackingModConfig.EnableRewardSystem;
+		data.DisablePVPLeaderboard = g_TrackingModConfig.DisablePVPLeaderboard;
+		data.DisablePVELeaderboard = g_TrackingModConfig.DisablePVELeaderboard;
+		data.MaxPVEPlayersDisplay = g_TrackingModConfig.MaxPVEPlayersDisplay;
+		data.MaxPVPPlayersDisplay = g_TrackingModConfig.MaxPVPPlayersDisplay;
+		data.ShowPlayerOnlineStatusPVE = g_TrackingModConfig.ShowPlayerOnlineStatusPVE;
+		data.ShowPlayerOnlineStatusPVP = g_TrackingModConfig.ShowPlayerOnlineStatusPVP;
+		data.DisableDeathBySuicide = g_TrackingModConfig.DisableDeathBySuicide;
+		data.DisableDeathByGrenade = g_TrackingModConfig.DisableDeathByGrenade;
+		data.DisableDeathByTrap = g_TrackingModConfig.DisableDeathByTrap;
+		data.DisableDeathByZombie = g_TrackingModConfig.DisableDeathByZombie;
+		data.DisableDeathByAnimal = g_TrackingModConfig.DisableDeathByAnimal;
+		data.DisableDeathByAI = g_TrackingModConfig.DisableDeathByAI;
+		data.DisableDeathByCar = g_TrackingModConfig.DisableDeathByCar;
+		data.DisableDeathByWeapon = g_TrackingModConfig.DisableDeathByWeapon;
+		data.DisableDeathByUnarmed = g_TrackingModConfig.DisableDeathByUnarmed;
+		data.DisableDeathByUnknown = g_TrackingModConfig.DisableDeathByUnknown;
+		data.DisableKillByGrenade = g_TrackingModConfig.DisableKillByGrenade;
+		data.DisableKillByTrap = g_TrackingModConfig.DisableKillByTrap;
+		data.DisableKillByAnimal = g_TrackingModConfig.DisableKillByAnimal;
+		data.DisableKillByZombie = g_TrackingModConfig.DisableKillByZombie;
+		data.DisableKillByCar = g_TrackingModConfig.DisableKillByCar;
+		data.DisableKillByWeapon = g_TrackingModConfig.DisableKillByWeapon;
+		data.DisableKillByUnarmed = g_TrackingModConfig.DisableKillByUnarmed;
+		data.DisableKillByUnknown = g_TrackingModConfig.DisableKillByUnknown;
+		data.DisableKillByUnconsciousSuicide = g_TrackingModConfig.DisableKillByUnconsciousSuicide;
+		if (g_TrackingModConfig.TrackPVEKillsInZoneTypes)
+		{
+			for (i = 0; i < g_TrackingModConfig.TrackPVEKillsInZoneTypes.Count(); i++)
+			{
+				data.TrackPVEKillsInZoneTypes.Insert(g_TrackingModConfig.TrackPVEKillsInZoneTypes.Get(i));
+			}
+		}
+		data.ExcludePVPKillWhenBothInPVE = g_TrackingModConfig.ExcludePVPKillWhenBothInPVE;
+		data.EnableWebExport = g_TrackingModConfig.EnableWebExport;
+		data.WebExportIntervalSeconds = g_TrackingModConfig.WebExportIntervalSeconds;
+		data.WebExportMaxPlayers = g_TrackingModConfig.WebExportMaxPlayers;
+		data.WebExportIncludePlayerIDs = g_TrackingModConfig.WebExportIncludePlayerIDs;
+
+		return data;
+	}
+
+	protected void ApplyGeneralAdminData(TrackingModGeneralAdminData data)
+	{
+		int i;
+
+		if (!g_TrackingModConfig || !data)
+			return;
+
+		g_TrackingModConfig.AdminIDs.Clear();
+		if (data.AdminIDs)
+		{
+			for (i = 0; i < data.AdminIDs.Count(); i++)
+			{
+				if (data.AdminIDs.Get(i) != "")
+					g_TrackingModConfig.AdminIDs.Insert(data.AdminIDs.Get(i));
+			}
+		}
+
+		g_TrackingModConfig.DeletePlayerFilesOlderThanDays = Math.Max(0, data.DeletePlayerFilesOlderThanDays);
+		g_TrackingModConfig.UseUTCForDates = data.UseUTCForDates;
+		g_TrackingModConfig.EnableRewardSystem = data.EnableRewardSystem;
+		g_TrackingModConfig.DisablePVPLeaderboard = data.DisablePVPLeaderboard;
+		g_TrackingModConfig.DisablePVELeaderboard = data.DisablePVELeaderboard;
+		g_TrackingModConfig.MaxPVEPlayersDisplay = Math.Max(1, Math.Min(data.MaxPVEPlayersDisplay, 100));
+		g_TrackingModConfig.MaxPVPPlayersDisplay = Math.Max(1, Math.Min(data.MaxPVPPlayersDisplay, 100));
+		g_TrackingModConfig.ShowPlayerOnlineStatusPVE = data.ShowPlayerOnlineStatusPVE;
+		g_TrackingModConfig.ShowPlayerOnlineStatusPVP = data.ShowPlayerOnlineStatusPVP;
+		g_TrackingModConfig.DisableDeathBySuicide = data.DisableDeathBySuicide;
+		g_TrackingModConfig.DisableDeathByGrenade = data.DisableDeathByGrenade;
+		g_TrackingModConfig.DisableDeathByTrap = data.DisableDeathByTrap;
+		g_TrackingModConfig.DisableDeathByZombie = data.DisableDeathByZombie;
+		g_TrackingModConfig.DisableDeathByAnimal = data.DisableDeathByAnimal;
+		g_TrackingModConfig.DisableDeathByAI = data.DisableDeathByAI;
+		g_TrackingModConfig.DisableDeathByCar = data.DisableDeathByCar;
+		g_TrackingModConfig.DisableDeathByWeapon = data.DisableDeathByWeapon;
+		g_TrackingModConfig.DisableDeathByUnarmed = data.DisableDeathByUnarmed;
+		g_TrackingModConfig.DisableDeathByUnknown = data.DisableDeathByUnknown;
+		g_TrackingModConfig.DisableKillByGrenade = data.DisableKillByGrenade;
+		g_TrackingModConfig.DisableKillByTrap = data.DisableKillByTrap;
+		g_TrackingModConfig.DisableKillByAnimal = data.DisableKillByAnimal;
+		g_TrackingModConfig.DisableKillByZombie = data.DisableKillByZombie;
+		g_TrackingModConfig.DisableKillByCar = data.DisableKillByCar;
+		g_TrackingModConfig.DisableKillByWeapon = data.DisableKillByWeapon;
+		g_TrackingModConfig.DisableKillByUnarmed = data.DisableKillByUnarmed;
+		g_TrackingModConfig.DisableKillByUnknown = data.DisableKillByUnknown;
+		g_TrackingModConfig.DisableKillByUnconsciousSuicide = data.DisableKillByUnconsciousSuicide;
+		g_TrackingModConfig.TrackPVEKillsInZoneTypes.Clear();
+		if (data.TrackPVEKillsInZoneTypes)
+		{
+			for (i = 0; i < data.TrackPVEKillsInZoneTypes.Count(); i++)
+			{
+				if (data.TrackPVEKillsInZoneTypes.Get(i) != "")
+					g_TrackingModConfig.TrackPVEKillsInZoneTypes.Insert(data.TrackPVEKillsInZoneTypes.Get(i));
+			}
+		}
+		if (g_TrackingModConfig.TrackPVEKillsInZoneTypes.Count() == 0)
+			g_TrackingModConfig.TrackPVEKillsInZoneTypes.Insert("everywhere");
+		g_TrackingModConfig.ExcludePVPKillWhenBothInPVE = data.ExcludePVPKillWhenBothInPVE;
+		g_TrackingModConfig.EnableWebExport = data.EnableWebExport;
+		g_TrackingModConfig.WebExportIntervalSeconds = Math.Max(1, data.WebExportIntervalSeconds);
+		g_TrackingModConfig.WebExportMaxPlayers = Math.Max(1, Math.Min(data.WebExportMaxPlayers, 1000));
+		g_TrackingModConfig.WebExportIncludePlayerIDs = data.WebExportIncludePlayerIDs;
+	}
+
+	void RequestAdminConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		TrackingModGeneralAdminData data;
+
+		if (!GetGame().IsDedicatedServer() || type != CallType.Server || !sender)
+			return;
+
+		if (!IsSenderTrackingModAdmin(sender))
+		{
+			TrackingModAdminSaveResponse deniedResponse;
+			deniedResponse = new TrackingModAdminSaveResponse();
+			deniedResponse.Success = false;
+			deniedResponse.Message = "Keine Berechtigung fuer Admin-Konfiguration";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(deniedResponse), true, sender);
+			return;
+		}
+
+		data = BuildGeneralAdminData();
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(data), true, sender);
+	}
+
+	void SaveAdminConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModGeneralAdminData> params;
+		TrackingModAdminSaveResponse response;
+		TrackingModGeneralAdminData freshData;
+		string senderID;
+
+		if (!GetGame().IsDedicatedServer() || type != CallType.Server || !sender)
+			return;
+
+		response = new TrackingModAdminSaveResponse();
+		senderID = sender.GetPlainId();
+
+		if (!IsSenderTrackingModAdmin(sender))
+		{
+			response.Success = false;
+			response.Message = "Keine Berechtigung";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (!ctx.Read(params) || !params.param1)
+		{
+			response.Success = false;
+			response.Message = "Ungueltige Admin-Daten";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (!params.param1.AdminIDs || params.param1.AdminIDs.Count() == 0)
+		{
+			response.Success = false;
+			response.Message = "Mindestens eine Admin-ID muss erhalten bleiben";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (params.param1.AdminIDs.Find(senderID) == -1)
+		{
+			response.Success = false;
+			response.Message = "Eigene Admin-ID darf nicht entfernt werden";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		ApplyGeneralAdminData(params.param1);
+		g_TrackingModConfig.SaveConfig();
+		ReloadTrackingModConfigs();
+
+		response.Success = true;
+		response.Message = "LeaderBoardConfig geladen und angewendet";
+		freshData = BuildGeneralAdminData();
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(freshData), true, sender);
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+	}
 
 	void RequestTrackingModLeaderboard(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
 	{
@@ -206,6 +417,7 @@ modded class MissionServer extends MissionBase
 		leaderboardData.playerOnlineCounter = playerOnlineCounter;
 		if (g_TrackingModConfig)
 		{
+			leaderboardData.isAdmin = g_TrackingModConfig.IsAdmin(senderID);
 			leaderboardData.showPlayerOnlineStatusPVE = g_TrackingModConfig.ShowPlayerOnlineStatusPVE;
 			leaderboardData.showPlayerOnlineStatusPVP = g_TrackingModConfig.ShowPlayerOnlineStatusPVP;
 			leaderboardData.disablePVPLeaderboard = g_TrackingModConfig.DisablePVPLeaderboard;
@@ -314,6 +526,7 @@ modded class MissionServer extends MissionBase
 		TrackingMod.LogRPC("========================================");
 		TrackingMod.LogRPC("Sent data:");
 		TrackingMod.LogRPC("PlayerOnlineCounter[" + leaderboardData.playerOnlineCounter.ToString() + "]");
+		TrackingMod.LogRPC("IsAdmin[" + leaderboardData.isAdmin.ToString() + "]");
 		TrackingMod.LogRPC("ShowPlayerOnlineStatusPVE[" + leaderboardData.showPlayerOnlineStatusPVE.ToString() + "]");
 		TrackingMod.LogRPC("ShowPlayerOnlineStatusPVP[" + leaderboardData.showPlayerOnlineStatusPVP.ToString() + "]");
 		TrackingMod.LogRPC("DisablePVELeaderboard[" + leaderboardData.disablePVELeaderboard.ToString() + "]");

@@ -20,6 +20,8 @@ modded class MissionBase
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboardDenied", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceivePlayerDataUpdate", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", this, SingleplayerExecutionType.Client);
 			TrackingModUI.InitLogFile();
 			m_RPCRegistered = true;
 		}
@@ -337,6 +339,43 @@ modded class MissionBase
 				}
 			}
 		}
+	}
+
+	void ReceiveAdminConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModGeneralAdminData> dataParam;
+		TrackingModAdminMenu adminMenu;
+
+		if (type != CallType.Client)
+			return;
+
+		if (!ctx.Read(dataParam) || !dataParam || !dataParam.param1)
+			return;
+
+		adminMenu = TrackingModAdminMenu.GetInstance();
+		if (adminMenu)
+			adminMenu.ApplyGeneralConfigData(dataParam.param1);
+	}
+
+	void ReceiveAdminConfigSaved(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModAdminSaveResponse> responseParam;
+		TrackingModAdminMenu adminMenu;
+		PlayerBase player;
+
+		if (type != CallType.Client)
+			return;
+
+		if (!ctx.Read(responseParam) || !responseParam || !responseParam.param1)
+			return;
+
+		adminMenu = TrackingModAdminMenu.GetInstance();
+		if (adminMenu)
+			adminMenu.OnAdminConfigSaved(responseParam.param1);
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (player && responseParam.param1.Message != "")
+			player.MessageAction(responseParam.param1.Message);
 	}
 	
 	TrackingModLeaderboardData BuildLeaderboardDataFromMap(TrackingModData data, int requestedPage, bool isPVE)
