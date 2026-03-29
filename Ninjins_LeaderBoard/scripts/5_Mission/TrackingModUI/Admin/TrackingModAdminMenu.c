@@ -59,6 +59,21 @@ class TrackingModAdminMenu: ScriptViewMenu
 	protected EditBoxWidget m_EditExportInterval;
 	protected EditBoxWidget m_EditExportPlayers;
 	protected CheckBoxWidget m_CheckExportPlayerIDs;
+	protected EditBoxWidget m_EditPVEPenalty;
+	protected TextListboxWidget m_PVECategoriesList;
+	protected EditBoxWidget m_EditPVECategoryId;
+	protected EditBoxWidget m_EditPVEPreview;
+	protected EditBoxWidget m_EditPVEEntryValue;
+	protected TextListboxWidget m_PVEEntriesList;
+	protected EditBoxWidget m_EditPVPPenalty;
+	protected TextListboxWidget m_PVPCategoriesList;
+	protected EditBoxWidget m_EditPVPCategoryId;
+	protected EditBoxWidget m_EditPVPEntryValue;
+	protected TextListboxWidget m_PVPEntriesList;
+	protected ref TrackingModPVEAdminData m_PVEConfigData;
+	protected ref TrackingModPVPAdminData m_PVPConfigData;
+	protected int m_SelectedPVECategoryIndex;
+	protected int m_SelectedPVPCategoryIndex;
 
 	void TrackingModAdminMenu()
 	{
@@ -71,6 +86,10 @@ class TrackingModAdminMenu: ScriptViewMenu
 		m_ZoneTypeOptions.Insert("visual");
 		m_ZoneTypeOptions.Insert("raid");
 		m_GeneralConfigData = new TrackingModGeneralAdminData();
+		m_PVEConfigData = new TrackingModPVEAdminData();
+		m_PVPConfigData = new TrackingModPVPAdminData();
+		m_SelectedPVECategoryIndex = -1;
+		m_SelectedPVPCategoryIndex = -1;
 	}
 
 	void ~TrackingModAdminMenu()
@@ -134,6 +153,8 @@ class TrackingModAdminMenu: ScriptViewMenu
 	{
 		if (!data)
 			return;
+
+		TrackingModUI.LogRPC(string.Format("[AdminMenu] ApplyGeneralConfigData | AdminIDs=%1 | MaxPVE=%2 | MaxPVP=%3", data.AdminIDs.Count(), data.MaxPVEPlayersDisplay, data.MaxPVPPlayersDisplay));
 
 		m_GeneralConfigData = data;
 		FillAdminList();
@@ -210,6 +231,100 @@ class TrackingModAdminMenu: ScriptViewMenu
 			m_EditAdminId.SetText("");
 
 		SetStatus("Admin-Konfiguration geladen");
+	}
+
+	protected PVECategory ClonePVECategory(PVECategory sourceCategory)
+	{
+		PVECategory clonedCategory;
+		int i;
+
+		if (!sourceCategory)
+			return null;
+
+		clonedCategory = new PVECategory();
+		clonedCategory.CategoryID = sourceCategory.CategoryID;
+		clonedCategory.ClassNamePreview = sourceCategory.ClassNamePreview;
+		for (i = 0; i < sourceCategory.ClassNames.Count(); i++)
+			clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(i));
+
+		return clonedCategory;
+	}
+
+	protected PVPCategory ClonePVPCategory(PVPCategory sourceCategory)
+	{
+		PVPCategory clonedCategory;
+		int i;
+
+		if (!sourceCategory)
+			return null;
+
+		clonedCategory = new PVPCategory();
+		clonedCategory.CategoryID = sourceCategory.CategoryID;
+		clonedCategory.DisplayName = sourceCategory.DisplayName;
+		for (i = 0; i < sourceCategory.ClassNames.Count(); i++)
+			clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(i));
+
+		return clonedCategory;
+	}
+
+	void ApplyPVEConfigData(TrackingModPVEAdminData data)
+	{
+		int i;
+		PVECategory category;
+
+		if (data)
+			TrackingModUI.LogRPC(string.Format("[AdminMenu] ApplyPVEConfigData | Penalty=%1 | Categories=%2", data.PVEDeathPenaltyPoints, data.Categories.Count()));
+
+		m_PVEConfigData = new TrackingModPVEAdminData();
+		if (data)
+		{
+			m_PVEConfigData.PVEDeathPenaltyPoints = data.PVEDeathPenaltyPoints;
+			for (i = 0; i < data.Categories.Count(); i++)
+			{
+				category = ClonePVECategory(data.Categories.Get(i));
+				if (category)
+					m_PVEConfigData.Categories.Insert(category);
+			}
+		}
+
+		if (m_EditPVEPenalty)
+			m_EditPVEPenalty.SetText(m_PVEConfigData.PVEDeathPenaltyPoints.ToString());
+
+		PopulatePVECategoryList();
+		if (m_PVEConfigData.Categories.Count() > 0)
+			SelectPVECategory(0);
+		else
+			SelectPVECategory(-1);
+	}
+
+	void ApplyPVPConfigData(TrackingModPVPAdminData data)
+	{
+		int i;
+		PVPCategory category;
+
+		if (data)
+			TrackingModUI.LogRPC(string.Format("[AdminMenu] ApplyPVPConfigData | Penalty=%1 | Categories=%2", data.PVPDeathPenaltyPoints, data.Categories.Count()));
+
+		m_PVPConfigData = new TrackingModPVPAdminData();
+		if (data)
+		{
+			m_PVPConfigData.PVPDeathPenaltyPoints = data.PVPDeathPenaltyPoints;
+			for (i = 0; i < data.Categories.Count(); i++)
+			{
+				category = ClonePVPCategory(data.Categories.Get(i));
+				if (category)
+					m_PVPConfigData.Categories.Insert(category);
+			}
+		}
+
+		if (m_EditPVPPenalty)
+			m_EditPVPPenalty.SetText(m_PVPConfigData.PVPDeathPenaltyPoints.ToString());
+
+		PopulatePVPCategoryList();
+		if (m_PVPConfigData.Categories.Count() > 0)
+			SelectPVPCategory(0);
+		else
+			SelectPVPCategory(-1);
 	}
 
 	void OnAdminConfigSaved(TrackingModAdminSaveResponse response)
@@ -329,6 +444,210 @@ class TrackingModAdminMenu: ScriptViewMenu
 		return checkBox.IsChecked();
 	}
 
+	protected void PopulatePVECategoryList()
+	{
+		int i;
+
+		if (!m_PVECategoriesList)
+			return;
+
+		m_PVECategoriesList.ClearItems();
+		if (!m_PVEConfigData || !m_PVEConfigData.Categories)
+			return;
+
+		for (i = 0; i < m_PVEConfigData.Categories.Count(); i++)
+			m_PVECategoriesList.AddItem(m_PVEConfigData.Categories.Get(i).CategoryID, null, 0);
+	}
+
+	protected void PopulatePVEEntriesList(PVECategory category)
+	{
+		int i;
+
+		if (!m_PVEEntriesList)
+			return;
+
+		m_PVEEntriesList.ClearItems();
+		if (!category || !category.ClassNames)
+			return;
+
+		for (i = 0; i < category.ClassNames.Count(); i++)
+			m_PVEEntriesList.AddItem(category.ClassNames.Get(i), null, 0);
+	}
+
+	protected void SelectPVECategory(int index)
+	{
+		PVECategory category;
+
+		StoreSelectedPVECategoryEdits();
+		m_SelectedPVECategoryIndex = index;
+
+		if (!m_PVEConfigData || index < 0 || index >= m_PVEConfigData.Categories.Count())
+		{
+			m_SelectedPVECategoryIndex = -1;
+			if (m_EditPVECategoryId)
+				m_EditPVECategoryId.SetText("");
+			if (m_EditPVEPreview)
+				m_EditPVEPreview.SetText("");
+			if (m_EditPVEEntryValue)
+				m_EditPVEEntryValue.SetText("");
+			PopulatePVEEntriesList(null);
+			return;
+		}
+
+		category = m_PVEConfigData.Categories.Get(index);
+		if (!category)
+			return;
+
+		if (m_PVECategoriesList)
+			m_PVECategoriesList.SelectRow(index);
+		if (m_EditPVECategoryId)
+			m_EditPVECategoryId.SetText(category.CategoryID);
+		if (m_EditPVEPreview)
+			m_EditPVEPreview.SetText(category.ClassNamePreview);
+		if (m_EditPVEEntryValue)
+			m_EditPVEEntryValue.SetText("");
+		PopulatePVEEntriesList(category);
+	}
+
+	protected void StoreSelectedPVECategoryEdits()
+	{
+		PVECategory category;
+
+		if (!m_PVEConfigData || m_SelectedPVECategoryIndex < 0 || m_SelectedPVECategoryIndex >= m_PVEConfigData.Categories.Count())
+			return;
+
+		category = m_PVEConfigData.Categories.Get(m_SelectedPVECategoryIndex);
+		if (!category)
+			return;
+
+		if (m_EditPVECategoryId)
+			category.CategoryID = m_EditPVECategoryId.GetText();
+		if (m_EditPVEPreview)
+			category.ClassNamePreview = m_EditPVEPreview.GetText();
+
+		if (category.CategoryID == "")
+			category.CategoryID = "PVECategory" + (m_SelectedPVECategoryIndex + 1).ToString();
+	}
+
+	protected TrackingModPVEAdminData BuildPVEConfigDataFromWidgets()
+	{
+		TrackingModPVEAdminData data;
+		int i;
+		PVECategory category;
+
+		StoreSelectedPVECategoryEdits();
+		data = new TrackingModPVEAdminData();
+		data.PVEDeathPenaltyPoints = GetClampedEditBoxInt(m_EditPVEPenalty, 5, 0, 10000);
+		for (i = 0; i < m_PVEConfigData.Categories.Count(); i++)
+		{
+			category = ClonePVECategory(m_PVEConfigData.Categories.Get(i));
+			if (category && category.CategoryID != "")
+				data.Categories.Insert(category);
+		}
+
+		return data;
+	}
+
+	protected void PopulatePVPCategoryList()
+	{
+		int i;
+
+		if (!m_PVPCategoriesList)
+			return;
+
+		m_PVPCategoriesList.ClearItems();
+		if (!m_PVPConfigData || !m_PVPConfigData.Categories)
+			return;
+
+		for (i = 0; i < m_PVPConfigData.Categories.Count(); i++)
+			m_PVPCategoriesList.AddItem(m_PVPConfigData.Categories.Get(i).CategoryID, null, 0);
+	}
+
+	protected void PopulatePVPEntriesList(PVPCategory category)
+	{
+		int i;
+
+		if (!m_PVPEntriesList)
+			return;
+
+		m_PVPEntriesList.ClearItems();
+		if (!category || !category.ClassNames)
+			return;
+
+		for (i = 0; i < category.ClassNames.Count(); i++)
+			m_PVPEntriesList.AddItem(category.ClassNames.Get(i), null, 0);
+	}
+
+	protected void SelectPVPCategory(int index)
+	{
+		PVPCategory category;
+
+		StoreSelectedPVPCategoryEdits();
+		m_SelectedPVPCategoryIndex = index;
+
+		if (!m_PVPConfigData || index < 0 || index >= m_PVPConfigData.Categories.Count())
+		{
+			m_SelectedPVPCategoryIndex = -1;
+			if (m_EditPVPCategoryId)
+				m_EditPVPCategoryId.SetText("");
+			if (m_EditPVPEntryValue)
+				m_EditPVPEntryValue.SetText("");
+			PopulatePVPEntriesList(null);
+			return;
+		}
+
+		category = m_PVPConfigData.Categories.Get(index);
+		if (!category)
+			return;
+
+		if (m_PVPCategoriesList)
+			m_PVPCategoriesList.SelectRow(index);
+		if (m_EditPVPCategoryId)
+			m_EditPVPCategoryId.SetText(category.CategoryID);
+		if (m_EditPVPEntryValue)
+			m_EditPVPEntryValue.SetText("");
+		PopulatePVPEntriesList(category);
+	}
+
+	protected void StoreSelectedPVPCategoryEdits()
+	{
+		PVPCategory category;
+
+		if (!m_PVPConfigData || m_SelectedPVPCategoryIndex < 0 || m_SelectedPVPCategoryIndex >= m_PVPConfigData.Categories.Count())
+			return;
+
+		category = m_PVPConfigData.Categories.Get(m_SelectedPVPCategoryIndex);
+		if (!category)
+			return;
+
+		if (m_EditPVPCategoryId)
+			category.CategoryID = m_EditPVPCategoryId.GetText();
+
+		if (category.CategoryID == "")
+			category.CategoryID = "PVPCategory" + (m_SelectedPVPCategoryIndex + 1).ToString();
+
+		category.DisplayName = category.CategoryID;
+	}
+
+	protected TrackingModPVPAdminData BuildPVPConfigDataFromWidgets()
+	{
+		TrackingModPVPAdminData data;
+		int i;
+		PVPCategory category;
+
+		StoreSelectedPVPCategoryEdits();
+		data = new TrackingModPVPAdminData();
+		data.PVPDeathPenaltyPoints = GetClampedEditBoxInt(m_EditPVPPenalty, 10, 0, 10000);
+		for (i = 0; i < m_PVPConfigData.Categories.Count(); i++)
+		{
+			category = ClonePVPCategory(m_PVPConfigData.Categories.Get(i));
+			if (category && category.CategoryID != "")
+				data.Categories.Insert(category);
+		}
+
+		return data;
+	}
+
 	protected void FillAdminList()
 	{
 		int i;
@@ -439,6 +758,17 @@ class TrackingModAdminMenu: ScriptViewMenu
 		m_EditExportInterval = EditBoxWidget.Cast(root.FindAnyWidget("edit_export_interval"));
 		m_EditExportPlayers = EditBoxWidget.Cast(root.FindAnyWidget("edit_export_players"));
 		m_CheckExportPlayerIDs = CheckBoxWidget.Cast(root.FindAnyWidget("check_show_playerids_export"));
+		m_EditPVEPenalty = EditBoxWidget.Cast(root.FindAnyWidget("edit_pve_penalty"));
+		m_PVECategoriesList = TextListboxWidget.Cast(root.FindAnyWidget("pve_categories_list"));
+		m_EditPVECategoryId = EditBoxWidget.Cast(root.FindAnyWidget("edit_pve_category_id"));
+		m_EditPVEPreview = EditBoxWidget.Cast(root.FindAnyWidget("edit_pve_preview"));
+		m_EditPVEEntryValue = EditBoxWidget.Cast(root.FindAnyWidget("edit_pve_entry_value"));
+		m_PVEEntriesList = TextListboxWidget.Cast(root.FindAnyWidget("pve_entries_list"));
+		m_EditPVPPenalty = EditBoxWidget.Cast(root.FindAnyWidget("edit_pvp_penalty"));
+		m_PVPCategoriesList = TextListboxWidget.Cast(root.FindAnyWidget("pvp_categories_list"));
+		m_EditPVPCategoryId = EditBoxWidget.Cast(root.FindAnyWidget("edit_pvp_category_id"));
+		m_EditPVPEntryValue = EditBoxWidget.Cast(root.FindAnyWidget("edit_pvp_entry_value"));
+		m_PVPEntriesList = TextListboxWidget.Cast(root.FindAnyWidget("pvp_entries_list"));
 
 		m_TabGeneralPanel = root.FindAnyWidget("tab_general_panel");
 		m_TabPVEPanel = root.FindAnyWidget("tab_pve_panel");
@@ -548,8 +878,10 @@ class TrackingModAdminMenu: ScriptViewMenu
 
 	void OnClickSaveApply()
 	{
+		TrackingModGeneralAdminData generalData;
+		TrackingModPVEAdminData pveData;
+		TrackingModPVPAdminData pvpData;
 		PlayerBase player;
-		TrackingModGeneralAdminData data;
 
 		if (!m_LeaderboardData || !m_LeaderboardData.isAdmin)
 			return;
@@ -558,9 +890,150 @@ class TrackingModAdminMenu: ScriptViewMenu
 		if (!player || !player.GetIdentity())
 			return;
 
-		data = BuildGeneralConfigDataFromWidgets();
+		generalData = BuildGeneralConfigDataFromWidgets();
+		pveData = BuildPVEConfigDataFromWidgets();
+		pvpData = BuildPVPConfigDataFromWidgets();
 		SetStatus("Speichere Admin-Konfiguration...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "SaveAdminConfig", new Param1<TrackingModGeneralAdminData>(data), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "SaveAdminFullConfig", new Param3<TrackingModGeneralAdminData, TrackingModPVEAdminData, TrackingModPVPAdminData>(generalData, pveData, pvpData), true, player.GetIdentity());
+	}
+
+	void OnClickAddPVECategory()
+	{
+		PVECategory category;
+
+		StoreSelectedPVECategoryEdits();
+		category = new PVECategory();
+		category.CategoryID = "PVECategory" + (m_PVEConfigData.Categories.Count() + 1).ToString();
+		m_PVEConfigData.Categories.Insert(category);
+		PopulatePVECategoryList();
+		SelectPVECategory(m_PVEConfigData.Categories.Count() - 1);
+	}
+
+	void OnClickDeletePVECategory()
+	{
+		if (!m_PVEConfigData || m_SelectedPVECategoryIndex < 0 || m_SelectedPVECategoryIndex >= m_PVEConfigData.Categories.Count())
+			return;
+
+		m_PVEConfigData.Categories.Remove(m_SelectedPVECategoryIndex);
+		PopulatePVECategoryList();
+		if (m_PVEConfigData.Categories.Count() > 0)
+			SelectPVECategory(Math.Min(m_SelectedPVECategoryIndex, m_PVEConfigData.Categories.Count() - 1));
+		else
+			SelectPVECategory(-1);
+	}
+
+	void OnClickAddPVEEntry()
+	{
+		PVECategory category;
+		string entryValue;
+
+		if (!m_PVEConfigData || m_SelectedPVECategoryIndex < 0 || m_SelectedPVECategoryIndex >= m_PVEConfigData.Categories.Count())
+			return;
+
+		entryValue = "";
+		if (m_EditPVEEntryValue)
+			entryValue = m_EditPVEEntryValue.GetText();
+		if (entryValue == "")
+			return;
+
+		category = m_PVEConfigData.Categories.Get(m_SelectedPVECategoryIndex);
+		if (!category)
+			return;
+
+		category.ClassNames.Insert(entryValue);
+		if (m_EditPVEEntryValue)
+			m_EditPVEEntryValue.SetText("");
+		PopulatePVEEntriesList(category);
+	}
+
+	void OnClickDeletePVEEntry()
+	{
+		PVECategory category;
+		int selectedRow;
+
+		if (!m_PVEConfigData || !m_PVEEntriesList || m_SelectedPVECategoryIndex < 0 || m_SelectedPVECategoryIndex >= m_PVEConfigData.Categories.Count())
+			return;
+
+		selectedRow = m_PVEEntriesList.GetSelectedRow();
+		if (selectedRow < 0)
+			return;
+
+		category = m_PVEConfigData.Categories.Get(m_SelectedPVECategoryIndex);
+		if (!category || selectedRow >= category.ClassNames.Count())
+			return;
+
+		category.ClassNames.Remove(selectedRow);
+		PopulatePVEEntriesList(category);
+	}
+
+	void OnClickAddPVPCategory()
+	{
+		PVPCategory category;
+
+		StoreSelectedPVPCategoryEdits();
+		category = new PVPCategory();
+		category.CategoryID = "PVPCategory" + (m_PVPConfigData.Categories.Count() + 1).ToString();
+		category.DisplayName = category.CategoryID;
+		m_PVPConfigData.Categories.Insert(category);
+		PopulatePVPCategoryList();
+		SelectPVPCategory(m_PVPConfigData.Categories.Count() - 1);
+	}
+
+	void OnClickDeletePVPCategory()
+	{
+		if (!m_PVPConfigData || m_SelectedPVPCategoryIndex < 0 || m_SelectedPVPCategoryIndex >= m_PVPConfigData.Categories.Count())
+			return;
+
+		m_PVPConfigData.Categories.Remove(m_SelectedPVPCategoryIndex);
+		PopulatePVPCategoryList();
+		if (m_PVPConfigData.Categories.Count() > 0)
+			SelectPVPCategory(Math.Min(m_SelectedPVPCategoryIndex, m_PVPConfigData.Categories.Count() - 1));
+		else
+			SelectPVPCategory(-1);
+	}
+
+	void OnClickAddPVPEntry()
+	{
+		PVPCategory category;
+		string entryValue;
+
+		if (!m_PVPConfigData || m_SelectedPVPCategoryIndex < 0 || m_SelectedPVPCategoryIndex >= m_PVPConfigData.Categories.Count())
+			return;
+
+		entryValue = "";
+		if (m_EditPVPEntryValue)
+			entryValue = m_EditPVPEntryValue.GetText();
+		if (entryValue == "")
+			return;
+
+		category = m_PVPConfigData.Categories.Get(m_SelectedPVPCategoryIndex);
+		if (!category)
+			return;
+
+		category.ClassNames.Insert(entryValue);
+		if (m_EditPVPEntryValue)
+			m_EditPVPEntryValue.SetText("");
+		PopulatePVPEntriesList(category);
+	}
+
+	void OnClickDeletePVPEntry()
+	{
+		PVPCategory category;
+		int selectedRow;
+
+		if (!m_PVPConfigData || !m_PVPEntriesList || m_SelectedPVPCategoryIndex < 0 || m_SelectedPVPCategoryIndex >= m_PVPConfigData.Categories.Count())
+			return;
+
+		selectedRow = m_PVPEntriesList.GetSelectedRow();
+		if (selectedRow < 0)
+			return;
+
+		category = m_PVPConfigData.Categories.Get(m_SelectedPVPCategoryIndex);
+		if (!category || selectedRow >= category.ClassNames.Count())
+			return;
+
+		category.ClassNames.Remove(selectedRow);
+		PopulatePVPEntriesList(category);
 	}
 
 	void OnClickAddAdminId()
@@ -640,6 +1113,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 
 		skip = new TIntArray;
 		skip.Insert(UAUIBack);
+		skip.Insert(UAOpenTrackingModAdminMenu);
 
 		inputIDs = new TIntArray;
 		GetUApi().GetActiveInputs(inputIDs);
@@ -665,6 +1139,23 @@ class TrackingModAdminMenu: ScriptViewMenu
 		}
 
 		return super.OnClick(w, x, y, button);
+	}
+
+	override bool OnItemSelected(Widget w, int x, int y, int row, int column, int oldRow, int oldColumn)
+	{
+		if (w == m_PVECategoriesList)
+		{
+			SelectPVECategory(row);
+			return true;
+		}
+
+		if (w == m_PVPCategoriesList)
+		{
+			SelectPVPCategory(row);
+			return true;
+		}
+
+		return super.OnItemSelected(w, x, y, row, column, oldRow, oldColumn);
 	}
 
 	override array<string> GetInputExcludes()

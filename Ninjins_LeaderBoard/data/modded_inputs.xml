@@ -4,11 +4,13 @@
         <actions>
 			<input name="UAOpenTrackingModLeaderboardPVE" loc="STR_tracking_mod_open_leaderboard_pve" />
 			<input name="UAOpenTrackingModLeaderboardPVP" loc="STR_tracking_mod_open_leaderboard_pvp" />
+			<input name="UAOpenTrackingModAdminMenu" loc="AdminMenu" />
         </actions>
     </inputs>
-	<sorting name="tracking_mod" loc="STR_tracking_mod_menu">
+	<sorting name="PsyernsMods" loc="PsyernsMods">
 		<input name="UAOpenTrackingModLeaderboardPVE"/>
 		<input name="UAOpenTrackingModLeaderboardPVP"/>
+		<input name="UAOpenTrackingModAdminMenu"/>
 	</sorting>
     <preset>
 		<input name="UAOpenTrackingModLeaderboardPVE">
@@ -16,6 +18,9 @@
         </input>
 		<input name="UAOpenTrackingModLeaderboardPVP">
             <btn name="kF6"/>
+        </input>
+		<input name="UAOpenTrackingModAdminMenu">
+            <btn name=""/>
         </input>
     </preset>
 </modded_inputs>

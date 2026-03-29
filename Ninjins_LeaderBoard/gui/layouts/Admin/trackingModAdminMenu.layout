@@ -801,6 +801,11 @@ FrameWidgetClass TrackingModAdminMenu {
                style Editor
                text "Neue Kategorie"
                font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickAddPVECategory"
+                }
+               }
               }
              }
             }
@@ -868,17 +873,30 @@ FrameWidgetClass TrackingModAdminMenu {
                style Default
                font "gui/fonts/metronbook14"
               }
+              TextWidgetClass pve_entry_input_label {
+               position 0.02 0.28
+               size 0.24 0.05
+               text "Neuer Eintrag"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_pve_entry_value {
+               position 0.28 0.28
+               size 0.55 0.05
+               style Default
+               font "gui/fonts/metronbook14"
+              }
               TextWidgetClass pve_entries_title {
                color 0.85 0.85 0.85 1
-               position 0.02 0.3
+               position 0.02 0.36
                size 0.96 0.05
                text "ClassNames / Punkte / Multiplier"
                font "gui/fonts/metronbook14"
                "bold text" 1
               }
               TextListboxWidgetClass pve_entries_list {
-               position 0.02 0.37
-               size 0.96 0.48
+               position 0.02 0.43
+               size 0.96 0.42
                style Default
                font "gui/fonts/metronbook14"
               }
@@ -889,6 +907,24 @@ FrameWidgetClass TrackingModAdminMenu {
                style Editor
                text "Classname hinzufuegen"
                font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickAddPVEEntry"
+                }
+               }
+              }
+              ButtonWidgetClass btn_delete_pve_entry {
+               color 0.8 0.2 0.2 1
+               position 0.34 0.88
+               size 0.3 0.07
+               style Editor
+               text "Eintrag loeschen"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickDeletePVEEntry"
+                }
+               }
               }
               ButtonWidgetClass btn_delete_pve_category {
                color 0.8 0 0 1
@@ -897,6 +933,11 @@ FrameWidgetClass TrackingModAdminMenu {
                style Editor
                text "Kategorie loeschen"
                font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickDeletePVECategory"
+                }
+               }
               }
              }
             }
@@ -942,6 +983,11 @@ FrameWidgetClass TrackingModAdminMenu {
                style Editor
                text "Neue Kategorie"
                font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickAddPVPCategory"
+                }
+               }
               }
              }
             }
@@ -996,17 +1042,30 @@ FrameWidgetClass TrackingModAdminMenu {
                style Default
                font "gui/fonts/metronbook14"
               }
+              TextWidgetClass pvp_entry_input_label {
+               position 0.02 0.2
+               size 0.24 0.05
+               text "Neuer Eintrag"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_pvp_entry_value {
+               position 0.28 0.2
+               size 0.55 0.05
+               style Default
+               font "gui/fonts/metronbook14"
+              }
               TextWidgetClass pvp_entries_title {
                color 0.85 0.85 0.85 1
-               position 0.02 0.24
+               position 0.02 0.3
                size 0.96 0.05
                text "ClassNames / Punkte / Multiplier"
                font "gui/fonts/metronbook14"
                "bold text" 1
               }
               TextListboxWidgetClass pvp_entries_list {
-               position 0.02 0.31
-               size 0.96 0.54
+               position 0.02 0.37
+               size 0.96 0.48
                style Default
                font "gui/fonts/metronbook14"
               }
@@ -1017,6 +1076,24 @@ FrameWidgetClass TrackingModAdminMenu {
                style Editor
                text "Classname hinzufuegen"
                font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickAddPVPEntry"
+                }
+               }
+              }
+              ButtonWidgetClass btn_delete_pvp_entry {
+               color 0.8 0.2 0.2 1
+               position 0.34 0.88
+               size 0.3 0.07
+               style Editor
+               text "Eintrag loeschen"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickDeletePVPEntry"
+                }
+               }
               }
               ButtonWidgetClass btn_delete_pvp_category {
                color 0.8 0 0 1
@@ -1025,6 +1102,11 @@ FrameWidgetClass TrackingModAdminMenu {
                style Editor
                text "Kategorie loeschen"
                font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickDeletePVPCategory"
+                }
+               }
               }
              }
             }

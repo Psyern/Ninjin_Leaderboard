@@ -233,4 +233,69 @@ class PVPCategoryConfig
 	{
 		return m_PVPDeathPenaltyPoints;
 	}
+
+	void ApplyAdminData(TrackingModPVPAdminData data)
+	{
+		PVPCategory sourceCategory;
+		PVPCategory clonedCategory;
+		int i;
+		int j;
+
+		m_Categories.Clear();
+		m_CategoryMap.Clear();
+		m_PVPDeathPenaltyPoints = 0;
+
+		if (data)
+		{
+			m_PVPDeathPenaltyPoints = Math.Max(0, data.PVPDeathPenaltyPoints);
+			if (data.Categories)
+			{
+				for (i = 0; i < data.Categories.Count(); i++)
+				{
+					sourceCategory = data.Categories.Get(i);
+					if (!sourceCategory || sourceCategory.CategoryID == "")
+						continue;
+
+					clonedCategory = new PVPCategory();
+					clonedCategory.CategoryID = sourceCategory.CategoryID;
+					clonedCategory.DisplayName = sourceCategory.DisplayName;
+					for (j = 0; j < sourceCategory.ClassNames.Count(); j++)
+						clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(j));
+
+					m_Categories.Insert(clonedCategory);
+					m_CategoryMap.Set(clonedCategory.CategoryID, clonedCategory);
+				}
+			}
+		}
+
+		SaveCategories();
+	}
+
+	void SaveCategories()
+	{
+		PVPCategoryConfigJson jsonData;
+		PVPCategory sourceCategory;
+		PVPCategory clonedCategory;
+		int i;
+		int j;
+
+		jsonData = new PVPCategoryConfigJson();
+		jsonData.PVPDeathPenaltyPoints = m_PVPDeathPenaltyPoints;
+		for (i = 0; i < m_Categories.Count(); i++)
+		{
+			sourceCategory = m_Categories.Get(i);
+			if (!sourceCategory || sourceCategory.CategoryID == "")
+				continue;
+
+			clonedCategory = new PVPCategory();
+			clonedCategory.CategoryID = sourceCategory.CategoryID;
+			clonedCategory.DisplayName = sourceCategory.DisplayName;
+			for (j = 0; j < sourceCategory.ClassNames.Count(); j++)
+				clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(j));
+
+			jsonData.Categories.Insert(clonedCategory);
+		}
+
+		JsonFileLoader<PVPCategoryConfigJson>.JsonSaveFile(PVP_CATEGORIES_FILE, jsonData);
+	}
 }

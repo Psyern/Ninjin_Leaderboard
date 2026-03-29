@@ -375,6 +375,72 @@ class PVECategoryConfig
 	{
 		return m_PVEDeathPenaltyPoints;
 	}
+
+	void ApplyAdminData(TrackingModPVEAdminData data)
+	{
+		PVECategory sourceCategory;
+		PVECategory clonedCategory;
+		int i;
+		int j;
+
+		m_Categories.Clear();
+		m_CategoryMap.Clear();
+		m_PVEDeathPenaltyPoints = 0;
+
+		if (data)
+		{
+			m_PVEDeathPenaltyPoints = Math.Max(0, data.PVEDeathPenaltyPoints);
+			if (data.Categories)
+			{
+				for (i = 0; i < data.Categories.Count(); i++)
+				{
+					sourceCategory = data.Categories.Get(i);
+					if (!sourceCategory || sourceCategory.CategoryID == "")
+						continue;
+
+					clonedCategory = new PVECategory();
+					clonedCategory.CategoryID = sourceCategory.CategoryID;
+					clonedCategory.ClassNamePreview = sourceCategory.ClassNamePreview;
+					for (j = 0; j < sourceCategory.ClassNames.Count(); j++)
+						clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(j));
+
+					m_Categories.Insert(clonedCategory);
+					m_CategoryMap.Set(clonedCategory.CategoryID, clonedCategory);
+				}
+			}
+		}
+
+		SaveCategories();
+	}
+
+	void SaveCategories()
+	{
+		PVECategoryConfigJson jsonData;
+		PVECategory sourceCategory;
+		PVECategory clonedCategory;
+		int i;
+		int j;
+
+		jsonData = new PVECategoryConfigJson();
+		jsonData.PVEDeathPenaltyPoints = m_PVEDeathPenaltyPoints;
+		for (i = 0; i < m_Categories.Count(); i++)
+		{
+			sourceCategory = m_Categories.Get(i);
+			if (!sourceCategory || sourceCategory.CategoryID == "")
+				continue;
+
+			clonedCategory = new PVECategory();
+			clonedCategory.CategoryID = sourceCategory.CategoryID;
+			clonedCategory.ClassNamePreview = sourceCategory.ClassNamePreview;
+			for (j = 0; j < sourceCategory.ClassNames.Count(); j++)
+				clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(j));
+
+			jsonData.Categories.Insert(clonedCategory);
+		}
+
+		JsonFileLoader<PVECategoryConfigJson>.JsonSaveFile(PVE_CATEGORIES_FILE, jsonData);
+	}
+
 	array<ref CategoryMatch> GetCategoryMatchesForClass(string className, Object entity = null)
 	{
 		array<ref CategoryMatch> exactMatches = new array<ref CategoryMatch>();

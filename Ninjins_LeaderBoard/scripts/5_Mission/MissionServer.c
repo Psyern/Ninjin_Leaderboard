@@ -41,6 +41,7 @@ modded class MissionServer extends MissionBase
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ClaimTrackingModReward", this, SingleplayerExecutionType.Server);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestAdminConfig", this, SingleplayerExecutionType.Server);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "SaveAdminConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "SaveAdminFullConfig", this, SingleplayerExecutionType.Server);
 			
 			#ifdef NinjinsPvPPvE
 			stateHandler = new TrackingModZoneHandler();
@@ -92,6 +93,40 @@ modded class MissionServer extends MissionBase
 			return false;
 
 		return g_TrackingModConfig.IsAdmin(sender.GetPlainId());
+	}
+
+	protected PVECategory ClonePVECategory(PVECategory sourceCategory)
+	{
+		PVECategory clonedCategory;
+		int i;
+
+		if (!sourceCategory)
+			return null;
+
+		clonedCategory = new PVECategory();
+		clonedCategory.CategoryID = sourceCategory.CategoryID;
+		clonedCategory.ClassNamePreview = sourceCategory.ClassNamePreview;
+		for (i = 0; i < sourceCategory.ClassNames.Count(); i++)
+			clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(i));
+
+		return clonedCategory;
+	}
+
+	protected PVPCategory ClonePVPCategory(PVPCategory sourceCategory)
+	{
+		PVPCategory clonedCategory;
+		int i;
+
+		if (!sourceCategory)
+			return null;
+
+		clonedCategory = new PVPCategory();
+		clonedCategory.CategoryID = sourceCategory.CategoryID;
+		clonedCategory.DisplayName = sourceCategory.DisplayName;
+		for (i = 0; i < sourceCategory.ClassNames.Count(); i++)
+			clonedCategory.ClassNames.Insert(sourceCategory.ClassNames.Get(i));
+
+		return clonedCategory;
 	}
 
 	protected TrackingModGeneralAdminData BuildGeneralAdminData()
@@ -151,6 +186,68 @@ modded class MissionServer extends MissionBase
 		data.WebExportIntervalSeconds = g_TrackingModConfig.WebExportIntervalSeconds;
 		data.WebExportMaxPlayers = g_TrackingModConfig.WebExportMaxPlayers;
 		data.WebExportIncludePlayerIDs = g_TrackingModConfig.WebExportIncludePlayerIDs;
+
+		return data;
+	}
+
+	protected TrackingModPVEAdminData BuildPVEAdminData()
+	{
+		TrackingModPVEAdminData data;
+		PVECategoryConfig config;
+		array<ref PVECategory> categories;
+		PVECategory category;
+		int i;
+
+		data = new TrackingModPVEAdminData();
+		config = PVECategoryConfig.GetInstance();
+		if (!config)
+			return data;
+
+		data.PVEDeathPenaltyPoints = config.GetPVEDeathPenaltyPoints();
+		categories = config.GetCategories();
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = ClonePVECategory(categories.Get(i));
+			if (category)
+				data.Categories.Insert(category);
+		}
+
+		return data;
+	}
+
+	protected TrackingModPVPAdminData BuildPVPAdminData()
+	{
+		TrackingModPVPAdminData data;
+		PVPCategoryConfig config;
+		array<ref PVPCategory> categories;
+		PVPCategory category;
+		int i;
+
+		data = new TrackingModPVPAdminData();
+		config = PVPCategoryConfig.GetInstance();
+		if (!config)
+			return data;
+
+		data.PVPDeathPenaltyPoints = config.GetPVPDeathPenaltyPoints();
+		categories = config.GetCategories();
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = ClonePVPCategory(categories.Get(i));
+			if (category)
+				data.Categories.Insert(category);
+		}
+
+		return data;
+	}
+
+	protected TrackingModAdminConfigData BuildAdminConfigData()
+	{
+		TrackingModAdminConfigData data;
+
+		data = new TrackingModAdminConfigData();
+		data.GeneralSettings = BuildGeneralAdminData();
+		data.PVESettings = BuildPVEAdminData();
+		data.PVPSettings = BuildPVPAdminData();
 
 		return data;
 	}
@@ -220,7 +317,9 @@ modded class MissionServer extends MissionBase
 
 	void RequestAdminConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
 	{
-		TrackingModGeneralAdminData data;
+		TrackingModGeneralAdminData generalData;
+		TrackingModPVEAdminData pveData;
+		TrackingModPVPAdminData pvpData;
 
 		if (!GetGame().IsDedicatedServer() || type != CallType.Server || !sender)
 			return;
@@ -235,8 +334,13 @@ modded class MissionServer extends MissionBase
 			return;
 		}
 
-		data = BuildGeneralAdminData();
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(data), true, sender);
+		generalData = BuildGeneralAdminData();
+		pveData = BuildPVEAdminData();
+		pvpData = BuildPVPAdminData();
+		TrackingMod.LogInfo(string.Format("[AdminRPC] Sending admin config to %1 | General AdminIDs=%2 | PVE Categories=%3 | PVP Categories=%4", sender.GetName(), generalData.AdminIDs.Count(), pveData.Categories.Count(), pvpData.Categories.Count()));
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(generalData), true, sender);
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVEConfig", new Param1<TrackingModPVEAdminData>(pveData), true, sender);
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVPConfig", new Param1<TrackingModPVPAdminData>(pvpData), true, sender);
 	}
 
 	void SaveAdminConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -292,6 +396,70 @@ modded class MissionServer extends MissionBase
 		response.Message = "LeaderBoardConfig geladen und angewendet";
 		freshData = BuildGeneralAdminData();
 		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(freshData), true, sender);
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+	}
+
+	void SaveAdminFullConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param3<TrackingModGeneralAdminData, TrackingModPVEAdminData, TrackingModPVPAdminData> params;
+		TrackingModAdminSaveResponse response;
+		TrackingModGeneralAdminData freshGeneralData;
+		TrackingModPVEAdminData freshPVEData;
+		TrackingModPVPAdminData freshPVPData;
+		string senderID;
+
+		if (!GetGame().IsDedicatedServer() || type != CallType.Server || !sender)
+			return;
+
+		response = new TrackingModAdminSaveResponse();
+		senderID = sender.GetPlainId();
+
+		if (!IsSenderTrackingModAdmin(sender))
+		{
+			response.Success = false;
+			response.Message = "Keine Berechtigung";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (!ctx.Read(params) || !params.param1)
+		{
+			response.Success = false;
+			response.Message = "Ungueltige Admin-Daten";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (!params.param1.AdminIDs || params.param1.AdminIDs.Count() == 0)
+		{
+			response.Success = false;
+			response.Message = "Mindestens eine Admin-ID muss erhalten bleiben";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (params.param1.AdminIDs.Find(senderID) == -1)
+		{
+			response.Success = false;
+			response.Message = "Eigene Admin-ID darf nicht entfernt werden";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		ApplyGeneralAdminData(params.param1);
+		PVECategoryConfig.GetInstance().ApplyAdminData(params.param2);
+		PVPCategoryConfig.GetInstance().ApplyAdminData(params.param3);
+		g_TrackingModConfig.SaveConfig();
+		ReloadTrackingModConfigs();
+
+		response.Success = true;
+		response.Message = "LeaderBoardConfig geladen und angewendet";
+		freshGeneralData = BuildGeneralAdminData();
+		freshPVEData = BuildPVEAdminData();
+		freshPVPData = BuildPVPAdminData();
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(freshGeneralData), true, sender);
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVEConfig", new Param1<TrackingModPVEAdminData>(freshPVEData), true, sender);
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVPConfig", new Param1<TrackingModPVPAdminData>(freshPVPData), true, sender);
 		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 

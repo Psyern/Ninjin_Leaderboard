@@ -76,6 +76,44 @@ class TrackingModGeneralAdminData
 	}
 }
 
+class TrackingModPVEAdminData
+{
+	int PVEDeathPenaltyPoints;
+	ref array<ref PVECategory> Categories;
+
+	void TrackingModPVEAdminData()
+	{
+		PVEDeathPenaltyPoints = 5;
+		Categories = new array<ref PVECategory>();
+	}
+}
+
+class TrackingModPVPAdminData
+{
+	int PVPDeathPenaltyPoints;
+	ref array<ref PVPCategory> Categories;
+
+	void TrackingModPVPAdminData()
+	{
+		PVPDeathPenaltyPoints = 10;
+		Categories = new array<ref PVPCategory>();
+	}
+}
+
+class TrackingModAdminConfigData
+{
+	ref TrackingModGeneralAdminData GeneralSettings;
+	ref TrackingModPVEAdminData PVESettings;
+	ref TrackingModPVPAdminData PVPSettings;
+
+	void TrackingModAdminConfigData()
+	{
+		GeneralSettings = new TrackingModGeneralAdminData();
+		PVESettings = new TrackingModPVEAdminData();
+		PVPSettings = new TrackingModPVPAdminData();
+	}
+}
+
 class TrackingModAdminSaveResponse
 {
 	bool Success;

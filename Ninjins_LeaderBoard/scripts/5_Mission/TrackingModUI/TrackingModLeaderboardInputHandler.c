@@ -2,13 +2,17 @@ modded class MissionBase
 {
 	protected bool m_PendingPVEMode;
 	protected bool m_PendingPVPMode;
+	protected bool m_PendingAdminMenu;
 	protected ref TrackingModLeaderboardMenu m_LeaderboardMenu;
 	protected ref TrackingModPvPLeaderboardMenu m_PvPLeaderboardMenu;
+	protected ref TrackingModLeaderboardData m_LastLeaderboardData;
 	protected bool m_RPCRegistered = false;
 	
 	override void OnUpdate(float timeslice)
 	{
 		PlayerBase player;
+		TrackingModAdminMenu adminMenu;
+		UAInput adminInput;
 		UAInput pveInput;
 		UAInput pvpInput;
 		
@@ -21,6 +25,8 @@ modded class MissionBase
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceivePlayerDataUpdate", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPVEConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPVPConfig", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", this, SingleplayerExecutionType.Client);
 			TrackingModUI.InitLogFile();
 			m_RPCRegistered = true;
@@ -29,6 +35,21 @@ modded class MissionBase
 		player = PlayerBase.Cast(GetGame().GetPlayer());
 		if (!player)
 			return;
+
+		adminMenu = TrackingModAdminMenu.GetInstance();
+		adminInput = GetUApi().GetInputByName("UAOpenTrackingModAdminMenu");
+		if (adminInput && adminInput.LocalPress())
+		{
+			if (adminMenu)
+			{
+				GetGame().GetMission().GetHud().Show(true);
+				adminMenu.Close();
+			}
+			else
+			{
+				OpenTrackingModAdminMenu();
+			}
+		}
 		
 		pveInput = GetUApi().GetInputByName("UAOpenTrackingModLeaderboardPVE");
 		if (pveInput && pveInput.LocalPress())
@@ -82,6 +103,44 @@ modded class MissionBase
 			GetGame().GetMission().GetHud().Show(true);
 			m_PvPLeaderboardMenu = null;
 		}
+	}
+
+	void OpenTrackingModAdminMenu()
+	{
+		PlayerBase player;
+
+		if (m_LeaderboardMenu || m_PvPLeaderboardMenu || TrackingModAdminMenu.GetInstance())
+			return;
+
+		if (GetGame().GetUIManager().GetMenu())
+			return;
+
+		if (m_LastLeaderboardData && m_LastLeaderboardData.isAdmin)
+		{
+			OpenTrackingModAdminMenuFromData(m_LastLeaderboardData);
+			return;
+		}
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!player || !player.GetIdentity())
+			return;
+
+		m_PendingAdminMenu = true;
+		m_PendingPVEMode = false;
+		m_PendingPVPMode = false;
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
+	}
+
+	void OpenTrackingModAdminMenuFromData(TrackingModLeaderboardData leaderboardData)
+	{
+		TrackingModAdminMenu adminMenu;
+
+		if (!leaderboardData || !leaderboardData.isAdmin)
+			return;
+
+		adminMenu = new TrackingModAdminMenu();
+		if (adminMenu)
+			adminMenu.SetLeaderboardData(leaderboardData);
 	}
 	
 	void OpenTrackingModLeaderboardPVE()
@@ -171,6 +230,7 @@ modded class MissionBase
 			player = PlayerBase.Cast(GetGame().GetPlayer());
 			if (leaderboardData)
 			{
+				m_LastLeaderboardData = leaderboardData;
 				TrackingModUI.LogRPC("========================================");
 				TrackingModUI.LogRPC("Received data:");
 				TrackingModUI.LogRPC("PlayerOnlineCounter[" + leaderboardData.playerOnlineCounter.ToString() + "]");
@@ -222,6 +282,20 @@ modded class MissionBase
 				}
 				
 				TrackingModUI.LogRPC("========================================");
+
+				if (m_PendingAdminMenu)
+				{
+					m_PendingAdminMenu = false;
+					if (!leaderboardData.isAdmin)
+					{
+						if (player)
+							player.MessageAction("[TrackingMod] Access denied. Admin only.");
+						return;
+					}
+
+					OpenTrackingModAdminMenuFromData(leaderboardData);
+					return;
+				}
 				
 				if (m_PendingPVEMode || (m_LeaderboardMenu && m_LeaderboardMenu.IsVisible()))
 				{
@@ -352,9 +426,47 @@ modded class MissionBase
 		if (!ctx.Read(dataParam) || !dataParam || !dataParam.param1)
 			return;
 
+		TrackingModUI.LogRPC(string.Format("[AdminRPC] Client received General admin config | AdminIDs=%1", dataParam.param1.AdminIDs.Count()));
+
 		adminMenu = TrackingModAdminMenu.GetInstance();
 		if (adminMenu)
 			adminMenu.ApplyGeneralConfigData(dataParam.param1);
+	}
+
+	void ReceiveAdminPVEConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModPVEAdminData> dataParam;
+		TrackingModAdminMenu adminMenu;
+
+		if (type != CallType.Client)
+			return;
+
+		if (!ctx.Read(dataParam) || !dataParam || !dataParam.param1)
+			return;
+
+		TrackingModUI.LogRPC(string.Format("[AdminRPC] Client received PVE admin config | Penalty=%1 | Categories=%2", dataParam.param1.PVEDeathPenaltyPoints, dataParam.param1.Categories.Count()));
+
+		adminMenu = TrackingModAdminMenu.GetInstance();
+		if (adminMenu)
+			adminMenu.ApplyPVEConfigData(dataParam.param1);
+	}
+
+	void ReceiveAdminPVPConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModPVPAdminData> dataParam;
+		TrackingModAdminMenu adminMenu;
+
+		if (type != CallType.Client)
+			return;
+
+		if (!ctx.Read(dataParam) || !dataParam || !dataParam.param1)
+			return;
+
+		TrackingModUI.LogRPC(string.Format("[AdminRPC] Client received PVP admin config | Penalty=%1 | Categories=%2", dataParam.param1.PVPDeathPenaltyPoints, dataParam.param1.Categories.Count()));
+
+		adminMenu = TrackingModAdminMenu.GetInstance();
+		if (adminMenu)
+			adminMenu.ApplyPVPConfigData(dataParam.param1);
 	}
 
 	void ReceiveAdminConfigSaved(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
