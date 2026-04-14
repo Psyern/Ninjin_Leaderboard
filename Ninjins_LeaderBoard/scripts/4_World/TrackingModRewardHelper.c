@@ -613,6 +613,120 @@ class TrackingModRewardHelper
 		return null;
 	}
 	
+	static void CheckSimpleCashReward(PlayerBase player, string playerID, string categoryType, int totalKills)
+	{
+		TrackingModSimpleCashReward cashConfig;
+		int interval;
+		int rewardAmount;
+		string currencyClassName;
+		EntityAI currencyEntity;
+		ItemBase currencyItem;
+		InventoryLocation tempLocation;
+		EntityAI tempItem;
+		bool canFit;
+		vector playerPos;
+		vector playerDir;
+		vector groundPos;
+		StringLocaliser title;
+		StringLocaliser message;
+
+		if (!g_Game)
+			return;
+
+		if (!g_TrackingModRewardConfig)
+			return;
+
+		cashConfig = g_TrackingModRewardConfig.SimpleCashRewards;
+		if (!cashConfig || !cashConfig.Enabled)
+			return;
+
+		if (!player || !player.GetIdentity())
+			return;
+
+		currencyClassName = cashConfig.CurrencyClassName;
+		if (currencyClassName == "")
+			return;
+
+		interval = 0;
+		rewardAmount = 0;
+
+		if (categoryType == "Zombies")
+		{
+			interval = cashConfig.ZombieKillInterval;
+			rewardAmount = cashConfig.ZombieRewardAmount;
+		}
+		else if (categoryType == "Animals")
+		{
+			interval = cashConfig.AnimalKillInterval;
+			rewardAmount = cashConfig.AnimalRewardAmount;
+		}
+		else if (categoryType == "AI")
+		{
+			interval = cashConfig.AIKillInterval;
+			rewardAmount = cashConfig.AIRewardAmount;
+		}
+		else if (categoryType == "Players")
+		{
+			interval = cashConfig.PlayerKillInterval;
+			rewardAmount = cashConfig.PlayerRewardAmount;
+		}
+
+		if (interval <= 0 || rewardAmount <= 0)
+			return;
+
+		if (totalKills % interval != 0)
+			return;
+
+		TrackingMod.LogInfo("[SimpleCashReward] Player " + playerID + " reached " + totalKills.ToString() + " " + categoryType + " kills - awarding " + rewardAmount.ToString() + " " + currencyClassName);
+
+		tempItem = EntityAI.Cast(g_Game.CreateObject(currencyClassName, vector.Zero, false, true));
+		if (!tempItem)
+		{
+			TrackingMod.LogWarning("[SimpleCashReward] Currency class not found: " + currencyClassName);
+			return;
+		}
+
+		tempLocation = new InventoryLocation;
+		canFit = player.GetHumanInventory().FindFreeLocationFor(tempItem, FindInventoryLocationType.CARGO, tempLocation);
+		if (!canFit)
+		{
+			canFit = player.GetHumanInventory().FindFreeLocationFor(tempItem, FindInventoryLocationType.ANY, tempLocation);
+		}
+		g_Game.ObjectDelete(tempItem);
+
+		currencyEntity = null;
+		if (canFit)
+		{
+			currencyEntity = player.GetHumanInventory().CreateInInventory(currencyClassName);
+		}
+
+		if (!currencyEntity)
+		{
+			playerPos = player.GetPosition();
+			playerDir = player.GetDirection();
+			groundPos = playerPos + (playerDir * 1.5);
+			groundPos[1] = playerPos[1];
+			currencyEntity = player.SpawnEntityOnGroundPos(currencyClassName, groundPos);
+			if (!currencyEntity)
+			{
+				TrackingMod.LogWarning("[SimpleCashReward] Failed to spawn currency on ground: " + currencyClassName);
+				return;
+			}
+			TrackingMod.LogInfo("[SimpleCashReward] Placed currency on ground (inventory full): " + currencyClassName);
+		}
+
+		currencyItem = ItemBase.Cast(currencyEntity);
+		if (currencyItem)
+		{
+			SetCurrencyQuantity(currencyItem, rewardAmount, currencyClassName);
+		}
+		currencyEntity.SetSynchDirty();
+
+		title = new StringLocaliser("Cash Reward!");
+		message = new StringLocaliser(rewardAmount.ToString() + " " + currencyClassName + " for " + totalKills.ToString() + " " + categoryType + " kills!");
+		NotificationSystem.Create(title, message, "set:dayz_gui image:checkmark", ARGB(255, 0, 255, 0), 5.0, player.GetIdentity());
+	}
+
 	static array<ref TrackingModCurrencyReward> SelectCurrencyRewards(array<ref TrackingModCurrencyReward> currencyRewards, int currencyMin, int currencyMax)
 	{
 		array<ref TrackingModCurrencyReward> currenciesToGive;

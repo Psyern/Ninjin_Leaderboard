@@ -75,6 +75,24 @@ class TrackingModAdminMenu: ScriptViewMenu
 	protected int m_SelectedPVECategoryIndex;
 	protected int m_SelectedPVPCategoryIndex;
 
+	protected ButtonWidget m_BtnTabPlayers;
+	protected Widget m_TabPlayersPanel;
+	protected EditBoxWidget m_EditPlayerSearch;
+	protected ButtonWidget m_BtnSearchPlayer;
+	protected TextListboxWidget m_PlayerResultList;
+	protected TextWidget m_PlayerSelectedLabel;
+	protected ButtonWidget m_BtnWipePlayerData;
+	protected ButtonWidget m_BtnWipePlayerPoints;
+	protected EditBoxWidget m_EditAwardPoints;
+	protected ButtonWidget m_BtnAwardPVEPoints;
+	protected ButtonWidget m_BtnAwardPVPPoints;
+	protected EditBoxWidget m_EditAwardItemClass;
+	protected EditBoxWidget m_EditAwardItemAmount;
+	protected ButtonWidget m_BtnAwardItem;
+	protected TextWidget m_PlayerActionStatus;
+	protected string m_SelectedPlayerID;
+	protected string m_SelectedPlayerName;
+
 	void TrackingModAdminMenu()
 	{
 		s_Instance = this;
@@ -775,6 +793,16 @@ class TrackingModAdminMenu: ScriptViewMenu
 		m_TabPVPPanel = root.FindAnyWidget("tab_pvp_panel");
 		m_TabMilestonesPanel = root.FindAnyWidget("tab_milestones_panel");
 		m_TabRewardsPanel = root.FindAnyWidget("tab_rewards_panel");
+
+		m_BtnTabPlayers = ButtonWidget.Cast(root.FindAnyWidget("btn_tab_players"));
+		m_TabPlayersPanel = root.FindAnyWidget("tab_players_panel");
+		m_EditPlayerSearch = EditBoxWidget.Cast(root.FindAnyWidget("edit_player_search"));
+		m_PlayerResultList = TextListboxWidget.Cast(root.FindAnyWidget("player_result_list"));
+		m_PlayerSelectedLabel = TextWidget.Cast(root.FindAnyWidget("player_selected_label"));
+		m_EditAwardPoints = EditBoxWidget.Cast(root.FindAnyWidget("edit_award_points"));
+		m_EditAwardItemClass = EditBoxWidget.Cast(root.FindAnyWidget("edit_award_item_class"));
+		m_EditAwardItemAmount = EditBoxWidget.Cast(root.FindAnyWidget("edit_award_item_amount"));
+		m_PlayerActionStatus = TextWidget.Cast(root.FindAnyWidget("player_action_status"));
 	}
 
 	protected void SetActiveTab(int tabIndex)
@@ -791,12 +819,15 @@ class TrackingModAdminMenu: ScriptViewMenu
 			m_TabMilestonesPanel.Show(tabIndex == 3);
 		if (m_TabRewardsPanel)
 			m_TabRewardsPanel.Show(tabIndex == 4);
+		if (m_TabPlayersPanel)
+			m_TabPlayersPanel.Show(tabIndex == 5);
 
 		UpdateTabButtonState(m_BtnTabGeneral, tabIndex == 0);
 		UpdateTabButtonState(m_BtnTabPVE, tabIndex == 1);
 		UpdateTabButtonState(m_BtnTabPVP, tabIndex == 2);
 		UpdateTabButtonState(m_BtnTabMilestones, tabIndex == 3);
 		UpdateTabButtonState(m_BtnTabRewards, tabIndex == 4);
+		UpdateTabButtonState(m_BtnTabPlayers, tabIndex == 5);
 
 		UpdateHeaderState();
 	}
@@ -835,6 +866,9 @@ class TrackingModAdminMenu: ScriptViewMenu
 				break;
 			case 4:
 				tabLabel = "Rewards";
+				break;
+			case 5:
+				tabLabel = "Players";
 				break;
 		}
 
@@ -1082,6 +1116,247 @@ class TrackingModAdminMenu: ScriptViewMenu
 		FillAdminList();
 	}
 
+	void SelectPlayerFromList(int row)
+	{
+		string rowText;
+		int openParen;
+		int closeParen;
+
+		if (!m_PlayerResultList || row < 0)
+			return;
+
+		m_PlayerResultList.GetItemText(row, 0, rowText);
+		openParen = rowText.IndexOf("(");
+		closeParen = rowText.IndexOf(")");
+		if (openParen > 0 && closeParen > openParen)
+		{
+			m_SelectedPlayerID = rowText.Substring(openParen + 1, closeParen - openParen - 1);
+			m_SelectedPlayerName = rowText.Substring(0, openParen - 1);
+		}
+		UpdateSelectedPlayerLabel();
+	}
+
+	void OnClickTabPlayers()
+	{
+		SetActiveTab(5);
+	}
+
+	void OnClickSearchPlayer()
+	{
+		PlayerBase player;
+		string searchTerm;
+
+		if (!m_EditPlayerSearch)
+			return;
+
+		searchTerm = m_EditPlayerSearch.GetText();
+		if (searchTerm == "")
+			return;
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!player || !player.GetIdentity())
+			return;
+
+		SetPlayerActionStatus("Suche...");
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminSearchPlayer", new Param1<string>(searchTerm), true, player.GetIdentity());
+	}
+
+	void OnClickWipePlayerData()
+	{
+		PlayerBase player;
+
+		if (m_SelectedPlayerID == "")
+		{
+			SetPlayerActionStatus("Kein Spieler ausgewaehlt!");
+			return;
+		}
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!player || !player.GetIdentity())
+			return;
+
+		SetPlayerActionStatus("Loesche Daten fuer " + m_SelectedPlayerName + "...");
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminWipePlayerData", new Param1<string>(m_SelectedPlayerID), true, player.GetIdentity());
+	}
+
+	void OnClickWipePlayerPoints()
+	{
+		PlayerBase player;
+
+		if (m_SelectedPlayerID == "")
+		{
+			SetPlayerActionStatus("Kein Spieler ausgewaehlt!");
+			return;
+		}
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!player || !player.GetIdentity())
+			return;
+
+		SetPlayerActionStatus("Setze Points zurueck fuer " + m_SelectedPlayerName + "...");
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminWipePlayerPoints", new Param1<string>(m_SelectedPlayerID), true, player.GetIdentity());
+	}
+
+	void OnClickAwardPVEPoints()
+	{
+		PlayerBase player;
+		int amount;
+
+		if (m_SelectedPlayerID == "")
+		{
+			SetPlayerActionStatus("Kein Spieler ausgewaehlt!");
+			return;
+		}
+
+		if (!m_EditAwardPoints)
+			return;
+
+		amount = m_EditAwardPoints.GetText().ToInt();
+		if (amount <= 0)
+		{
+			SetPlayerActionStatus("Ungueltige Punktzahl!");
+			return;
+		}
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!player || !player.GetIdentity())
+			return;
+
+		SetPlayerActionStatus("Vergebe " + amount.ToString() + " PvE Points an " + m_SelectedPlayerName + "...");
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminAwardPoints", new Param3<string, int, bool>(m_SelectedPlayerID, amount, true), true, player.GetIdentity());
+	}
+
+	void OnClickAwardPVPPoints()
+	{
+		PlayerBase player;
+		int amount;
+
+		if (m_SelectedPlayerID == "")
+		{
+			SetPlayerActionStatus("Kein Spieler ausgewaehlt!");
+			return;
+		}
+
+		if (!m_EditAwardPoints)
+			return;
+
+		amount = m_EditAwardPoints.GetText().ToInt();
+		if (amount <= 0)
+		{
+			SetPlayerActionStatus("Ungueltige Punktzahl!");
+			return;
+		}
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!player || !player.GetIdentity())
+			return;
+
+		SetPlayerActionStatus("Vergebe " + amount.ToString() + " PvP Points an " + m_SelectedPlayerName + "...");
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminAwardPoints", new Param3<string, int, bool>(m_SelectedPlayerID, amount, false), true, player.GetIdentity());
+	}
+
+	void OnClickAwardItem()
+	{
+		PlayerBase player;
+		string className;
+		int amount;
+
+		if (m_SelectedPlayerID == "")
+		{
+			SetPlayerActionStatus("Kein Spieler ausgewaehlt!");
+			return;
+		}
+
+		if (!m_EditAwardItemClass || !m_EditAwardItemAmount)
+			return;
+
+		className = m_EditAwardItemClass.GetText();
+		amount = m_EditAwardItemAmount.GetText().ToInt();
+		if (className == "")
+		{
+			SetPlayerActionStatus("Kein Item-Classname angegeben!");
+			return;
+		}
+		if (amount <= 0)
+			amount = 1;
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!player || !player.GetIdentity())
+			return;
+
+		SetPlayerActionStatus("Gebe " + amount.ToString() + "x " + className + " an " + m_SelectedPlayerName + "...");
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminAwardItem", new Param3<string, string, int>(m_SelectedPlayerID, className, amount), true, player.GetIdentity());
+	}
+
+	void ReceiveAdminPlayerSearch(string resultJSON)
+	{
+		int i;
+		int separatorIdx;
+		string entry;
+		string pID;
+		string pName;
+
+		if (!m_PlayerResultList)
+			return;
+
+		m_PlayerResultList.ClearItems();
+		m_SelectedPlayerID = "";
+		m_SelectedPlayerName = "";
+
+		if (resultJSON == "" || resultJSON == "[]")
+		{
+			SetPlayerActionStatus("Keine Spieler gefunden.");
+			UpdateSelectedPlayerLabel();
+			return;
+		}
+
+		array<string> entries;
+		entries = new array<string>();
+		resultJSON.Split("|", entries);
+
+		for (i = 0; i < entries.Count(); i++)
+		{
+			entry = entries.Get(i);
+			separatorIdx = entry.IndexOf(":");
+			if (separatorIdx > 0)
+			{
+				pID = entry.Substring(0, separatorIdx);
+				pName = entry.Substring(separatorIdx + 1, entry.Length() - separatorIdx - 1);
+				m_PlayerResultList.AddItem(pName + " (" + pID + ")", null, 0);
+			}
+		}
+
+		SetPlayerActionStatus(entries.Count().ToString() + " Spieler gefunden.");
+	}
+
+	void ReceiveAdminActionResult(TrackingModAdminSaveResponse response)
+	{
+		if (!response)
+			return;
+
+		if (response.Success)
+			SetPlayerActionStatus("Erfolg: " + response.Message);
+		else
+			SetPlayerActionStatus("Fehler: " + response.Message);
+	}
+
+	void SetPlayerActionStatus(string text)
+	{
+		if (m_PlayerActionStatus)
+			m_PlayerActionStatus.SetText(text);
+	}
+
+	void UpdateSelectedPlayerLabel()
+	{
+		if (!m_PlayerSelectedLabel)
+			return;
+
+		if (m_SelectedPlayerID != "")
+			m_PlayerSelectedLabel.SetText("Ausgewaehlt: " + m_SelectedPlayerName + " (" + m_SelectedPlayerID + ")");
+		else
+			m_PlayerSelectedLabel.SetText("Kein Spieler ausgewaehlt");
+	}
+
 	void OnClickCloseAdmin()
 	{
 		CloseAdminMenu();
@@ -1152,6 +1427,12 @@ class TrackingModAdminMenu: ScriptViewMenu
 		if (w == m_PVPCategoriesList)
 		{
 			SelectPVPCategory(row);
+			return true;
+		}
+
+		if (w == m_PlayerResultList)
+		{
+			SelectPlayerFromList(row);
 			return true;
 		}
 

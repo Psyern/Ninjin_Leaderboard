@@ -36,6 +36,12 @@ class PlayerDeathData
 	// Expansion Hardline integration (populated from 4_World via #ifdef EXPANSIONMODHARDLINE)
 	int HardlineReputation;
 
+	// Extended stats tracking
+	int ShotsFired;
+	int ShotsHit;
+	int Headshots;
+	float DistanceTravelled;
+
 	void PlayerDeathData()
 	{
 		PlayerID = "";
@@ -58,6 +64,10 @@ class PlayerDeathData
 		WarLevel = 0;
 		WarBossKills = 0;
 		HardlineReputation = 0;
+		ShotsFired = 0;
+		ShotsHit = 0;
+		Headshots = 0;
+		DistanceTravelled = 0.0;
 	}
 	
 	int GetPVPPoints()
@@ -510,6 +520,47 @@ class PlayerDeathData
 		CheckAndAddMilestones(categoryID, currentKills + 1);
 	}
 	
+	void AddShotFired()
+	{
+		ShotsFired = ShotsFired + 1;
+	}
+
+	void AddShotHit(bool isHeadshot)
+	{
+		ShotsHit = ShotsHit + 1;
+		if (isHeadshot)
+		{
+			Headshots = Headshots + 1;
+		}
+	}
+
+	void AddDistanceTravelled(float distance)
+	{
+		DistanceTravelled = DistanceTravelled + distance;
+	}
+
+	float GetAccuracy()
+	{
+		float accuracy;
+
+		if (ShotsFired <= 0)
+			return 0.0;
+		accuracy = (ShotsHit * 100.0) / ShotsFired;
+		accuracy = Math.Round(accuracy * 100.0) / 100.0;
+		return accuracy;
+	}
+
+	float GetHeadshotPercentage()
+	{
+		float pct;
+
+		if (ShotsHit <= 0)
+			return 0.0;
+		pct = (Headshots * 100.0) / ShotsHit;
+		pct = Math.Round(pct * 100.0) / 100.0;
+		return pct;
+	}
+
 	void CheckAndAddMilestones(string categoryID, int newKillCount)
 	{
 		array<int> milestones;
@@ -594,6 +645,12 @@ class PlayerDeathData
 							{
 								availableMilestones.Insert(milestone);
 								TrackingMod.LogInfo("[CheckAndAddMilestones] Added milestone " + milestone.ToString() + " for category " + categoryID + " to AvailableMilestones");
+								if (g_TrackingModRewardConfig && g_TrackingModRewardConfig.EnableServerwideMilestoneNotification)
+								{
+									string broadcastMsg;
+									broadcastMsg = string.Format(g_TrackingModRewardConfig.ServerwideMilestoneMessage, PlayerName, milestone.ToString(), categoryID);
+									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "set:dayz_gui image:notify_special", ARGB(255, 255, 215, 0), 8.0, null);
+								}
 							}
 						}
 					}
@@ -665,6 +722,12 @@ class PlayerDeathData
 							{
 								availableMilestones.Insert(milestone);
 								TrackingMod.LogInfo("[CheckAndAddMilestones] Added milestone " + milestone.ToString() + " for category " + categoryID + " to AvailableMilestones");
+								if (g_TrackingModRewardConfig && g_TrackingModRewardConfig.EnableServerwideMilestoneNotification)
+								{
+									string broadcastMsg;
+									broadcastMsg = string.Format(g_TrackingModRewardConfig.ServerwideMilestoneMessage, PlayerName, milestone.ToString(), categoryID);
+									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "set:dayz_gui image:notify_special", ARGB(255, 255, 215, 0), 8.0, null);
+								}
 							}
 						}
 					}
@@ -1327,6 +1390,10 @@ class TrackingModData
 		exportPlayer.warLevel = playerData.WarLevel;
 		exportPlayer.warBossKills = playerData.WarBossKills;
 		exportPlayer.hardlineReputation = playerData.HardlineReputation;
+		exportPlayer.shotsFired = playerData.ShotsFired;
+		exportPlayer.shotsHit = playerData.ShotsHit;
+		exportPlayer.headshots = playerData.Headshots;
+		exportPlayer.distanceTravelled = playerData.DistanceTravelled;
 
 		return exportPlayer;
 	}

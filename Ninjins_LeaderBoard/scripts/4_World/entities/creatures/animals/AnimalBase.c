@@ -64,5 +64,15 @@ modded class AnimalBase
 		}
 		data.AddAnimalKill(killerID, killerName, killRange, animalClassName, this, killCause);
 		Print("[TrackingMod] Animal killed by player: " + killerName + " (ID: " + killerID + ") from " + killRange.ToString() + " meters (Class: " + animalClassName + ")");
+		{
+			PlayerDeathData cashCheckData;
+			int totalAnimalKills;
+			cashCheckData = data.GetPlayerData(killerID);
+			if (cashCheckData && killerPlayer)
+			{
+				totalAnimalKills = cashCheckData.GetCategoryKills("Animals");
+				TrackingModRewardHelper.CheckSimpleCashReward(killerPlayer, killerID, "Animals", totalAnimalKills);
+			}
+		}
 	}
 }

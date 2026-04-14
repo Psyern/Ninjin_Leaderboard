@@ -67,6 +67,16 @@ modded class eAIBase
 		}
 		data.AddAIKill(killerID, killerName, killRange, aiClassName, this, killCause);
 		Print("[TrackingMod] AI killed by player: " + killerName + " (ID: " + killerID + ") from " + killRange.ToString() + " meters (Class: " + aiClassName + ")");
+		{
+			PlayerDeathData cashCheckData;
+			int totalAIKills;
+			cashCheckData = data.GetPlayerData(killerID);
+			if (cashCheckData && killerPlayer)
+			{
+				totalAIKills = cashCheckData.GetCategoryKills("AI");
+				TrackingModRewardHelper.CheckSimpleCashReward(killerPlayer, killerID, "AI", totalAIKills);
+			}
+		}
 	}
 }
 #endif

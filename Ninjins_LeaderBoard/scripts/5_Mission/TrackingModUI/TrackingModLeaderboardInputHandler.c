@@ -28,6 +28,12 @@ modded class MissionBase
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPVEConfig", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPVPConfig", this, SingleplayerExecutionType.Client);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPlayerSearch", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceivePlayerOwnStats", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveShopConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveStyleConfig", this, SingleplayerExecutionType.Client);
 			TrackingModUI.InitLogFile();
 			m_RPCRegistered = true;
 		}
@@ -490,6 +496,103 @@ modded class MissionBase
 			player.MessageAction(responseParam.param1.Message);
 	}
 	
+	void ReceivePlayerOwnStats(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModLeaderboardPlayerData> statsParam;
+		TrackingModLeaderboardMenu pveMenu;
+		TrackingModPvPLeaderboardMenu pvpMenu;
+
+		if (type != CallType.Client)
+			return;
+
+		if (!ctx.Read(statsParam) || !statsParam || !statsParam.param1)
+			return;
+
+		pveMenu = TrackingModLeaderboardMenu.GetInstance();
+		if (pveMenu)
+			pveMenu.SetOwnPlayerStats(statsParam.param1);
+
+		pvpMenu = TrackingModPvPLeaderboardMenu.GetInstance();
+		if (pvpMenu)
+			pvpMenu.SetOwnPlayerStats(statsParam.param1);
+	}
+
+	void ReceiveStyleConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModStyleConfig> styleParam;
+
+		if (type != CallType.Client)
+			return;
+		if (!ctx.Read(styleParam) || !styleParam || !styleParam.param1)
+			return;
+
+		g_TrackingModStyleConfig = styleParam.param1;
+	}
+
+	void ReceiveShopConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModShopConfig> shopParam;
+
+		if (type != CallType.Client)
+			return;
+		if (!ctx.Read(shopParam) || !shopParam || !shopParam.param1)
+			return;
+
+		g_TrackingModShopConfig = shopParam.param1;
+	}
+
+	void ReceiveShopPurchaseResult(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModAdminSaveResponse> responseParam;
+		PlayerBase player;
+
+		if (type != CallType.Client)
+			return;
+		if (!ctx.Read(responseParam) || !responseParam || !responseParam.param1)
+			return;
+
+		player = PlayerBase.Cast(GetGame().GetPlayer());
+		if (player && responseParam.param1.Message != "")
+		{
+			if (responseParam.param1.Success)
+				NotificationSystem.Create(new StringLocaliser("Shop"), new StringLocaliser(responseParam.param1.Message), "set:dayz_gui image:checkmark", ARGB(255, 0, 255, 0), 5.0, player.GetIdentity());
+			else
+				NotificationSystem.Create(new StringLocaliser("Shop"), new StringLocaliser(responseParam.param1.Message), "set:dayz_gui image:cross", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
+		}
+	}
+
+	void ReceiveAdminPlayerSearch(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<string> searchParam;
+		TrackingModAdminMenu adminMenu;
+
+		if (type != CallType.Client)
+			return;
+
+		if (!ctx.Read(searchParam) || !searchParam)
+			return;
+
+		adminMenu = TrackingModAdminMenu.GetInstance();
+		if (adminMenu)
+			adminMenu.ReceiveAdminPlayerSearch(searchParam.param1);
+	}
+
+	void ReceiveAdminActionResult(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<TrackingModAdminSaveResponse> responseParam;
+		TrackingModAdminMenu adminMenu;
+
+		if (type != CallType.Client)
+			return;
+
+		if (!ctx.Read(responseParam) || !responseParam || !responseParam.param1)
+			return;
+
+		adminMenu = TrackingModAdminMenu.GetInstance();
+		if (adminMenu)
+			adminMenu.ReceiveAdminActionResult(responseParam.param1);
+	}
+
 	TrackingModLeaderboardData BuildLeaderboardDataFromMap(TrackingModData data, int requestedPage, bool isPVE)
 	{
 		TrackingModLeaderboardData leaderboardData;
@@ -687,7 +790,14 @@ modded class MissionBase
 				leaderboardPlayer.categoryLongestRanges.Set(rangeCategoryID, longestRange);
 			}
 		}
-		
+
+		leaderboardPlayer.shotsFired = playerData.ShotsFired;
+		leaderboardPlayer.shotsHit = playerData.ShotsHit;
+		leaderboardPlayer.headshots = playerData.Headshots;
+		leaderboardPlayer.distanceTravelled = playerData.DistanceTravelled;
+		leaderboardPlayer.accuracy = playerData.GetAccuracy();
+		leaderboardPlayer.headshotPercentage = playerData.GetHeadshotPercentage();
+
 		return leaderboardPlayer;
 	}
 }

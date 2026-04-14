@@ -243,7 +243,7 @@ FrameWidgetClass TrackingModAdminMenu {
            visible 1
            color 0.3 0.3 0.3 1
            position 0.51 0.08
-           size 0.12 0.84
+           size 0.11 0.84
            hexactpos 0
            vexactpos 0
            hexactsize 0
@@ -258,6 +258,24 @@ FrameWidgetClass TrackingModAdminMenu {
            }
           }
          }
+          ButtonWidgetClass btn_tab_players {
+           visible 1
+           color 0.3 0.3 0.3 1
+           position 0.63 0.08
+           size 0.11 0.84
+           hexactpos 0
+           vexactpos 0
+           hexactsize 0
+           vexactsize 0
+           style Editor
+           text "Players"
+           font "gui/fonts/metronbook14"
+           {
+            ScriptParamsClass {
+             Relay_Command "OnClickTabPlayers"
+            }
+           }
+          }
         }
         PanelWidgetClass content_container {
          visible 1
@@ -1370,6 +1388,211 @@ FrameWidgetClass TrackingModAdminMenu {
                size 0.42 0.05
                style Editor
                text "Test-Reward an mich vergeben"
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+           }
+          }
+          PanelWidgetClass tab_players_panel {
+           visible 0
+           position 0.01 0.01
+           size 0.98 0.98
+           {
+            PanelWidgetClass players_search_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0
+             size 1 0.12
+             style DayZDefaultPanel
+             {
+              TextWidgetClass players_search_label {
+               color 1 0.7 0.3 1
+               position 0.02 0.15
+               size 0.15 0.7
+               text "Spieler suchen:"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_player_search {
+               position 0.18 0.15
+               size 0.5 0.7
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_search_player {
+               color 0.2 0.6 0.8 1
+               position 0.7 0.15
+               size 0.28 0.7
+               style Editor
+               text "Suchen"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickSearchPlayer"
+                }
+               }
+              }
+             }
+            }
+            PanelWidgetClass players_list_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0 0.14
+             size 0.4 0.84
+             style DayZDefaultPanel
+             {
+              TextWidgetClass players_list_title {
+               color 0.85 0.85 0.85 1
+               position 0.02 0.02
+               size 0.96 0.06
+               text "Suchergebnisse"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextListboxWidgetClass player_result_list {
+               position 0.02 0.1
+               size 0.96 0.88
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+             }
+            }
+            PanelWidgetClass players_actions_group {
+             visible 1
+             color 0.1 0.1 0.1 0.8
+             position 0.42 0.14
+             size 0.58 0.84
+             style DayZDefaultPanel
+             {
+              TextWidgetClass players_actions_title {
+               color 1 0.7 0.3 1
+               position 0.02 0.02
+               size 0.96 0.06
+               text "Aktionen"
+               font "gui/fonts/metronbook16"
+               "bold text" 1
+              }
+              TextWidgetClass player_selected_label {
+               color 0.85 0.85 0.85 1
+               position 0.02 0.1
+               size 0.96 0.05
+               text "Kein Spieler ausgewaehlt"
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_wipe_player_data {
+               color 0.8 0 0 1
+               position 0.02 0.18
+               size 0.45 0.07
+               style Editor
+               text "Alle Daten loeschen"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickWipePlayerData"
+                }
+               }
+              }
+              ButtonWidgetClass btn_wipe_player_points {
+               color 0.8 0.3 0 1
+               position 0.5 0.18
+               size 0.45 0.07
+               style Editor
+               text "Points zuruecksetzen"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickWipePlayerPoints"
+                }
+               }
+              }
+              TextWidgetClass award_points_label {
+               color 0.85 0.85 0.85 1
+               position 0.02 0.3
+               size 0.2 0.06
+               text "Points:"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_award_points {
+               position 0.22 0.3
+               size 0.25 0.06
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_award_pve_points {
+               color 0 0.6 0.2 1
+               position 0.5 0.3
+               size 0.23 0.06
+               style Editor
+               text "PvE vergeben"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickAwardPVEPoints"
+                }
+               }
+              }
+              ButtonWidgetClass btn_award_pvp_points {
+               color 0.2 0.4 0.8 1
+               position 0.75 0.3
+               size 0.23 0.06
+               style Editor
+               text "PvP vergeben"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickAwardPVPPoints"
+                }
+               }
+              }
+              TextWidgetClass award_item_label {
+               color 0.85 0.85 0.85 1
+               position 0.02 0.42
+               size 0.2 0.06
+               text "Item Class:"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_award_item_class {
+               position 0.22 0.42
+               size 0.35 0.06
+               style Default
+               font "gui/fonts/metronbook14"
+              }
+              TextWidgetClass award_amount_label {
+               color 0.85 0.85 0.85 1
+               position 0.6 0.42
+               size 0.1 0.06
+               text "Anzahl:"
+               font "gui/fonts/metronbook14"
+               "text valign" center
+              }
+              EditBoxWidgetClass edit_award_item_amount {
+               position 0.7 0.42
+               size 0.1 0.06
+               style Default
+               text "1"
+               font "gui/fonts/metronbook14"
+              }
+              ButtonWidgetClass btn_award_item {
+               color 0.6 0.4 0.8 1
+               position 0.82 0.42
+               size 0.16 0.06
+               style Editor
+               text "Item geben"
+               font "gui/fonts/metronbook14"
+               {
+                ScriptParamsClass {
+                 Relay_Command "OnClickAwardItem"
+                }
+               }
+              }
+              TextWidgetClass player_action_status {
+               color 0.5 0.9 0.5 1
+               position 0.02 0.55
+               size 0.96 0.06
+               text ""
                font "gui/fonts/metronbook14"
               }
              }

@@ -14,7 +14,13 @@ class TrackingModLeaderboardPlayerData
 	ref map<string, int> categoryKills;
 	ref map<string, int> categoryDeaths;
 	ref map<string, int> categoryLongestRanges;
-	
+	int shotsFired;
+	int shotsHit;
+	int headshots;
+	float distanceTravelled;
+	float accuracy;
+	float headshotPercentage;
+
 	void TrackingModLeaderboardPlayerData()
 	{
 		playerID = "";
@@ -28,6 +34,12 @@ class TrackingModLeaderboardPlayerData
 		categoryKills = new map<string, int>();
 		categoryDeaths = new map<string, int>();
 		categoryLongestRanges = new map<string, int>();
+		shotsFired = 0;
+		shotsHit = 0;
+		headshots = 0;
+		distanceTravelled = 0.0;
+		accuracy = 0.0;
+		headshotPercentage = 0.0;
 	}
 }
 
@@ -49,7 +61,15 @@ class TrackingModLeaderboardData
 	int totalPlayers;
 	int maxDisplayCount;
 	int playersOnCurrentPage;
-	
+	bool showShotsFired;
+	bool showShotsHit;
+	bool showHeadshots;
+	bool showHeadshotPercentage;
+	bool showDistanceTravelled;
+	bool showAccuracy;
+	ref array<ref TrackingModColumnConfig> pveColumns;
+	ref array<ref TrackingModColumnConfig> pvpColumns;
+
 	void TrackingModLeaderboardData()
 	{
 		playerOnlineCounter = 0;
@@ -68,6 +88,14 @@ class TrackingModLeaderboardData
 		totalPlayers = 0;
 		maxDisplayCount = 0;
 		playersOnCurrentPage = 0;
+		showShotsFired = true;
+		showShotsHit = true;
+		showHeadshots = true;
+		showHeadshotPercentage = true;
+		showDistanceTravelled = true;
+		showAccuracy = true;
+		pveColumns = new array<ref TrackingModColumnConfig>();
+		pvpColumns = new array<ref TrackingModColumnConfig>();
 	}
 }
 
@@ -107,6 +135,12 @@ class TrackingModWebLeaderboardPlayerData
 	int warBossKills;
 	int hardlineReputation;
 
+	// Extended stats
+	int shotsFired;
+	int shotsHit;
+	int headshots;
+	float distanceTravelled;
+
 	void TrackingModWebLeaderboardPlayerData()
 	{
 		playerID = "";
@@ -128,6 +162,10 @@ class TrackingModWebLeaderboardPlayerData
 		warLevel = 0;
 		warBossKills = 0;
 		hardlineReputation = 0;
+		shotsFired = 0;
+		shotsHit = 0;
+		headshots = 0;
+		distanceTravelled = 0.0;
 	}
 }
 

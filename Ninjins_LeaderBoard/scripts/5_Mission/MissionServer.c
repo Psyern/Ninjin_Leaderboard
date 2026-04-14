@@ -2,6 +2,7 @@ modded class MissionServer extends MissionBase
 {
 	protected ref map<string, int> m_LeaderboardRequestTimes;
 	protected const int LEADERBOARD_RATE_LIMIT_MS = 500;
+	protected float m_NJN_DistanceTrackTimer;
 	#ifdef Psyerns_Framework
 	protected float m_WebExportTimer;
 	protected float m_WebExportInterval;
@@ -18,6 +19,7 @@ modded class MissionServer extends MissionBase
 		
 		super.OnInit();
 		m_LeaderboardRequestTimes = new map<string, int>();
+		m_NJN_DistanceTrackTimer = 0;
 		if (GetGame().IsDedicatedServer())
 		{
 			TrackingModData.CheckDirectories();
@@ -27,7 +29,10 @@ modded class MissionServer extends MissionBase
 			DeathCategoryConfig.GetInstance();
 			g_TrackingModConfig = TrackingModConfig.LoadConfig();
 			g_TrackingModRewardConfig = TrackingModRewardConfig.LoadConfig();
-			
+			TrackingModPermissions.GetInstance().LoadPermissions();
+			g_TrackingModShopConfig = TrackingModShopConfig.LoadConfig();
+			g_TrackingModStyleConfig = TrackingModStyleConfig.LoadConfig();
+
 			TrackingModData.CleanupOldFiles();
 			
 			if (data)
@@ -42,7 +47,15 @@ modded class MissionServer extends MissionBase
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestAdminConfig", this, SingleplayerExecutionType.Server);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "SaveAdminConfig", this, SingleplayerExecutionType.Server);
 			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "SaveAdminFullConfig", this, SingleplayerExecutionType.Server);
-			
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminSearchPlayer", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminWipePlayerData", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminWipePlayerPoints", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminAwardPoints", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminAwardItem", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestShopConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "PurchaseShopItem", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestStyleConfig", this, SingleplayerExecutionType.Server);
+
 			#ifdef NinjinsPvPPvE
 			stateHandler = new TrackingModZoneHandler();
 			PlayerZoneController.RegisterPlayerStateChangeCallback(stateHandler);
@@ -69,11 +82,34 @@ modded class MissionServer extends MissionBase
 		}
 	}
 	
-	#ifdef Psyerns_Framework
 	override void OnUpdate(float timeslice)
 	{
+		array<Man> allPlayers;
+		int pIdx;
+		PlayerBase pb;
+
 		super.OnUpdate(timeslice);
 
+		if (g_Game && g_Game.IsDedicatedServer())
+		{
+			m_NJN_DistanceTrackTimer = m_NJN_DistanceTrackTimer + timeslice;
+			if (m_NJN_DistanceTrackTimer >= 30.0)
+			{
+				m_NJN_DistanceTrackTimer = 0;
+				allPlayers = new array<Man>();
+				g_Game.GetPlayers(allPlayers);
+				for (pIdx = 0; pIdx < allPlayers.Count(); pIdx++)
+				{
+					pb = PlayerBase.Cast(allPlayers.Get(pIdx));
+					if (pb)
+					{
+						pb.NJN_UpdateDistanceTracking();
+					}
+				}
+			}
+		}
+
+		#ifdef Psyerns_Framework
 		if (m_WebExportEnabled && GetGame().IsDedicatedServer())
 		{
 			m_WebExportTimer += timeslice;
@@ -84,8 +120,8 @@ modded class MissionServer extends MissionBase
 				TrackingModWebExportHelper.SendExport();
 			}
 		}
+		#endif
 	}
-	#endif
 
 	protected bool IsSenderTrackingModAdmin(PlayerIdentity sender)
 	{
@@ -592,6 +628,16 @@ modded class MissionServer extends MissionBase
 			leaderboardData.disablePVELeaderboard = g_TrackingModConfig.DisablePVELeaderboard;
 			leaderboardData.survivorIconPathMale = g_TrackingModConfig.SurvivorIconPathMale;
 			leaderboardData.survivorIconPathFemale = g_TrackingModConfig.SurvivorIconPathFemale;
+			leaderboardData.showShotsFired = g_TrackingModConfig.ShowShotsFired;
+			leaderboardData.showShotsHit = g_TrackingModConfig.ShowShotsHit;
+			leaderboardData.showHeadshots = g_TrackingModConfig.ShowHeadshots;
+			leaderboardData.showHeadshotPercentage = g_TrackingModConfig.ShowHeadshotPercentage;
+			leaderboardData.showDistanceTravelled = g_TrackingModConfig.ShowDistanceTravelled;
+			leaderboardData.showAccuracy = g_TrackingModConfig.ShowAccuracy;
+			if (g_TrackingModConfig.PVEColumns)
+				leaderboardData.pveColumns = g_TrackingModConfig.PVEColumns;
+			if (g_TrackingModConfig.PVPColumns)
+				leaderboardData.pvpColumns = g_TrackingModConfig.PVPColumns;
 		}
 		
 		categoryConfig = PVECategoryConfig.GetInstance();
@@ -745,6 +791,21 @@ modded class MissionServer extends MissionBase
 		TrackingMod.LogRPC("========================================");
 		
 		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboard", new Param1<TrackingModLeaderboardData>(leaderboardData), true, sender);
+
+		if (senderID != "" && data.m_PlayerDataMap && data.m_PlayerDataMap.Contains(senderID))
+		{
+			PlayerDeathData ownPlayerData;
+			TrackingModLeaderboardPlayerData ownStats;
+			ownPlayerData = data.m_PlayerDataMap.Get(senderID);
+			if (ownPlayerData)
+			{
+				ownStats = CreateLeaderboardPlayerData(ownPlayerData);
+				if (ownStats)
+				{
+					GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceivePlayerOwnStats", new Param1<TrackingModLeaderboardPlayerData>(ownStats), true, sender);
+				}
+			}
+		}
 	}
 	
 	override TrackingModLeaderboardPlayerData CreateLeaderboardPlayerData(PlayerDeathData playerData)
@@ -812,10 +873,499 @@ modded class MissionServer extends MissionBase
 				leaderboardPlayer.categoryLongestRanges.Set(rangeCategoryID, longestRange);
 			}
 		}
-		
+
+		leaderboardPlayer.shotsFired = playerData.ShotsFired;
+		leaderboardPlayer.shotsHit = playerData.ShotsHit;
+		leaderboardPlayer.headshots = playerData.Headshots;
+		leaderboardPlayer.distanceTravelled = playerData.DistanceTravelled;
+		leaderboardPlayer.accuracy = playerData.GetAccuracy();
+		leaderboardPlayer.headshotPercentage = playerData.GetHeadshotPercentage();
+
 		return leaderboardPlayer;
 	}
 	
+	void RequestStyleConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		if (type != CallType.Server || !sender)
+			return;
+		if (!g_TrackingModStyleConfig)
+			return;
+
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveStyleConfig", new Param1<TrackingModStyleConfig>(g_TrackingModStyleConfig), true, sender);
+	}
+
+	void RequestShopConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		if (type != CallType.Server || !sender)
+			return;
+
+		if (!g_TrackingModShopConfig)
+			return;
+
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopConfig", new Param1<TrackingModShopConfig>(g_TrackingModShopConfig), true, sender);
+	}
+
+	void PurchaseShopItem(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param3<string, int, bool> purchaseParams;
+		string itemClassName;
+		int amount;
+		bool usePvEPoints;
+		string senderID;
+		TrackingModData data;
+		PlayerDeathData buyerData;
+		TrackingModAdminSaveResponse response;
+		TrackingModShopItem shopItem;
+		int i;
+		int price;
+		int totalCost;
+		array<Man> allPlayers;
+		PlayerBase buyerPlayer;
+		PlayerIdentity pIdentity;
+		int pIdx;
+		EntityAI spawnedItem;
+		int spawned;
+
+		if (type != CallType.Server || !sender)
+			return;
+		if (!ctx.Read(purchaseParams))
+			return;
+
+		itemClassName = purchaseParams.param1;
+		amount = purchaseParams.param2;
+		usePvEPoints = purchaseParams.param3;
+		senderID = sender.GetPlainId();
+		response = new TrackingModAdminSaveResponse();
+
+		if (!g_TrackingModShopConfig || !g_TrackingModShopConfig.EnableShop)
+		{
+			response.Success = false;
+			response.Message = "Shop ist deaktiviert";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		shopItem = null;
+		for (i = 0; i < g_TrackingModShopConfig.ShopItems.Count(); i++)
+		{
+			if (g_TrackingModShopConfig.ShopItems.Get(i).ItemClassName == itemClassName)
+			{
+				shopItem = g_TrackingModShopConfig.ShopItems.Get(i);
+				break;
+			}
+		}
+
+		if (!shopItem)
+		{
+			response.Success = false;
+			response.Message = "Item nicht im Shop gefunden";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (amount < 1)
+			amount = 1;
+		if (amount > shopItem.MaxPerPurchase)
+			amount = shopItem.MaxPerPurchase;
+
+		if (usePvEPoints)
+			price = shopItem.PricePvE;
+		else
+			price = shopItem.PricePvP;
+
+		if (price <= 0)
+		{
+			response.Success = false;
+			response.Message = "Nicht kaufbar mit diesem Punktetyp";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		totalCost = price * amount;
+		data = g_TrackingModData;
+		if (!data)
+		{
+			response.Success = false;
+			response.Message = "Daten nicht verfuegbar";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		buyerData = data.GetPlayerData(senderID);
+		if (!buyerData)
+		{
+			response.Success = false;
+			response.Message = "Spielerdaten nicht gefunden";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (usePvEPoints && buyerData.PvEPoints < totalCost)
+		{
+			response.Success = false;
+			response.Message = "Nicht genug PvE Points (" + buyerData.PvEPoints.ToString() + "/" + totalCost.ToString() + ")";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+		if (!usePvEPoints && buyerData.PvPPoints < totalCost)
+		{
+			response.Success = false;
+			response.Message = "Nicht genug PvP Points (" + buyerData.PvPPoints.ToString() + "/" + totalCost.ToString() + ")";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		allPlayers = new array<Man>();
+		GetGame().GetPlayers(allPlayers);
+		buyerPlayer = null;
+		for (pIdx = 0; pIdx < allPlayers.Count(); pIdx++)
+		{
+			pIdentity = allPlayers.Get(pIdx).GetIdentity();
+			if (pIdentity && pIdentity.GetPlainId() == senderID)
+			{
+				buyerPlayer = PlayerBase.Cast(allPlayers.Get(pIdx));
+				break;
+			}
+		}
+
+		if (!buyerPlayer)
+		{
+			response.Success = false;
+			response.Message = "Spieler nicht online";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		spawned = 0;
+		for (i = 0; i < amount; i++)
+		{
+			spawnedItem = buyerPlayer.GetHumanInventory().CreateInInventory(itemClassName);
+			if (!spawnedItem)
+			{
+				vector bPos;
+				vector bDir;
+				vector gPos;
+				bPos = buyerPlayer.GetPosition();
+				bDir = buyerPlayer.GetDirection();
+				gPos = bPos + (bDir * 1.5);
+				gPos[1] = bPos[1];
+				spawnedItem = buyerPlayer.SpawnEntityOnGroundPos(itemClassName, gPos);
+			}
+			if (spawnedItem)
+			{
+				if (shopItem.Attachments && shopItem.Attachments.Count() > 0)
+					TrackingModRewardHelper.ProcessAttachmentsRecursive(spawnedItem, shopItem.Attachments, itemClassName, 1);
+				spawned = spawned + 1;
+			}
+		}
+
+		if (spawned > 0)
+		{
+			if (usePvEPoints)
+				buyerData.PvEPoints = buyerData.PvEPoints - totalCost;
+			else
+				buyerData.PvPPoints = buyerData.PvPPoints - totalCost;
+
+			data.SavePlayerData(buyerData, senderID);
+			data.MarkLeaderboardDirty();
+			data.RebuildSortedLists();
+
+			response.Success = true;
+			response.Message = spawned.ToString() + "x " + shopItem.DisplayName + " gekauft fuer " + totalCost.ToString() + " Points";
+			TrackingMod.LogInfo("[Shop] " + sender.GetName() + " purchased " + spawned.ToString() + "x " + itemClassName + " for " + totalCost.ToString() + " points");
+		}
+		else
+		{
+			response.Success = false;
+			response.Message = "Item konnte nicht erstellt werden";
+		}
+
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+	}
+
+	void AdminSearchPlayer(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<string> searchParams;
+		string searchTerm;
+		TrackingModData data;
+		string resultStr;
+		int i;
+		string playerID;
+		PlayerDeathData pData;
+		int matchCount;
+
+		if (type != CallType.Server || !sender)
+			return;
+		if (!IsSenderTrackingModAdmin(sender))
+			return;
+		if (!ctx.Read(searchParams))
+			return;
+
+		searchTerm = searchParams.param1;
+		searchTerm.ToLower();
+		data = g_TrackingModData;
+		if (!data || !data.m_PlayerDataMap)
+			return;
+
+		resultStr = "";
+		matchCount = 0;
+		for (i = 0; i < data.m_PlayerDataMap.Count(); i++)
+		{
+			if (matchCount >= 50)
+				break;
+			playerID = data.m_PlayerDataMap.GetKey(i);
+			pData = data.m_PlayerDataMap.GetElement(i);
+			if (!pData)
+				continue;
+			string lowerName = pData.PlayerName;
+			lowerName.ToLower();
+			if (lowerName.Contains(searchTerm) || playerID.Contains(searchTerm))
+			{
+				if (resultStr != "")
+					resultStr = resultStr + "|";
+				resultStr = resultStr + playerID + ":" + pData.PlayerName;
+				matchCount = matchCount + 1;
+			}
+		}
+
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPlayerSearch", new Param1<string>(resultStr), true, sender);
+	}
+
+	void AdminWipePlayerData(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<string> wipeParams;
+		string targetPlayerID;
+		TrackingModData data;
+		string filePath;
+		TrackingModAdminSaveResponse response;
+
+		if (type != CallType.Server || !sender)
+			return;
+		if (!IsSenderTrackingModAdmin(sender))
+			return;
+		if (!ctx.Read(wipeParams))
+			return;
+
+		targetPlayerID = wipeParams.param1;
+		data = g_TrackingModData;
+		response = new TrackingModAdminSaveResponse();
+
+		if (!data || !data.m_PlayerDataMap)
+		{
+			response.Success = false;
+			response.Message = "Daten nicht verfuegbar";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		filePath = GetPlayerFilePath(targetPlayerID);
+		if (FileExist(filePath))
+		{
+			DeleteFile(filePath);
+		}
+
+		if (data.m_PlayerDataMap.Contains(targetPlayerID))
+		{
+			data.m_PlayerDataMap.Remove(targetPlayerID);
+		}
+
+		data.MarkLeaderboardDirty();
+		data.RebuildSortedLists();
+		TrackingMod.LogInfo("[Admin] Player data wiped by " + sender.GetName() + " for player: " + targetPlayerID);
+
+		response.Success = true;
+		response.Message = "Spielerdaten fuer " + targetPlayerID + " geloescht";
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+	}
+
+	void AdminWipePlayerPoints(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param1<string> wipeParams;
+		string targetPlayerID;
+		TrackingModData data;
+		PlayerDeathData targetData;
+		TrackingModAdminSaveResponse response;
+
+		if (type != CallType.Server || !sender)
+			return;
+		if (!IsSenderTrackingModAdmin(sender))
+			return;
+		if (!ctx.Read(wipeParams))
+			return;
+
+		targetPlayerID = wipeParams.param1;
+		data = g_TrackingModData;
+		response = new TrackingModAdminSaveResponse();
+
+		if (!data || !data.m_PlayerDataMap)
+		{
+			response.Success = false;
+			response.Message = "Daten nicht verfuegbar";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		targetData = data.GetPlayerData(targetPlayerID);
+		if (!targetData)
+		{
+			response.Success = false;
+			response.Message = "Spieler " + targetPlayerID + " nicht gefunden";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		targetData.PvEPoints = 0;
+		targetData.PvPPoints = 0;
+		data.SavePlayerData(targetData, targetPlayerID);
+		data.MarkLeaderboardDirty();
+		data.RebuildSortedLists();
+		TrackingMod.LogInfo("[Admin] Points wiped by " + sender.GetName() + " for player: " + targetPlayerID);
+
+		response.Success = true;
+		response.Message = "Points fuer " + targetData.PlayerName + " auf 0 gesetzt";
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+	}
+
+	void AdminAwardPoints(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param3<string, int, bool> awardParams;
+		string targetPlayerID;
+		int amount;
+		bool isPvE;
+		TrackingModData data;
+		PlayerDeathData targetData;
+		TrackingModAdminSaveResponse response;
+
+		if (type != CallType.Server || !sender)
+			return;
+		if (!IsSenderTrackingModAdmin(sender))
+			return;
+		if (!ctx.Read(awardParams))
+			return;
+
+		targetPlayerID = awardParams.param1;
+		amount = awardParams.param2;
+		isPvE = awardParams.param3;
+		data = g_TrackingModData;
+		response = new TrackingModAdminSaveResponse();
+
+		if (!data)
+		{
+			response.Success = false;
+			response.Message = "Daten nicht verfuegbar";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		targetData = data.GetPlayerData(targetPlayerID);
+		if (!targetData)
+		{
+			response.Success = false;
+			response.Message = "Spieler " + targetPlayerID + " nicht gefunden";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		if (isPvE)
+			targetData.PvEPoints = targetData.PvEPoints + amount;
+		else
+			targetData.PvPPoints = targetData.PvPPoints + amount;
+
+		data.SavePlayerData(targetData, targetPlayerID);
+		data.MarkLeaderboardDirty();
+		data.RebuildSortedLists();
+
+		string pointType;
+		if (isPvE)
+			pointType = "PvE";
+		else
+			pointType = "PvP";
+
+		TrackingMod.LogInfo("[Admin] " + amount.ToString() + " " + pointType + " points awarded by " + sender.GetName() + " to player: " + targetPlayerID);
+
+		response.Success = true;
+		response.Message = amount.ToString() + " " + pointType + " Points an " + targetData.PlayerName + " vergeben";
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+	}
+
+	void AdminAwardItem(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
+	{
+		Param3<string, string, int> itemParams;
+		string targetPlayerID;
+		string className;
+		int amount;
+		TrackingModData data;
+		PlayerDeathData targetData;
+		TrackingModAdminSaveResponse response;
+		array<Man> allPlayers;
+		int i;
+		PlayerBase targetPlayer;
+		PlayerIdentity targetIdentity;
+		EntityAI spawnedItem;
+		int spawned;
+
+		if (type != CallType.Server || !sender)
+			return;
+		if (!IsSenderTrackingModAdmin(sender))
+			return;
+		if (!ctx.Read(itemParams))
+			return;
+
+		targetPlayerID = itemParams.param1;
+		className = itemParams.param2;
+		amount = itemParams.param3;
+		if (amount <= 0)
+			amount = 1;
+
+		response = new TrackingModAdminSaveResponse();
+
+		allPlayers = new array<Man>();
+		GetGame().GetPlayers(allPlayers);
+		targetPlayer = null;
+		for (i = 0; i < allPlayers.Count(); i++)
+		{
+			targetIdentity = allPlayers.Get(i).GetIdentity();
+			if (targetIdentity && targetIdentity.GetPlainId() == targetPlayerID)
+			{
+				targetPlayer = PlayerBase.Cast(allPlayers.Get(i));
+				break;
+			}
+		}
+
+		if (!targetPlayer)
+		{
+			response.Success = false;
+			response.Message = "Spieler " + targetPlayerID + " ist nicht online";
+			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
+		spawned = 0;
+		for (i = 0; i < amount; i++)
+		{
+			spawnedItem = targetPlayer.GetHumanInventory().CreateInInventory(className);
+			if (!spawnedItem)
+			{
+				vector playerPos;
+				vector playerDir;
+				vector groundPos;
+				playerPos = targetPlayer.GetPosition();
+				playerDir = targetPlayer.GetDirection();
+				groundPos = playerPos + (playerDir * 1.5);
+				groundPos[1] = playerPos[1];
+				spawnedItem = targetPlayer.SpawnEntityOnGroundPos(className, groundPos);
+			}
+			if (spawnedItem)
+				spawned = spawned + 1;
+		}
+
+		TrackingMod.LogInfo("[Admin] " + spawned.ToString() + "x " + className + " awarded by " + sender.GetName() + " to player: " + targetPlayerID);
+
+		response.Success = true;
+		response.Message = spawned.ToString() + "x " + className + " an " + targetPlayer.GetIdentity().GetName() + " vergeben";
+		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+	}
+
 	override void OnMissionFinish()
 	{
 		int offlineCount;

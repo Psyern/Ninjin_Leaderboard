@@ -50,5 +50,15 @@ modded class ZombieBase
 		}
 		data.AddZombieKill(killerID, killerName, killRange, zombieClassName, this, killCause);
 		Print("[TrackingMod] Zombie killed by player: " + killerName + " (ID: " + killerID + ") from " + killRange.ToString() + " meters (Class: " + zombieClassName + ")");
+		{
+			PlayerDeathData cashCheckData;
+			int totalZombieKills;
+			cashCheckData = data.GetPlayerData(killerID);
+			if (cashCheckData && killerPlayer)
+			{
+				totalZombieKills = cashCheckData.GetCategoryKills("Zombies");
+				TrackingModRewardHelper.CheckSimpleCashReward(killerPlayer, killerID, "Zombies", totalZombieKills);
+			}
+		}
 	}
 }

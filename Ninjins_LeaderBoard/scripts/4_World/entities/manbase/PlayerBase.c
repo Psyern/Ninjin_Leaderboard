@@ -3,10 +3,20 @@ modded class PlayerBase
 	private string m_LastDamageAmmo = "";
 	private int m_LastDamageType = -1;
 	private EntityAI m_LastDamageSource;
+	protected vector m_NJN_LastPosition;
+	protected float m_NJN_DistanceAccumulator;
+	protected bool m_NJN_PositionInitialized;
 	int TrackingMod_GetLastDamageType() { return m_LastDamageType; }
 	string TrackingMod_GetLastDamageAmmo() { return m_LastDamageAmmo; }
 	override void EEHitBy(TotalDamageResult damageResult, int damageType, EntityAI source, int component, string dmgZone, string ammo, vector modelPos, float speedCoef)
 	{
+		PlayerBase shooterPlayer;
+		PlayerIdentity shooterIdentity;
+		string shooterID;
+		TrackingModData trackData;
+		PlayerDeathData shooterData;
+		bool isHeadshotHit;
+
 		super.EEHitBy(damageResult, damageType, source, component, dmgZone, ammo, modelPos, speedCoef);
 		if (g_Game.IsServer())
 		{
@@ -15,6 +25,31 @@ modded class PlayerBase
 			if (ammo != "")
 			{
 				m_LastDamageAmmo = ammo;
+			}
+			if (source)
+			{
+				shooterPlayer = PlayerBase.Cast(source);
+				if (!shooterPlayer && source.IsInherited(EntityAI))
+					shooterPlayer = PlayerBase.Cast(EntityAI.Cast(source).GetHierarchyRootPlayer());
+				if (shooterPlayer && shooterPlayer != this)
+				{
+					shooterIdentity = shooterPlayer.GetIdentity();
+					if (shooterIdentity)
+					{
+						shooterID = shooterIdentity.GetPlainId();
+						trackData = TrackingModData.LoadData();
+						if (trackData)
+						{
+							shooterData = trackData.GetPlayerData(shooterID);
+							if (shooterData)
+							{
+								isHeadshotHit = (dmgZone == "Head");
+								shooterData.AddShotHit(isHeadshotHit);
+								trackData.SavePlayerData(shooterData, shooterID);
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -50,6 +85,9 @@ modded class PlayerBase
 					playerData.survivorType = survivorType;
 					data.UpdateLastLoginDate(playerData);
 					data.SavePlayerData(playerData, plainID);
+					m_NJN_LastPosition = GetPosition();
+					m_NJN_DistanceAccumulator = 0.0;
+					m_NJN_PositionInitialized = true;
 					Print(string.Format("[TrackingMod] OnConnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
 				}
 			}
@@ -86,6 +124,9 @@ modded class PlayerBase
 					playerData.survivorType = survivorType;
 					data.UpdateLastLoginDate(playerData);
 					data.SavePlayerData(playerData, plainID);
+					m_NJN_LastPosition = GetPosition();
+					m_NJN_DistanceAccumulator = 0.0;
+					m_NJN_PositionInitialized = true;
 					Print(string.Format("[TrackingMod] OnReconnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
 				}
 			}
@@ -104,13 +145,59 @@ modded class PlayerBase
 		}
 	}
 	
+	void NJN_UpdateDistanceTracking()
+	{
+		PlayerIdentity distIdentity;
+		string distPlainID;
+		vector currentPos;
+		float dist;
+		TrackingModData distTrackData;
+		PlayerDeathData distPlayerData;
+
+		if (!g_Game || !g_Game.IsServer())
+			return;
+		if (!m_NJN_PositionInitialized)
+			return;
+		if (!IsAlive())
+			return;
+
+		currentPos = GetPosition();
+		dist = vector.Distance(m_NJN_LastPosition, currentPos);
+
+		if (dist > 0.5 && dist < 1000.0)
+		{
+			m_NJN_DistanceAccumulator = m_NJN_DistanceAccumulator + dist;
+		}
+		m_NJN_LastPosition = currentPos;
+
+		if (m_NJN_DistanceAccumulator >= 50.0)
+		{
+			distIdentity = GetIdentity();
+			if (distIdentity)
+			{
+				distPlainID = distIdentity.GetPlainId();
+				distTrackData = TrackingModData.LoadData();
+				if (distTrackData)
+				{
+					distPlayerData = distTrackData.GetPlayerData(distPlainID);
+					if (distPlayerData)
+					{
+						distPlayerData.AddDistanceTravelled(m_NJN_DistanceAccumulator);
+						distTrackData.SavePlayerData(distPlayerData, distPlainID);
+					}
+				}
+			}
+			m_NJN_DistanceAccumulator = 0.0;
+		}
+	}
+
 	override void OnDisconnect()
 	{
 		PlayerIdentity identity;
 		string plainID;
 		TrackingModData data;
 		PlayerDeathData playerData;
-		
+
 		if (g_Game.IsServer())
 		{
 			identity = GetIdentity();
@@ -121,6 +208,12 @@ modded class PlayerBase
 				playerData = data.GetPlayerData(plainID);
 				if (playerData)
 				{
+					if (m_NJN_PositionInitialized && m_NJN_DistanceAccumulator > 0.5)
+					{
+						playerData.AddDistanceTravelled(m_NJN_DistanceAccumulator);
+						m_NJN_DistanceAccumulator = 0.0;
+					}
+					m_NJN_PositionInitialized = false;
 					playerData.playerIsOnline = 0;
 					data.SavePlayerData(playerData, plainID);
 				}
@@ -206,6 +299,16 @@ modded class PlayerBase
 					Print("[TrackingMod] Killed by player explosion: " + killerName + " from " + killRange.ToString() + " meters");
 					killCause = GetKillCause(m_LastDamageType, m_LastDamageAmmo, this);
 					data.AddKill(killerID, killerName, killRange, victimID, this, killCause);
+					{
+						PlayerDeathData explosionCashData;
+						int explosionTotalKills;
+						explosionCashData = data.GetPlayerData(killerID);
+						if (explosionCashData && explosionKiller)
+						{
+							explosionTotalKills = explosionCashData.GetCategoryKills("Players");
+							TrackingModRewardHelper.CheckSimpleCashReward(explosionKiller, killerID, "Players", explosionTotalKills);
+						}
+					}
 					}
 					else
 					{
@@ -304,6 +407,16 @@ modded class PlayerBase
 									Print("[TrackingMod] Killed by player: " + killerName + " from " + killRange.ToString() + " meters");
 								killCause = GetKillCause(m_LastDamageType, m_LastDamageAmmo, this);
 								data.AddKill(killerID, killerName, killRange, victimID, this, killCause);
+								{
+									PlayerDeathData pvpCashData;
+									int pvpTotalKills;
+									pvpCashData = data.GetPlayerData(killerID);
+									if (pvpCashData && killerPlayer)
+									{
+										pvpTotalKills = pvpCashData.GetCategoryKills("Players");
+										TrackingModRewardHelper.CheckSimpleCashReward(killerPlayer, killerID, "Players", pvpTotalKills);
+									}
+								}
 							}
 							else
 							{

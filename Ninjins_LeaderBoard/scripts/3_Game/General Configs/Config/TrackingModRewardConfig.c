@@ -76,6 +76,34 @@ class TrackingModCurrencyReward
 	}
 }
 
+class TrackingModSimpleCashReward
+{
+	bool Enabled;
+	string CurrencyClassName;
+	int ZombieKillInterval;
+	int ZombieRewardAmount;
+	int AnimalKillInterval;
+	int AnimalRewardAmount;
+	int AIKillInterval;
+	int AIRewardAmount;
+	int PlayerKillInterval;
+	int PlayerRewardAmount;
+
+	void TrackingModSimpleCashReward()
+	{
+		Enabled = false;
+		CurrencyClassName = "Hryvnia";
+		ZombieKillInterval = 10;
+		ZombieRewardAmount = 50;
+		AnimalKillInterval = 5;
+		AnimalRewardAmount = 100;
+		AIKillInterval = 5;
+		AIRewardAmount = 150;
+		PlayerKillInterval = 3;
+		PlayerRewardAmount = 200;
+	}
+}
+
 class TrackingModRewardSection
 {
 	string Name;
@@ -102,7 +130,17 @@ class TrackingModRewardConfig
 	ref map<string, ref array<int>> PVPMilestones;
 	ref map<string, ref array<ref RewardConfigEntry>> PVERewardConfigs;
 	ref map<string, ref array<ref RewardConfigEntry>> PVPRewardConfigs;
-	
+	ref TrackingModSimpleCashReward SimpleCashRewards;
+	bool EnableServerwideMilestoneNotification;
+	string ServerwideMilestoneMessage;
+	bool EnableCrateSpawnOnMilestone;
+	float CrateSpawnRadius;
+	string CrateContainerClassName;
+	bool EnableCrateProximityNotification;
+	float CrateProximityCheckInterval;
+	float CrateProximityNotifyRadius;
+	float CrateDespawnTime;
+
 	void TrackingModRewardConfig()
 	{
 		EnableMilestoneRewards = true;
@@ -111,12 +149,25 @@ class TrackingModRewardConfig
 		PVPMilestones = new map<string, ref array<int>>;
 		PVERewardConfigs = new map<string, ref array<ref RewardConfigEntry>>;
 		PVPRewardConfigs = new map<string, ref array<ref RewardConfigEntry>>;
+		SimpleCashRewards = new TrackingModSimpleCashReward();
+		EnableServerwideMilestoneNotification = false;
+		ServerwideMilestoneMessage = "%1 hat %2 %3 Kills erreicht!";
+		EnableCrateSpawnOnMilestone = false;
+		CrateSpawnRadius = 15.0;
+		CrateContainerClassName = "WoodenCrate";
+		EnableCrateProximityNotification = false;
+		CrateProximityCheckInterval = 30.0;
+		CrateProximityNotifyRadius = 50.0;
+		CrateDespawnTime = 600.0;
 	}
 	
 	void CreateDefaultMilestoneConfig()
 	{
 		array<int> wolfesMilestones;
 		array<int> zombiesMilestones;
+
+		if (!SimpleCashRewards)
+			SimpleCashRewards = new TrackingModSimpleCashReward();
 		array<int> playersMilestones;
 		array<ref RewardConfigEntry> wolfesRewardConfigs;
 		array<ref RewardConfigEntry> zombiesRewardConfigs;

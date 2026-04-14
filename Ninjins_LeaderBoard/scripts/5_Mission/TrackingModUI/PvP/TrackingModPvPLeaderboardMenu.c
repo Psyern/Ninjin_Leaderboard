@@ -1,5 +1,6 @@
 class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 {
+	protected static ref TrackingModPvPLeaderboardMenu s_NJN_Instance;
 	protected ref TrackingModPvPLeaderboardController m_MenuController;
 	protected ref TrackingModLeaderboardData m_LeaderboardData;
 	protected int m_CurrentPage;
@@ -8,9 +9,11 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 	protected int m_NextPreloadPage;
 	protected int m_MaxPreloadPage;
 	protected ButtonWidget m_SettingsButton;
-	
+	protected ref TrackingModLeaderboardPlayerData m_NJN_OwnPlayerStats;
+
 	void TrackingModPvPLeaderboardMenu()
 	{
+		s_NJN_Instance = this;
 		m_MenuController = TrackingModPvPLeaderboardController.Cast(m_Controller);
 		m_CurrentPage = 1;
 		m_IsPVPMode = true;
@@ -18,11 +21,23 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		m_NextPreloadPage = 0;
 		m_MaxPreloadPage = 0;
 	}
-	
+
 	void ~TrackingModPvPLeaderboardMenu()
 	{
+		if (s_NJN_Instance == this)
+			s_NJN_Instance = null;
 		ClearCache();
 		UnlockControls();
+	}
+
+	static TrackingModPvPLeaderboardMenu GetInstance()
+	{
+		return s_NJN_Instance;
+	}
+
+	void SetOwnPlayerStats(TrackingModLeaderboardPlayerData ownStats)
+	{
+		m_NJN_OwnPlayerStats = ownStats;
 	}
 	
 	override void OnWidgetScriptInit(Widget w)

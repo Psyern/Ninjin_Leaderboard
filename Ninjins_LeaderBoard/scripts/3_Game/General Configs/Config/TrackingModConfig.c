@@ -42,6 +42,14 @@ class TrackingModConfig
 	bool WebExportIncludePlayerIDs;
 	int WebExportMaxPlayers;
 	int WebExportIntervalSeconds;
+	bool ShowShotsFired;
+	bool ShowShotsHit;
+	bool ShowHeadshots;
+	bool ShowHeadshotPercentage;
+	bool ShowDistanceTravelled;
+	bool ShowAccuracy;
+	ref array<ref TrackingModColumnConfig> PVEColumns;
+	ref array<ref TrackingModColumnConfig> PVPColumns;
 	void TrackingModConfig()
 	{
 		AdminIDs = new array<string>();
@@ -86,6 +94,14 @@ class TrackingModConfig
 		WebExportIncludePlayerIDs = true;
 		WebExportMaxPlayers = 100;
 		WebExportIntervalSeconds = 300;
+		ShowShotsFired = true;
+		ShowShotsHit = true;
+		ShowHeadshots = true;
+		ShowHeadshotPercentage = true;
+		ShowDistanceTravelled = true;
+		ShowAccuracy = true;
+		PVEColumns = new array<ref TrackingModColumnConfig>();
+		PVPColumns = new array<ref TrackingModColumnConfig>();
 		ZoneKillExclusion example1;
 		ZoneKillExclusion example2;
 		ZoneKillExclusion example3;
@@ -159,13 +175,22 @@ class TrackingModConfig
 	}
 	bool IsAdmin(string playerID)
 	{
-		if (!AdminIDs)
-			return false;
-		for (int i = 0; i < AdminIDs.Count(); i++)
+		int i;
+		TrackingModPermissions perms;
+
+		if (AdminIDs)
 		{
-			if (AdminIDs[i] == playerID)
-				return true;
+			for (i = 0; i < AdminIDs.Count(); i++)
+			{
+				if (AdminIDs[i] == playerID)
+					return true;
+			}
 		}
+
+		perms = TrackingModPermissions.GetInstance();
+		if (perms && perms.IsAdmin(playerID))
+			return true;
+
 		return false;
 	}
 	bool ShouldExcludeDeathCause(int deathCause)

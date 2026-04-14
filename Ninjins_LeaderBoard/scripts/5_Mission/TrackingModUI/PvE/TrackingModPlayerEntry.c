@@ -92,6 +92,40 @@ class TrackingModPlayerEntry: ScriptView
 		
 		if (m_ShowOnlineStatus)
 			UpdateOnlineIndicatorColor();
+
+		HighlightIfCurrentPlayer();
+	}
+
+	void HighlightIfCurrentPlayer()
+	{
+		PlayerBase highlightPlayer;
+		PlayerIdentity highlightIdentity;
+		string highlightPlayerID;
+		Widget rootWidget;
+
+		if (!m_PlayerData)
+			return;
+
+		highlightPlayer = PlayerBase.Cast(GetGame().GetPlayer());
+		if (!highlightPlayer)
+			return;
+
+		highlightIdentity = highlightPlayer.GetIdentity();
+		if (!highlightIdentity)
+			return;
+
+		highlightPlayerID = highlightIdentity.GetPlainId();
+		if (highlightPlayerID == m_PlayerData.playerID)
+		{
+			rootWidget = GetLayoutRoot();
+			if (rootWidget)
+			{
+				if (g_TrackingModStyleConfig && g_TrackingModStyleConfig.CurrentPlayerHighlightColor)
+					rootWidget.SetColor(g_TrackingModStyleConfig.CurrentPlayerHighlightColor.ToARGB());
+				else
+					rootWidget.SetColor(ARGB(80, 255, 215, 0));
+			}
+		}
 	}
 	
 	void UpdateOnlineIndicatorColor()
@@ -104,9 +138,19 @@ class TrackingModPlayerEntry: ScriptView
 		if (player_online_indicator && m_PlayerData)
 		{
 			if (m_PlayerData.isOnline == 1)
-				colorToSet = ARGB(255, 0, 200, 0);
+			{
+				if (g_TrackingModStyleConfig && g_TrackingModStyleConfig.OnlineIndicatorColor)
+					colorToSet = g_TrackingModStyleConfig.OnlineIndicatorColor.ToARGB();
+				else
+					colorToSet = ARGB(255, 0, 200, 0);
+			}
 			else
-				colorToSet = ARGB(255, 200, 0, 0);
+			{
+				if (g_TrackingModStyleConfig && g_TrackingModStyleConfig.OfflineIndicatorColor)
+					colorToSet = g_TrackingModStyleConfig.OfflineIndicatorColor.ToARGB();
+				else
+					colorToSet = ARGB(255, 200, 0, 0);
+			}
 			
 			player_online_indicator.SetColor(colorToSet);
 			player_online_indicator.Update();
