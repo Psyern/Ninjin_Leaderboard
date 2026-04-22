@@ -42,6 +42,34 @@ class TrackingModColumnSort
 		return s_NJN_SortAscending;
 	}
 
+	static int CompareStrings(string a, string b)
+	{
+		int lenA = a.Length();
+		int lenB = b.Length();
+		int minLen = lenA;
+		if (lenB < minLen)
+			minLen = lenB;
+
+		int i;
+		int charA;
+		int charB;
+		for (i = 0; i < minLen; i++)
+		{
+			charA = a.Get(i).ToAscii();
+			charB = b.Get(i).ToAscii();
+			if (charA < charB)
+				return -1;
+			if (charA > charB)
+				return 1;
+		}
+
+		if (lenA < lenB)
+			return -1;
+		if (lenA > lenB)
+			return 1;
+		return 0;
+	}
+
 	static int ComparePlayerData(TrackingModLeaderboardPlayerData a, TrackingModLeaderboardPlayerData b)
 	{
 		int valA;
@@ -56,7 +84,7 @@ class TrackingModColumnSort
 		result = 0;
 		if (s_NJN_CurrentSortColumn == "Name")
 		{
-			result = a.playerName.Compare(b.playerName);
+			result = CompareStrings(a.playerName, b.playerName);
 		}
 		else if (s_NJN_CurrentSortColumn == "PvEPoints")
 		{

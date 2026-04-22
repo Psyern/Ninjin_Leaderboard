@@ -273,12 +273,42 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              ignorepointer 1
              color 1 1 1 1
              position 0.39 0
-             size 0.12 1
+             size 0.10 1
              valign center_ref
              hexactpos 0
              vexactpos 0
              hexactsize 0
              text "PVE Points"
+             font "gui/fonts/metronbook16"
+             "bold text" 1
+             "text halign" right
+             "text valign" center
+            }
+            TextWidgetClass th_shots_fired {
+             ignorepointer 1
+             color 1 1 1 1
+             position 0.50 0
+             size 0.09 1
+             valign center_ref
+             hexactpos 0
+             vexactpos 0
+             hexactsize 0
+             text "Schüsse"
+             font "gui/fonts/metronbook16"
+             "bold text" 1
+             "text halign" right
+             "text valign" center
+            }
+            TextWidgetClass th_longest_range {
+             ignorepointer 1
+             color 1 1 1 1
+             position 0.60 0
+             size 0.09 1
+             valign center_ref
+             hexactpos 0
+             vexactpos 0
+             hexactsize 0
+             text "Weitester"
              font "gui/fonts/metronbook16"
              "bold text" 1
              "text halign" right

@@ -16,18 +16,77 @@ class TrackingModPlayerEntry: ScriptView
 	ImageWidget Survivor_Female;
 	WrapSpacerWidget kill_categories;
 	
+	protected int GetLongestPVERange()
+	{
+		PVECategoryConfig pveCategoryConfig;
+		array<ref PVECategory> categories;
+		ref map<string, bool> processedCategories;
+		PVECategory category;
+		string categoryID;
+		int longestRange;
+		int categoryRange;
+		int i;
+
+		if (!m_PlayerData || !m_PlayerData.categoryLongestRanges)
+			return 0;
+
+		pveCategoryConfig = PVECategoryConfig.GetInstance();
+		if (!pveCategoryConfig)
+		{
+			longestRange = 0;
+			for (i = 0; i < m_PlayerData.categoryLongestRanges.Count(); i++)
+			{
+				categoryRange = m_PlayerData.categoryLongestRanges.GetElement(i);
+				if (categoryRange > longestRange)
+					longestRange = categoryRange;
+			}
+			return longestRange;
+		}
+
+		categories = pveCategoryConfig.GetCategories();
+		processedCategories = new map<string, bool>();
+		longestRange = 0;
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = categories.Get(i);
+			if (!category || category.CategoryID == "")
+				continue;
+
+			categoryID = category.CategoryID;
+			if (processedCategories.Contains(categoryID))
+				continue;
+			processedCategories.Set(categoryID, true);
+
+			if (m_PlayerData.categoryLongestRanges.Contains(categoryID))
+			{
+				categoryRange = m_PlayerData.categoryLongestRanges.Get(categoryID);
+				if (categoryRange > longestRange)
+					longestRange = categoryRange;
+			}
+		}
+
+		return longestRange;
+	}
+
 	void TrackingModPlayerEntry(TrackingModLeaderboardPlayerData playerData, int position)
 	{
+		int longestRange;
+
 		m_PlayerData = playerData;
 		m_Position = position;
 		m_EntryController = TrackingModPlayerEntryController.Cast(m_Controller);
-		
+
 		if (m_PlayerData && m_EntryController)
 		{
 			m_EntryController.PlayerName = m_PlayerData.playerName;
 			m_EntryController.PlayerPosition = position.ToString();
 			m_EntryController.PVEPoints = m_PlayerData.pvePoints.ToString();
-			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints"});
+			m_EntryController.ShotsFired = m_PlayerData.shotsFired.ToString();
+
+			longestRange = GetLongestPVERange();
+			m_EntryController.LongestRange = longestRange.ToString() + " m";
+
+			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "ShotsFired", "LongestRange"});
 		}
 	}
 	

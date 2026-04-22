@@ -22,7 +22,7 @@ class TrackingModWarHardlineSync
 			playerData.WarFaction = warState.Faction;
 			playerData.WarAlignment = warState.Alignment;
 			playerData.WarLevel = warState.Level;
-			playerData.WarBossKills = 0;
+			playerData.WarBossKills = warState.BossKills;
 		}
 		#endif
 	}

@@ -572,7 +572,8 @@ class PlayerDeathData
 		bool alreadyAvailable;
 		bool alreadyClaimed;
 		int claimedIdx;
-		
+		string broadcastMsg;
+
 		if (!g_TrackingModRewardConfig || !g_TrackingModRewardConfig.EnableMilestoneRewards)
 			return;
 		
@@ -647,7 +648,6 @@ class PlayerDeathData
 								TrackingMod.LogInfo("[CheckAndAddMilestones] Added milestone " + milestone.ToString() + " for category " + categoryID + " to AvailableMilestones");
 								if (g_TrackingModRewardConfig && g_TrackingModRewardConfig.EnableServerwideMilestoneNotification)
 								{
-									string broadcastMsg;
 									broadcastMsg = string.Format(g_TrackingModRewardConfig.ServerwideMilestoneMessage, PlayerName, milestone.ToString(), categoryID);
 									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "set:dayz_gui image:notify_special", ARGB(255, 255, 215, 0), 8.0, null);
 								}
@@ -724,7 +724,6 @@ class PlayerDeathData
 								TrackingMod.LogInfo("[CheckAndAddMilestones] Added milestone " + milestone.ToString() + " for category " + categoryID + " to AvailableMilestones");
 								if (g_TrackingModRewardConfig && g_TrackingModRewardConfig.EnableServerwideMilestoneNotification)
 								{
-									string broadcastMsg;
 									broadcastMsg = string.Format(g_TrackingModRewardConfig.ServerwideMilestoneMessage, PlayerName, milestone.ToString(), categoryID);
 									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "set:dayz_gui image:notify_special", ARGB(255, 255, 215, 0), 8.0, null);
 								}
