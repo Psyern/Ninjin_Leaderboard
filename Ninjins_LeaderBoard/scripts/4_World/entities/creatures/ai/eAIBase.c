@@ -77,6 +77,46 @@ modded class eAIBase
 				TrackingModRewardHelper.CheckSimpleCashReward(killerPlayer, killerID, "AI", totalAIKills);
 			}
 		}
+
+		#ifdef DME_War
+		if (TrackingMod_IsDMEWBoss())
+		{
+			PlayerDeathData bossKillData;
+			bossKillData = data.GetPlayerData(killerID);
+			if (bossKillData)
+			{
+				bossKillData.WarBossKills = bossKillData.WarBossKills + 1;
+				data.SavePlayerData(bossKillData, killerID);
+				Print("[TrackingMod] DME-WAR Boss killed by " + killerName + " - WarBossKills=" + bossKillData.WarBossKills.ToString());
+			}
+		}
+		#endif
 	}
+
+	#ifdef DME_War
+	protected bool TrackingMod_IsDMEWBoss()
+	{
+		array<ref DMEBossSquad> squads;
+		DMEBossSquad squad;
+		int i;
+
+		squads = DMEBossSpawner.s_Squads;
+		if (!squads)
+			return false;
+
+		for (i = 0; i < squads.Count(); i++)
+		{
+			squad = squads[i];
+			if (!squad)
+				continue;
+			if (squad.Boss == this)
+				return true;
+			if (squad.Wingman && squad.Wingman == this)
+				return true;
+		}
+
+		return false;
+	}
+	#endif
 }
 #endif

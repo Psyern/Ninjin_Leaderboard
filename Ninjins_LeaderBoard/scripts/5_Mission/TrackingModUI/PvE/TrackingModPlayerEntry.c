@@ -18,10 +18,7 @@ class TrackingModPlayerEntry: ScriptView
 	
 	protected int GetLongestPVERange()
 	{
-		PVECategoryConfig pveCategoryConfig;
-		array<ref PVECategory> categories;
-		ref map<string, bool> processedCategories;
-		PVECategory category;
+		PVPCategoryConfig pvpCategoryConfig;
 		string categoryID;
 		int longestRange;
 		int categoryRange;
@@ -30,39 +27,17 @@ class TrackingModPlayerEntry: ScriptView
 		if (!m_PlayerData || !m_PlayerData.categoryLongestRanges)
 			return 0;
 
-		pveCategoryConfig = PVECategoryConfig.GetInstance();
-		if (!pveCategoryConfig)
-		{
-			longestRange = 0;
-			for (i = 0; i < m_PlayerData.categoryLongestRanges.Count(); i++)
-			{
-				categoryRange = m_PlayerData.categoryLongestRanges.GetElement(i);
-				if (categoryRange > longestRange)
-					longestRange = categoryRange;
-			}
-			return longestRange;
-		}
-
-		categories = pveCategoryConfig.GetCategories();
-		processedCategories = new map<string, bool>();
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
 		longestRange = 0;
-		for (i = 0; i < categories.Count(); i++)
+		for (i = 0; i < m_PlayerData.categoryLongestRanges.Count(); i++)
 		{
-			category = categories.Get(i);
-			if (!category || category.CategoryID == "")
+			categoryID = m_PlayerData.categoryLongestRanges.GetKey(i);
+			if (pvpCategoryConfig && pvpCategoryConfig.HasCategory(categoryID))
 				continue;
 
-			categoryID = category.CategoryID;
-			if (processedCategories.Contains(categoryID))
-				continue;
-			processedCategories.Set(categoryID, true);
-
-			if (m_PlayerData.categoryLongestRanges.Contains(categoryID))
-			{
-				categoryRange = m_PlayerData.categoryLongestRanges.Get(categoryID);
-				if (categoryRange > longestRange)
-					longestRange = categoryRange;
-			}
+			categoryRange = m_PlayerData.categoryLongestRanges.GetElement(i);
+			if (categoryRange > longestRange)
+				longestRange = categoryRange;
 		}
 
 		return longestRange;

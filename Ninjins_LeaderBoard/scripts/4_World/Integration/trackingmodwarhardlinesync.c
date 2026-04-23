@@ -22,7 +22,9 @@ class TrackingModWarHardlineSync
 			playerData.WarFaction = warState.Faction;
 			playerData.WarAlignment = warState.Alignment;
 			playerData.WarLevel = warState.Level;
-			playerData.WarBossKills = warState.BossKills;
+			// WarBossKills wird direkt in eAIBase.TrackAIKill inkrementiert,
+			// da DMEW_PlayerState.BossKills die entgegengesetzte Semantik hat
+			// (zählt, wie oft Spieler von Boss getötet wurde).
 		}
 		#endif
 	}
