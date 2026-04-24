@@ -41,6 +41,8 @@ class PlayerDeathData
 	int ShotsHit;
 	int Headshots;
 	float DistanceTravelled;
+	float DistanceOnFoot;
+	float DistanceInVehicle;
 
 	void PlayerDeathData()
 	{
@@ -68,6 +70,8 @@ class PlayerDeathData
 		ShotsHit = 0;
 		Headshots = 0;
 		DistanceTravelled = 0.0;
+		DistanceOnFoot = 0.0;
+		DistanceInVehicle = 0.0;
 	}
 	
 	int GetPVPPoints()
@@ -537,6 +541,39 @@ class PlayerDeathData
 	void AddDistanceTravelled(float distance)
 	{
 		DistanceTravelled = DistanceTravelled + distance;
+	}
+
+	void AddDistanceOnFoot(float distance)
+	{
+		DistanceOnFoot = DistanceOnFoot + distance;
+		DistanceTravelled = DistanceTravelled + distance;
+	}
+
+	void AddDistanceInVehicle(float distance)
+	{
+		DistanceInVehicle = DistanceInVehicle + distance;
+		DistanceTravelled = DistanceTravelled + distance;
+	}
+
+	int GetSuicides()
+	{
+		return GetCategoryDeaths("SelfInflicted");
+	}
+
+	int GetTotalDeaths()
+	{
+		int total;
+		int idx;
+
+		if (!CategoryDeaths)
+			return 0;
+
+		total = 0;
+		for (idx = 0; idx < CategoryDeaths.Count(); idx++)
+		{
+			total = total + CategoryDeaths.GetElement(idx);
+		}
+		return total;
 	}
 
 	float GetAccuracy()

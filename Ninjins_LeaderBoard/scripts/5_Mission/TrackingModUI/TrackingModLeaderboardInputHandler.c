@@ -795,6 +795,10 @@ modded class MissionBase
 		leaderboardPlayer.shotsHit = playerData.ShotsHit;
 		leaderboardPlayer.headshots = playerData.Headshots;
 		leaderboardPlayer.distanceTravelled = playerData.DistanceTravelled;
+		leaderboardPlayer.distanceOnFoot = playerData.DistanceOnFoot;
+		leaderboardPlayer.distanceInVehicle = playerData.DistanceInVehicle;
+		leaderboardPlayer.totalDeaths = playerData.GetTotalDeaths();
+		leaderboardPlayer.suicides = playerData.GetSuicides();
 		leaderboardPlayer.accuracy = playerData.GetAccuracy();
 		leaderboardPlayer.headshotPercentage = playerData.GetHeadshotPercentage();
 

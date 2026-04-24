@@ -43,6 +43,37 @@ class TrackingModPlayerEntry: ScriptView
 		return longestRange;
 	}
 
+	protected string FormatDistance(float meters)
+	{
+		int rounded;
+		float km;
+		string kmStr;
+		int dotPos;
+		int decimals;
+
+		if (meters < 1000.0)
+		{
+			rounded = Math.Round(meters);
+			return rounded.ToString() + " m";
+		}
+
+		km = meters / 1000.0;
+		km = Math.Round(km * 10.0) / 10.0;
+		kmStr = km.ToString();
+		dotPos = kmStr.IndexOf(".");
+		if (dotPos == -1)
+			kmStr = kmStr + ".0";
+		else
+		{
+			decimals = kmStr.Length() - dotPos - 1;
+			if (decimals == 0)
+				kmStr = kmStr + "0";
+			else if (decimals > 1)
+				kmStr = kmStr.Substring(0, dotPos + 2);
+		}
+		return kmStr + " km";
+	}
+
 	void TrackingModPlayerEntry(TrackingModLeaderboardPlayerData playerData, int position)
 	{
 		int longestRange;
@@ -61,7 +92,12 @@ class TrackingModPlayerEntry: ScriptView
 			longestRange = GetLongestPVERange();
 			m_EntryController.LongestRange = longestRange.ToString() + " m";
 
-			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "ShotsFired", "LongestRange"});
+			m_EntryController.TotalDeaths = m_PlayerData.totalDeaths.ToString();
+			m_EntryController.Suicides = m_PlayerData.suicides.ToString();
+			m_EntryController.DistanceOnFoot = FormatDistance(m_PlayerData.distanceOnFoot);
+			m_EntryController.DistanceInVehicle = FormatDistance(m_PlayerData.distanceInVehicle);
+
+			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "ShotsFired", "LongestRange", "TotalDeaths", "Suicides", "DistanceOnFoot", "DistanceInVehicle"});
 		}
 	}
 	

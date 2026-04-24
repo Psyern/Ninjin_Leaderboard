@@ -87,6 +87,8 @@ modded class PlayerBase
 					data.SavePlayerData(playerData, plainID);
 					m_NJN_LastPosition = GetPosition();
 					m_NJN_DistanceAccumulator = 0.0;
+					m_NJN_DistanceFootAccumulator = 0.0;
+					m_NJN_DistanceVehicleAccumulator = 0.0;
 					m_NJN_PositionInitialized = true;
 					Print(string.Format("[TrackingMod] OnConnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
 				}
@@ -126,6 +128,8 @@ modded class PlayerBase
 					data.SavePlayerData(playerData, plainID);
 					m_NJN_LastPosition = GetPosition();
 					m_NJN_DistanceAccumulator = 0.0;
+					m_NJN_DistanceFootAccumulator = 0.0;
+					m_NJN_DistanceVehicleAccumulator = 0.0;
 					m_NJN_PositionInitialized = true;
 					Print(string.Format("[TrackingMod] OnReconnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
 				}
@@ -145,14 +149,19 @@ modded class PlayerBase
 		}
 	}
 	
+	protected float m_NJN_DistanceFootAccumulator;
+	protected float m_NJN_DistanceVehicleAccumulator;
+
 	void NJN_UpdateDistanceTracking()
 	{
 		PlayerIdentity distIdentity;
 		string distPlainID;
 		vector currentPos;
 		float dist;
+		bool inVehicle;
 		TrackingModData distTrackData;
 		PlayerDeathData distPlayerData;
+		float totalAccum;
 
 		if (!g_Game || !g_Game.IsServer())
 			return;
@@ -166,11 +175,16 @@ modded class PlayerBase
 
 		if (dist > 0.5 && dist < 1000.0)
 		{
-			m_NJN_DistanceAccumulator = m_NJN_DistanceAccumulator + dist;
+			inVehicle = IsInVehicle();
+			if (inVehicle)
+				m_NJN_DistanceVehicleAccumulator = m_NJN_DistanceVehicleAccumulator + dist;
+			else
+				m_NJN_DistanceFootAccumulator = m_NJN_DistanceFootAccumulator + dist;
 		}
 		m_NJN_LastPosition = currentPos;
 
-		if (m_NJN_DistanceAccumulator >= 50.0)
+		totalAccum = m_NJN_DistanceFootAccumulator + m_NJN_DistanceVehicleAccumulator;
+		if (totalAccum >= 50.0)
 		{
 			distIdentity = GetIdentity();
 			if (distIdentity)
@@ -182,11 +196,16 @@ modded class PlayerBase
 					distPlayerData = distTrackData.GetPlayerData(distPlainID);
 					if (distPlayerData)
 					{
-						distPlayerData.AddDistanceTravelled(m_NJN_DistanceAccumulator);
+						if (m_NJN_DistanceFootAccumulator > 0.0)
+							distPlayerData.AddDistanceOnFoot(m_NJN_DistanceFootAccumulator);
+						if (m_NJN_DistanceVehicleAccumulator > 0.0)
+							distPlayerData.AddDistanceInVehicle(m_NJN_DistanceVehicleAccumulator);
 						distTrackData.SavePlayerData(distPlayerData, distPlainID);
 					}
 				}
 			}
+			m_NJN_DistanceFootAccumulator = 0.0;
+			m_NJN_DistanceVehicleAccumulator = 0.0;
 			m_NJN_DistanceAccumulator = 0.0;
 		}
 	}
@@ -208,9 +227,14 @@ modded class PlayerBase
 				playerData = data.GetPlayerData(plainID);
 				if (playerData)
 				{
-					if (m_NJN_PositionInitialized && m_NJN_DistanceAccumulator > 0.5)
+					if (m_NJN_PositionInitialized)
 					{
-						playerData.AddDistanceTravelled(m_NJN_DistanceAccumulator);
+						if (m_NJN_DistanceFootAccumulator > 0.5)
+							playerData.AddDistanceOnFoot(m_NJN_DistanceFootAccumulator);
+						if (m_NJN_DistanceVehicleAccumulator > 0.5)
+							playerData.AddDistanceInVehicle(m_NJN_DistanceVehicleAccumulator);
+						m_NJN_DistanceFootAccumulator = 0.0;
+						m_NJN_DistanceVehicleAccumulator = 0.0;
 						m_NJN_DistanceAccumulator = 0.0;
 					}
 					m_NJN_PositionInitialized = false;
