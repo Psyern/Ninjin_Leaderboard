@@ -168,7 +168,22 @@ class PVPCategoryConfig
 		defaultData.Categories.Insert(players);
 		defaultData.PVPDeathPenaltyPoints = 10;
 		JsonFileLoader<PVPCategoryConfigJson>.JsonSaveFile(PVP_CATEGORIES_FILE, defaultData);
-		LoadCategories();
+
+		// Populate in-memory state directly from defaults instead of recursing
+		// into LoadCategories(). On clients without write access to $profile,
+		// JsonSaveFile fails silently, so a re-Load would recurse infinitely.
+		int i;
+		PVPCategory category;
+		for (i = 0; i < defaultData.Categories.Count(); i++)
+		{
+			category = defaultData.Categories[i];
+			if (category && category.CategoryID != "")
+			{
+				m_Categories.Insert(category);
+				m_CategoryMap.Set(category.CategoryID, category);
+			}
+		}
+		m_PVPDeathPenaltyPoints = defaultData.PVPDeathPenaltyPoints;
 	}
 	array<ref PVPCategory> GetCategories()
 	{

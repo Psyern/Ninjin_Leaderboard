@@ -357,7 +357,22 @@ class PVECategoryConfig
 		zombies2.ClassNames.Insert("ZombieBase:10:2");
 		defaultData.Categories.Insert(zombies2);
 		JsonFileLoader<PVECategoryConfigJson>.JsonSaveFile(PVE_CATEGORIES_FILE, defaultData);
-		LoadCategories();
+
+		// Populate in-memory state directly from defaults instead of recursing
+		// into LoadCategories(). On clients without write access to $profile,
+		// JsonSaveFile fails silently, so a re-Load would recurse infinitely.
+		int idx;
+		PVECategory category;
+		for (idx = 0; idx < defaultData.Categories.Count(); idx++)
+		{
+			category = defaultData.Categories[idx];
+			if (category && category.CategoryID != "")
+			{
+				m_Categories.Insert(category);
+				m_CategoryMap.Set(category.CategoryID, category);
+			}
+		}
+		m_PVEDeathPenaltyPoints = defaultData.PVEDeathPenaltyPoints;
 	}
 	array<ref PVECategory> GetCategories()
 	{
