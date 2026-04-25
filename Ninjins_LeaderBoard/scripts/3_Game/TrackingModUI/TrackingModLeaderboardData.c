@@ -148,6 +148,10 @@ class TrackingModWebLeaderboardPlayerData
 	int shotsHit;
 	int headshots;
 	float distanceTravelled;
+	float distanceOnFoot;
+	float distanceInVehicle;
+	int totalDeaths;
+	int suicides;
 
 	void TrackingModWebLeaderboardPlayerData()
 	{
@@ -174,6 +178,10 @@ class TrackingModWebLeaderboardPlayerData
 		shotsHit = 0;
 		headshots = 0;
 		distanceTravelled = 0.0;
+		distanceOnFoot = 0.0;
+		distanceInVehicle = 0.0;
+		totalDeaths = 0;
+		suicides = 0;
 	}
 }
 

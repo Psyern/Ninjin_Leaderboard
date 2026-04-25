@@ -116,8 +116,11 @@ modded class MissionServer extends MissionBase
 			if (m_WebExportTimer >= m_WebExportInterval)
 			{
 				m_WebExportTimer = 0;
-				TrackingModWarHardlineSync.SyncAllPlayers();
-				TrackingModWebExportHelper.SendExport();
+				if (g_TrackingModConfig && g_TrackingModConfig.EnableWebExport)
+				{
+					TrackingModWarHardlineSync.SyncAllPlayers();
+					TrackingModWebExportHelper.SendExport();
+				}
 			}
 		}
 		#endif

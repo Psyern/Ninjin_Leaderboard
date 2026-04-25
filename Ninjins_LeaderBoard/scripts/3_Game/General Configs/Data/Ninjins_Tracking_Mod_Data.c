@@ -1430,6 +1430,10 @@ class TrackingModData
 		exportPlayer.shotsHit = playerData.ShotsHit;
 		exportPlayer.headshots = playerData.Headshots;
 		exportPlayer.distanceTravelled = playerData.DistanceTravelled;
+		exportPlayer.distanceOnFoot = playerData.DistanceOnFoot;
+		exportPlayer.distanceInVehicle = playerData.DistanceInVehicle;
+		exportPlayer.totalDeaths = playerData.GetTotalDeaths();
+		exportPlayer.suicides = playerData.GetSuicides();
 
 		return exportPlayer;
 	}
