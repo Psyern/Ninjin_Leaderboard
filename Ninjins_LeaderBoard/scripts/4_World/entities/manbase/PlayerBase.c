@@ -292,6 +292,14 @@ modded class PlayerBase
 		deathPosition = GetPosition();
 		data = TrackingModData.LoadData();
 		Print("[TrackingMod] TrackDeath - Player: " + playerName + " (ID: " + playerID + ")");
+
+		// Wenn killer null oder == this ist, auf den letzten Damage-Source
+		// zurückfallen (z.B. wenn ein Mod die Damage-Pipeline umroutet, kann
+		// killer fälschlich auf das Opfer selbst zeigen → ohne Fallback würde
+		// jeder PvP-Kill als Selbstmord eingestuft werden).
+		if ((!killer || killer == this) && m_LastDamageSource)
+			killer = m_LastDamageSource;
+
 		killerName = "Unknown";
 		killerType = "Unknown";
 		killerID = "";
