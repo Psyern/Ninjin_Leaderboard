@@ -32,7 +32,11 @@ class TrackingModWarHardlineSync
 	protected static void SyncHardlineData(string plainId, PlayerDeathData playerData)
 	{
 		#ifdef EXPANSIONMODHARDLINE
-		PlayerBase player = PlayerBase.GetPlayerByUID(plainId);
+		// PlayerBase.GetPlayerByUID erwartet die Bohemia-ID (PlayerIdentity::GetId()).
+		// Unsere plainId ist aber die Steam64-ID (PlayerIdentity::GetPlainId()),
+		// daher Expansion_GetByPlainID() nutzen, sonst wird player IMMER null und
+		// die Reputation bleibt fix bei 0.
+		PlayerBase player = PlayerBase.Expansion_GetByPlainID(plainId);
 		if (player)
 		{
 			playerData.HardlineReputation = player.Expansion_GetReputation();
