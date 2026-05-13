@@ -10,6 +10,29 @@ class TrackingModPvPPlayerEntry: ScriptView
 	protected ButtonWidget claim_reward_button;
 	protected ImageWidget Survivor_Female;
 
+	protected string FormatPlaytime(int totalSeconds)
+	{
+		int days;
+		int hours;
+		int minutes;
+		int remainder;
+
+		if (totalSeconds <= 0)
+			return "0h";
+
+		days = totalSeconds / 86400;
+		remainder = totalSeconds - (days * 86400);
+		hours = remainder / 3600;
+		remainder = remainder - (hours * 3600);
+		minutes = remainder / 60;
+
+		if (days > 0)
+			return days.ToString() + "d " + hours.ToString() + "h";
+		if (hours > 0)
+			return hours.ToString() + "h " + minutes.ToString() + "m";
+		return minutes.ToString() + "m";
+	}
+
 	protected int GetPVPCategoryValue(map<string, int> categoryMap, string categoryID)
 	{
 		PVPCategoryConfig pvpCategoryConfig;
@@ -169,10 +192,11 @@ class TrackingModPvPPlayerEntry: ScriptView
 			m_EntryController.KDRatio = kdStr;
 			
 			longestRange = GetLongestPVPRange();
-			
+
 			m_EntryController.LongestRange = longestRange.ToString() + " m";
-			
-			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVPPoints", "Kills", "Deaths", "KDRatio", "LongestRange"});
+			m_EntryController.PlayTime = FormatPlaytime(m_PlayerData.playTimeSeconds);
+
+			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVPPoints", "Kills", "Deaths", "KDRatio", "LongestRange", "PlayTime"});
 		}
 	}
 	

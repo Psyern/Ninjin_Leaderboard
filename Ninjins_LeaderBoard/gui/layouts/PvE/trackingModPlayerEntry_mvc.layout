@@ -151,7 +151,7 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
      ignorepointer 1
      color 1 1 1 1
      position 0.13 0
-     size 0.16 1
+     size 0.14 1
      valign center_ref
      hexactpos 0
      vexactpos 0
@@ -169,8 +169,8 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
     TextWidgetClass player_pve_points {
      ignorepointer 1
      color 1 1 1 1
-     position 0.30 0
-     size 0.07 1
+     position 0.28 0
+     size 0.06 1
      valign center_ref
      hexactpos 0
      vexactpos 0
@@ -188,8 +188,8 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
     TextWidgetClass player_shots_fired {
      ignorepointer 1
      color 1 1 1 1
-     position 0.38 0
-     size 0.07 1
+     position 0.35 0
+     size 0.06 1
      valign center_ref
      hexactpos 0
      vexactpos 0
@@ -207,8 +207,8 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
     TextWidgetClass player_longest_range {
      ignorepointer 1
      color 0.2 0.8 0.5 1
-     position 0.46 0
-     size 0.07 1
+     position 0.42 0
+     size 0.06 1
      valign center_ref
      hexactpos 0
      vexactpos 0
@@ -226,7 +226,7 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
     TextWidgetClass player_total_deaths {
      ignorepointer 1
      color 1 1 1 1
-     position 0.54 0
+     position 0.49 0
      size 0.05 1
      valign center_ref
      hexactpos 0
@@ -245,7 +245,7 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
     TextWidgetClass player_suicides {
      ignorepointer 1
      color 0.9 0.5 0.2 1
-     position 0.60 0
+     position 0.55 0
      size 0.05 1
      valign center_ref
      hexactpos 0
@@ -264,8 +264,8 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
     TextWidgetClass player_distance_foot {
      ignorepointer 1
      color 1 1 1 1
-     position 0.66 0
-     size 0.08 1
+     position 0.61 0
+     size 0.07 1
      valign center_ref
      hexactpos 0
      vexactpos 0
@@ -283,8 +283,8 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
     TextWidgetClass player_distance_vehicle {
      ignorepointer 1
      color 1 1 1 1
-     position 0.75 0
-     size 0.08 1
+     position 0.69 0
+     size 0.07 1
      valign center_ref
      hexactpos 0
      vexactpos 0
@@ -296,6 +296,25 @@ GridSpacerWidgetClass TrackingModPlayerEntry {
      {
       ScriptParamsClass {
        Binding_Name "DistanceInVehicle"
+      }
+     }
+    }
+    TextWidgetClass player_playtime {
+     ignorepointer 1
+     color 0.7 0.85 1 1
+     position 0.77 0
+     size 0.06 1
+     valign center_ref
+     hexactpos 0
+     vexactpos 0
+     hexactsize 0
+     scriptclass "ViewBinding"
+     font "gui/fonts/metronbook14"
+     "text halign" right
+     "text valign" center
+     {
+      ScriptParamsClass {
+       Binding_Name "PlayTime"
       }
      }
     }

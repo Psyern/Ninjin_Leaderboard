@@ -22,6 +22,7 @@ class TrackingModLeaderboardPlayerData
 	float distanceInVehicle;
 	int totalDeaths;
 	int suicides;
+	int playTimeSeconds;
 	float accuracy;
 	float headshotPercentage;
 
@@ -46,6 +47,7 @@ class TrackingModLeaderboardPlayerData
 		distanceInVehicle = 0.0;
 		totalDeaths = 0;
 		suicides = 0;
+		playTimeSeconds = 0;
 		accuracy = 0.0;
 		headshotPercentage = 0.0;
 	}
@@ -122,6 +124,8 @@ class TrackingModWebLeaderboardPlayerData
 	int deathCount;
 	int pveDeaths;
 	int pvpDeaths;
+	int pveKills;
+	int pvpKills;
 	int pvePoints;
 	int pvpPoints;
 	int isOnline;
@@ -150,6 +154,7 @@ class TrackingModWebLeaderboardPlayerData
 	float distanceInVehicle;
 	int totalDeaths;
 	int suicides;
+	int playTimeSeconds;
 
 	void TrackingModWebLeaderboardPlayerData()
 	{
@@ -158,6 +163,8 @@ class TrackingModWebLeaderboardPlayerData
 		deathCount = 0;
 		pveDeaths = 0;
 		pvpDeaths = 0;
+		pveKills = 0;
+		pvpKills = 0;
 		pvePoints = 0;
 		pvpPoints = 0;
 		isOnline = 0;
@@ -180,6 +187,7 @@ class TrackingModWebLeaderboardPlayerData
 		distanceInVehicle = 0.0;
 		totalDeaths = 0;
 		suicides = 0;
+		playTimeSeconds = 0;
 	}
 }
 

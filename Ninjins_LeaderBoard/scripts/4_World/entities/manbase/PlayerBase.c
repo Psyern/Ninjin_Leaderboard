@@ -6,6 +6,9 @@ modded class PlayerBase
 	protected vector m_NJN_LastPosition;
 	protected float m_NJN_DistanceAccumulator;
 	protected bool m_NJN_PositionInitialized;
+	protected float m_NJN_PlaytimeLastTick;
+	protected int m_NJN_PlaytimeAccumulator;
+	protected bool m_NJN_PlaytimeInitialized;
 	int TrackingMod_GetLastDamageType() { return m_LastDamageType; }
 	string TrackingMod_GetLastDamageAmmo() { return m_LastDamageAmmo; }
 	override void EEHitBy(TotalDamageResult damageResult, int damageType, EntityAI source, int component, string dmgZone, string ammo, vector modelPos, float speedCoef)
@@ -90,6 +93,9 @@ modded class PlayerBase
 					m_NJN_DistanceFootAccumulator = 0.0;
 					m_NJN_DistanceVehicleAccumulator = 0.0;
 					m_NJN_PositionInitialized = true;
+					m_NJN_PlaytimeLastTick = g_Game.GetTickTime();
+					m_NJN_PlaytimeAccumulator = 0;
+					m_NJN_PlaytimeInitialized = true;
 					Print(string.Format("[TrackingMod] OnConnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
 				}
 			}
@@ -131,6 +137,9 @@ modded class PlayerBase
 					m_NJN_DistanceFootAccumulator = 0.0;
 					m_NJN_DistanceVehicleAccumulator = 0.0;
 					m_NJN_PositionInitialized = true;
+					m_NJN_PlaytimeLastTick = g_Game.GetTickTime();
+					m_NJN_PlaytimeAccumulator = 0;
+					m_NJN_PlaytimeInitialized = true;
 					Print(string.Format("[TrackingMod] OnReconnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
 				}
 			}
@@ -210,12 +219,64 @@ modded class PlayerBase
 		}
 	}
 
+	void NJN_UpdatePlaytimeTracking()
+	{
+		PlayerIdentity ptIdentity;
+		string ptPlainID;
+		float currentTick;
+		float delta;
+		int deltaInt;
+		TrackingModData ptTrackData;
+		PlayerDeathData ptPlayerData;
+
+		if (!g_Game || !g_Game.IsServer())
+			return;
+		if (!m_NJN_PlaytimeInitialized)
+			return;
+
+		currentTick = g_Game.GetTickTime();
+		delta = currentTick - m_NJN_PlaytimeLastTick;
+		m_NJN_PlaytimeLastTick = currentTick;
+
+		// Drop the delta on TickTime resets/wraps and on obviously bogus gaps
+		// (>10 min) to avoid one giant spike inflating the counter.
+		if (delta <= 0.0 || delta > 600.0)
+			return;
+
+		deltaInt = Math.Floor(delta);
+		if (deltaInt <= 0)
+			return;
+		m_NJN_PlaytimeAccumulator = m_NJN_PlaytimeAccumulator + deltaInt;
+
+		if (m_NJN_PlaytimeAccumulator >= 60)
+		{
+			ptIdentity = GetIdentity();
+			if (ptIdentity)
+			{
+				ptPlainID = ptIdentity.GetPlainId();
+				ptTrackData = TrackingModData.LoadData();
+				if (ptTrackData)
+				{
+					ptPlayerData = ptTrackData.GetPlayerData(ptPlainID);
+					if (ptPlayerData)
+					{
+						ptPlayerData.AddPlayTimeSeconds(m_NJN_PlaytimeAccumulator);
+						ptTrackData.SavePlayerData(ptPlayerData, ptPlainID);
+					}
+				}
+			}
+			m_NJN_PlaytimeAccumulator = 0;
+		}
+	}
+
 	override void OnDisconnect()
 	{
 		PlayerIdentity identity;
 		string plainID;
 		TrackingModData data;
 		PlayerDeathData playerData;
+		float ptDelta;
+		int ptDeltaInt;
 
 		if (g_Game.IsServer())
 		{
@@ -238,6 +299,20 @@ modded class PlayerBase
 						m_NJN_DistanceAccumulator = 0.0;
 					}
 					m_NJN_PositionInitialized = false;
+					if (m_NJN_PlaytimeInitialized)
+					{
+						ptDelta = g_Game.GetTickTime() - m_NJN_PlaytimeLastTick;
+						if (ptDelta > 0.0 && ptDelta < 600.0)
+						{
+							ptDeltaInt = Math.Floor(ptDelta);
+							if (ptDeltaInt > 0)
+								m_NJN_PlaytimeAccumulator = m_NJN_PlaytimeAccumulator + ptDeltaInt;
+						}
+						if (m_NJN_PlaytimeAccumulator > 0)
+							playerData.AddPlayTimeSeconds(m_NJN_PlaytimeAccumulator);
+						m_NJN_PlaytimeAccumulator = 0;
+						m_NJN_PlaytimeInitialized = false;
+					}
 					playerData.playerIsOnline = 0;
 					data.SavePlayerData(playerData, plainID);
 				}

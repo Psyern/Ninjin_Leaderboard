@@ -9,5 +9,6 @@ class TrackingModPlayerEntryController: ViewController
 	string Suicides = "0";
 	string DistanceOnFoot = "0 m";
 	string DistanceInVehicle = "0 m";
+	string PlayTime = "0h";
 	ref ObservableCollection<ref TrackingModKillCategory> KillCategories = new ObservableCollection<ref TrackingModKillCategory>(this);
 }

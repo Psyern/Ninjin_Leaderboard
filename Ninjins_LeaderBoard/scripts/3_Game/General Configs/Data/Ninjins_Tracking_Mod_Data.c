@@ -43,6 +43,7 @@ class PlayerDeathData
 	float DistanceTravelled;
 	float DistanceOnFoot;
 	float DistanceInVehicle;
+	int PlayTimeSeconds;
 
 	void PlayerDeathData()
 	{
@@ -72,6 +73,7 @@ class PlayerDeathData
 		DistanceTravelled = 0.0;
 		DistanceOnFoot = 0.0;
 		DistanceInVehicle = 0.0;
+		PlayTimeSeconds = 0;
 	}
 	
 	int GetPVPPoints()
@@ -472,13 +474,91 @@ class PlayerDeathData
 		return totalDeaths;
 	}
 	
+	int GetTotalPVPKills()
+	{
+		PVPCategoryConfig pvpCategoryConfig;
+		array<ref PVPCategory> categories;
+		int i;
+		PVPCategory category;
+		string categoryID;
+		int totalKills;
+		ref map<string, bool> processedCategories;
+
+		totalKills = 0;
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		if (!pvpCategoryConfig)
+			return 0;
+
+		categories = pvpCategoryConfig.GetCategories();
+		if (!categories)
+			return 0;
+		processedCategories = new map<string, bool>();
+
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = categories[i];
+			if (category && category.CategoryID != "")
+			{
+				categoryID = category.CategoryID;
+				if (processedCategories.Contains(categoryID))
+					continue;
+				processedCategories.Set(categoryID, true);
+				totalKills += GetCategoryKills(categoryID);
+			}
+		}
+
+		return totalKills;
+	}
+
+	int GetTotalPVEKills()
+	{
+		PVECategoryConfig pveCategoryConfig;
+		PVPCategoryConfig pvpCategoryConfig;
+		array<ref PVECategory> categories;
+		int i;
+		PVECategory category;
+		string categoryID;
+		int totalKills;
+		ref map<string, bool> processedCategories;
+
+		totalKills = 0;
+		pveCategoryConfig = PVECategoryConfig.GetInstance();
+		if (!pveCategoryConfig)
+			return 0;
+
+		categories = pveCategoryConfig.GetCategories();
+		if (!categories)
+			return 0;
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		processedCategories = new map<string, bool>();
+
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = categories[i];
+			if (category && category.CategoryID != "")
+			{
+				categoryID = category.CategoryID;
+				if (processedCategories.Contains(categoryID))
+					continue;
+				processedCategories.Set(categoryID, true);
+				// Eine Category die in BEIDEN Configs auftaucht zaehlt als PvP
+				// und darf hier nicht doppelt mitgezaehlt werden.
+				if (pvpCategoryConfig && pvpCategoryConfig.HasCategory(categoryID))
+					continue;
+				totalKills += GetCategoryKills(categoryID);
+			}
+		}
+
+		return totalKills;
+	}
+
 	void AddCategoryDeath(string categoryID)
 	{
 		int currentDeaths;
-		
+
 		if (!CategoryDeaths)
 			CategoryDeaths = new map<string, int>();
-		
+
 		currentDeaths = GetCategoryDeaths(categoryID);
 		CategoryDeaths.Set(categoryID, currentDeaths + 1);
 		Print("[TrackingMod] CategoryDeaths[" + categoryID + "] = " + (currentDeaths + 1).ToString());
@@ -553,6 +633,13 @@ class PlayerDeathData
 	{
 		DistanceInVehicle = DistanceInVehicle + distance;
 		DistanceTravelled = DistanceTravelled + distance;
+	}
+
+	void AddPlayTimeSeconds(int seconds)
+	{
+		if (seconds <= 0)
+			return;
+		PlayTimeSeconds = PlayTimeSeconds + seconds;
 	}
 
 	int GetSuicides()
@@ -1383,6 +1470,8 @@ class TrackingModData
 		exportPlayer.deathCount = playerData.GetTotalPVPDeaths();
 		exportPlayer.pveDeaths = playerData.GetTotalPVEDeaths();
 		exportPlayer.pvpDeaths = playerData.GetTotalPVPDeaths();
+		exportPlayer.pveKills = playerData.GetTotalPVEKills();
+		exportPlayer.pvpKills = playerData.GetTotalPVPKills();
 		exportPlayer.pvePoints = playerData.GetPVEPoints();
 		exportPlayer.pvpPoints = playerData.GetPVPPoints();
 		exportPlayer.isOnline = playerData.playerIsOnline;
@@ -1434,6 +1523,7 @@ class TrackingModData
 		exportPlayer.distanceInVehicle = playerData.DistanceInVehicle;
 		exportPlayer.totalDeaths = playerData.GetTotalDeaths();
 		exportPlayer.suicides = playerData.GetSuicides();
+		exportPlayer.playTimeSeconds = playerData.PlayTimeSeconds;
 
 		return exportPlayer;
 	}

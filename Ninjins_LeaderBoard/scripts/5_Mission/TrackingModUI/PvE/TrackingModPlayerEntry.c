@@ -43,6 +43,29 @@ class TrackingModPlayerEntry: ScriptView
 		return longestRange;
 	}
 
+	protected string FormatPlaytime(int totalSeconds)
+	{
+		int days;
+		int hours;
+		int minutes;
+		int remainder;
+
+		if (totalSeconds <= 0)
+			return "0h";
+
+		days = totalSeconds / 86400;
+		remainder = totalSeconds - (days * 86400);
+		hours = remainder / 3600;
+		remainder = remainder - (hours * 3600);
+		minutes = remainder / 60;
+
+		if (days > 0)
+			return days.ToString() + "d " + hours.ToString() + "h";
+		if (hours > 0)
+			return hours.ToString() + "h " + minutes.ToString() + "m";
+		return minutes.ToString() + "m";
+	}
+
 	protected string FormatDistance(float meters)
 	{
 		int rounded;
@@ -96,8 +119,9 @@ class TrackingModPlayerEntry: ScriptView
 			m_EntryController.Suicides = m_PlayerData.suicides.ToString();
 			m_EntryController.DistanceOnFoot = FormatDistance(m_PlayerData.distanceOnFoot);
 			m_EntryController.DistanceInVehicle = FormatDistance(m_PlayerData.distanceInVehicle);
+			m_EntryController.PlayTime = FormatPlaytime(m_PlayerData.playTimeSeconds);
 
-			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "ShotsFired", "LongestRange", "TotalDeaths", "Suicides", "DistanceOnFoot", "DistanceInVehicle"});
+			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "ShotsFired", "LongestRange", "TotalDeaths", "Suicides", "DistanceOnFoot", "DistanceInVehicle", "PlayTime"});
 		}
 	}
 	

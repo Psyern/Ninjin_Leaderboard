@@ -158,6 +158,15 @@ class TrackingModColumnSort
 			else if (fValA < fValB)
 				result = -1;
 		}
+		else if (s_NJN_CurrentSortColumn == "PlayTime")
+		{
+			valA = a.playTimeSeconds;
+			valB = b.playTimeSeconds;
+			if (valA > valB)
+				result = 1;
+			else if (valA < valB)
+				result = -1;
+		}
 
 		if (s_NJN_SortAscending)
 			return result;

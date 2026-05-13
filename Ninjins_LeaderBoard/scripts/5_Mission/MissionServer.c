@@ -104,6 +104,7 @@ modded class MissionServer extends MissionBase
 					if (pb)
 					{
 						pb.NJN_UpdateDistanceTracking();
+						pb.NJN_UpdatePlaytimeTracking();
 					}
 				}
 			}
@@ -885,6 +886,7 @@ modded class MissionServer extends MissionBase
 		leaderboardPlayer.distanceInVehicle = playerData.DistanceInVehicle;
 		leaderboardPlayer.totalDeaths = playerData.GetTotalDeaths();
 		leaderboardPlayer.suicides = playerData.GetSuicides();
+		leaderboardPlayer.playTimeSeconds = playerData.PlayTimeSeconds;
 		leaderboardPlayer.accuracy = playerData.GetAccuracy();
 		leaderboardPlayer.headshotPercentage = playerData.GetHeadshotPercentage();
 
