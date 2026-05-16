@@ -32,14 +32,31 @@ class TrackingModWarHardlineSync
 	protected static void SyncHardlineData(string plainId, PlayerDeathData playerData)
 	{
 		#ifdef EXPANSIONMODHARDLINE
+		PlayerBase player;
+		ExpansionHardlinePlayerData offlineData;
+
 		// PlayerBase.GetPlayerByUID erwartet die Bohemia-ID (PlayerIdentity::GetId()).
 		// Unsere plainId ist aber die Steam64-ID (PlayerIdentity::GetPlainId()),
 		// daher Expansion_GetByPlainID() nutzen, sonst wird player IMMER null und
 		// die Reputation bleibt fix bei 0.
-		PlayerBase player = PlayerBase.Expansion_GetByPlainID(plainId);
+		player = PlayerBase.Expansion_GetByPlainID(plainId);
 		if (player)
 		{
 			playerData.HardlineReputation = player.Expansion_GetReputation();
+			return;
+		}
+
+		// Offline-Fallback: Expansion speichert Hardline-Daten per Bohemia-UID
+		// (identity.GetId()), nicht per Steam-PlainID. Sobald der Spieler einmal
+		// nach dem Deploy dieser Version online war, ist BohemiaUID in der
+		// PlayerDeathData hinterlegt — damit koennen wir die Reputation direkt
+		// von der Platte laden, auch wenn der Spieler offline ist.
+		if (!playerData || playerData.BohemiaUID == "")
+			return;
+		offlineData = new ExpansionHardlinePlayerData();
+		if (offlineData.Load(playerData.BohemiaUID))
+		{
+			playerData.HardlineReputation = offlineData.Reputation;
 		}
 		#endif
 	}

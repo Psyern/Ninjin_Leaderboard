@@ -86,6 +86,7 @@ modded class PlayerBase
 				{
 					playerData.playerIsOnline = 1;
 					playerData.survivorType = survivorType;
+					playerData.BohemiaUID = identity.GetId();
 					data.UpdateLastLoginDate(playerData);
 					data.SavePlayerData(playerData, plainID);
 					m_NJN_LastPosition = GetPosition();
@@ -97,6 +98,11 @@ modded class PlayerBase
 					m_NJN_PlaytimeAccumulator = 0;
 					m_NJN_PlaytimeInitialized = true;
 					Print(string.Format("[TrackingMod] OnConnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
+					// Defer rep/war sync until Expansion's OnInvokeConnect has loaded
+					// hardline data onto this PlayerBase. 2s is well past every
+					// reasonable Expansion init path.
+					if (g_Game && g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY))
+						g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(NJN_DeferredHardlineWarSync, 2000, false);
 				}
 			}
 		}
@@ -130,6 +136,7 @@ modded class PlayerBase
 				{
 					playerData.playerIsOnline = 1;
 					playerData.survivorType = survivorType;
+					playerData.BohemiaUID = identity.GetId();
 					data.UpdateLastLoginDate(playerData);
 					data.SavePlayerData(playerData, plainID);
 					m_NJN_LastPosition = GetPosition();
@@ -141,6 +148,8 @@ modded class PlayerBase
 					m_NJN_PlaytimeAccumulator = 0;
 					m_NJN_PlaytimeInitialized = true;
 					Print(string.Format("[TrackingMod] OnReconnect - Saved playerData: playerIsOnline=%1, survivorType=%2", playerData.playerIsOnline, playerData.survivorType));
+					if (g_Game && g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY))
+						g_Game.GetCallQueue(CALL_CATEGORY_GAMEPLAY).CallLater(NJN_DeferredHardlineWarSync, 2000, false);
 				}
 			}
 		}
@@ -219,6 +228,31 @@ modded class PlayerBase
 		}
 	}
 
+	void NJN_DeferredHardlineWarSync()
+	{
+		PlayerIdentity syncIdentity;
+		string syncPlainID;
+		TrackingModData syncData;
+		PlayerDeathData syncPlayerData;
+
+		if (!g_Game || !g_Game.IsServer())
+			return;
+		syncIdentity = GetIdentity();
+		if (!syncIdentity)
+			return;
+		syncPlainID = syncIdentity.GetPlainId();
+		if (syncPlainID == "")
+			return;
+		syncData = TrackingModData.LoadData();
+		if (!syncData)
+			return;
+		syncPlayerData = syncData.GetPlayerData(syncPlainID);
+		if (!syncPlayerData)
+			return;
+		TrackingModWarHardlineSync.SyncPlayerData(syncPlainID, syncPlayerData);
+		syncData.SavePlayerData(syncPlayerData, syncPlainID, true);
+	}
+
 	void NJN_UpdatePlaytimeTracking()
 	{
 		PlayerIdentity ptIdentity;
@@ -288,6 +322,11 @@ modded class PlayerBase
 				playerData = data.GetPlayerData(plainID);
 				if (playerData)
 				{
+					// Capture final REP/War state while the PlayerBase is still
+					// reachable — the next periodic SyncAllPlayers won't see this
+					// player anymore once they're gone.
+					playerData.BohemiaUID = identity.GetId();
+					TrackingModWarHardlineSync.SyncPlayerData(plainID, playerData);
 					if (m_NJN_PositionInitialized)
 					{
 						if (m_NJN_DistanceFootAccumulator > 0.5)

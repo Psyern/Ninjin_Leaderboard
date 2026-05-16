@@ -110,7 +110,6 @@ class TrackingModPlayerEntry: ScriptView
 			m_EntryController.PlayerName = m_PlayerData.playerName;
 			m_EntryController.PlayerPosition = position.ToString();
 			m_EntryController.PVEPoints = m_PlayerData.pvePoints.ToString();
-			m_EntryController.ShotsFired = m_PlayerData.shotsFired.ToString();
 
 			longestRange = GetLongestPVERange();
 			m_EntryController.LongestRange = longestRange.ToString() + " m";
@@ -121,7 +120,7 @@ class TrackingModPlayerEntry: ScriptView
 			m_EntryController.DistanceInVehicle = FormatDistance(m_PlayerData.distanceInVehicle);
 			m_EntryController.PlayTime = FormatPlaytime(m_PlayerData.playTimeSeconds);
 
-			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "ShotsFired", "LongestRange", "TotalDeaths", "Suicides", "DistanceOnFoot", "DistanceInVehicle", "PlayTime"});
+			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "LongestRange", "TotalDeaths", "Suicides", "DistanceOnFoot", "DistanceInVehicle", "PlayTime"});
 		}
 	}
 	

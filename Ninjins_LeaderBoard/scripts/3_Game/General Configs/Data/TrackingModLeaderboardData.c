@@ -126,6 +126,8 @@ class TrackingModWebLeaderboardPlayerData
 	int pvpDeaths;
 	int pveKills;
 	int pvpKills;
+	int pveLongestShot;
+	int pvpLongestShot;
 	int pvePoints;
 	int pvpPoints;
 	int isOnline;
@@ -165,6 +167,8 @@ class TrackingModWebLeaderboardPlayerData
 		pvpDeaths = 0;
 		pveKills = 0;
 		pvpKills = 0;
+		pveLongestShot = 0;
+		pvpLongestShot = 0;
 		pvePoints = 0;
 		pvpPoints = 0;
 		isOnline = 0;

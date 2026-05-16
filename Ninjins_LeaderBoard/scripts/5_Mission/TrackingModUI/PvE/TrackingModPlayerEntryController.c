@@ -3,7 +3,6 @@ class TrackingModPlayerEntryController: ViewController
 	string PlayerName = "";
 	string PlayerPosition = "0";
 	string PVEPoints = "0";
-	string ShotsFired = "0";
 	string LongestRange = "0";
 	string TotalDeaths = "0";
 	string Suicides = "0";

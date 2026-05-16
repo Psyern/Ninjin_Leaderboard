@@ -36,6 +36,12 @@ class PlayerDeathData
 	// Expansion Hardline integration (populated from 4_World via #ifdef EXPANSIONMODHARDLINE)
 	int HardlineReputation;
 
+	// Bohemia UID (PlayerIdentity::GetId()) — only known once the player has
+	// connected at least once after this field was introduced. Needed to load
+	// Expansion's hardline data from disk for OFFLINE players (Expansion saves
+	// per Bohemia ID, while our PlayerID key is Steam PlainID).
+	string BohemiaUID;
+
 	// Extended stats tracking
 	int ShotsFired;
 	int ShotsHit;
@@ -67,6 +73,7 @@ class PlayerDeathData
 		WarLevel = 0;
 		WarBossKills = 0;
 		HardlineReputation = 0;
+		BohemiaUID = "";
 		ShotsFired = 0;
 		ShotsHit = 0;
 		Headshots = 0;
@@ -508,6 +515,96 @@ class PlayerDeathData
 		}
 
 		return totalKills;
+	}
+
+	int GetLongestPVPRange()
+	{
+		PVPCategoryConfig pvpCategoryConfig;
+		array<ref PVPCategory> categories;
+		int i;
+		PVPCategory category;
+		string categoryID;
+		int longestRange;
+		int categoryRange;
+		ref map<string, bool> processedCategories;
+
+		longestRange = 0;
+		if (!CategoryLongestRanges)
+			return 0;
+
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		if (!pvpCategoryConfig)
+			return 0;
+
+		categories = pvpCategoryConfig.GetCategories();
+		if (!categories)
+			return 0;
+		processedCategories = new map<string, bool>();
+
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = categories[i];
+			if (category && category.CategoryID != "")
+			{
+				categoryID = category.CategoryID;
+				if (processedCategories.Contains(categoryID))
+					continue;
+				processedCategories.Set(categoryID, true);
+				categoryRange = GetCategoryLongestRange(categoryID);
+				if (categoryRange > longestRange)
+					longestRange = categoryRange;
+			}
+		}
+
+		return longestRange;
+	}
+
+	int GetLongestPVERange()
+	{
+		PVECategoryConfig pveCategoryConfig;
+		PVPCategoryConfig pvpCategoryConfig;
+		array<ref PVECategory> categories;
+		int i;
+		PVECategory category;
+		string categoryID;
+		int longestRange;
+		int categoryRange;
+		ref map<string, bool> processedCategories;
+
+		longestRange = 0;
+		if (!CategoryLongestRanges)
+			return 0;
+
+		pveCategoryConfig = PVECategoryConfig.GetInstance();
+		if (!pveCategoryConfig)
+			return 0;
+
+		categories = pveCategoryConfig.GetCategories();
+		if (!categories)
+			return 0;
+		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
+		processedCategories = new map<string, bool>();
+
+		for (i = 0; i < categories.Count(); i++)
+		{
+			category = categories[i];
+			if (category && category.CategoryID != "")
+			{
+				categoryID = category.CategoryID;
+				if (processedCategories.Contains(categoryID))
+					continue;
+				processedCategories.Set(categoryID, true);
+				// Wenn die Category sowohl PvE- als auch PvP-konfiguriert ist,
+				// gehoert die Range zur PvP-Seite und darf hier nicht zaehlen.
+				if (pvpCategoryConfig && pvpCategoryConfig.HasCategory(categoryID))
+					continue;
+				categoryRange = GetCategoryLongestRange(categoryID);
+				if (categoryRange > longestRange)
+					longestRange = categoryRange;
+			}
+		}
+
+		return longestRange;
 	}
 
 	int GetTotalPVEKills()
@@ -1472,6 +1569,8 @@ class TrackingModData
 		exportPlayer.pvpDeaths = playerData.GetTotalPVPDeaths();
 		exportPlayer.pveKills = playerData.GetTotalPVEKills();
 		exportPlayer.pvpKills = playerData.GetTotalPVPKills();
+		exportPlayer.pveLongestShot = playerData.GetLongestPVERange();
+		exportPlayer.pvpLongestShot = playerData.GetLongestPVPRange();
 		exportPlayer.pvePoints = playerData.GetPVEPoints();
 		exportPlayer.pvpPoints = playerData.GetPVPPoints();
 		exportPlayer.isOnline = playerData.playerIsOnline;
