@@ -48,6 +48,7 @@ class TrackingModConfig
 	bool ShowHeadshotPercentage;
 	bool ShowDistanceTravelled;
 	bool ShowAccuracy;
+	bool ShowReputation;
 	ref array<ref TrackingModColumnConfig> PVEColumns;
 	ref array<ref TrackingModColumnConfig> PVPColumns;
 	void TrackingModConfig()
@@ -100,8 +101,23 @@ class TrackingModConfig
 		ShowHeadshotPercentage = true;
 		ShowDistanceTravelled = true;
 		ShowAccuracy = true;
+		ShowReputation = true;
 		PVEColumns = new array<ref TrackingModColumnConfig>();
 		PVPColumns = new array<ref TrackingModColumnConfig>();
+		TrackingModColumnConfig reputationColPVE;
+		TrackingModColumnConfig reputationColPVP;
+		reputationColPVE = new TrackingModColumnConfig();
+		reputationColPVE.ColumnID = "Reputation";
+		reputationColPVE.DisplayName = "Ruf";
+		reputationColPVE.Visible = true;
+		reputationColPVE.SortOrder = 100;
+		PVEColumns.Insert(reputationColPVE);
+		reputationColPVP = new TrackingModColumnConfig();
+		reputationColPVP.ColumnID = "Reputation";
+		reputationColPVP.DisplayName = "Ruf";
+		reputationColPVP.Visible = true;
+		reputationColPVP.SortOrder = 100;
+		PVPColumns.Insert(reputationColPVP);
 		ZoneKillExclusion example1;
 		ZoneKillExclusion example2;
 		ZoneKillExclusion example3;

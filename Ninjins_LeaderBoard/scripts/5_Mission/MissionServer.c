@@ -606,7 +606,12 @@ modded class MissionServer extends MissionBase
 		players = new array<Man>();
 		GetGame().GetPlayers(players);
 		playerOnlineCounter = players.Count();
-		
+
+		// Reputation in PlayerDeathData ist sonst nur bei Connect/Disconnect aktuell.
+		// Vor jedem Leaderboard-Build refreshen, damit Werte live sind.
+		if (g_TrackingModConfig && g_TrackingModConfig.ShowReputation)
+			TrackingModWarHardlineSync.SyncAllPlayers();
+
 		playerOnlineCounter = 0;
 		if (data && data.m_PlayerDataMap)
 		{
@@ -638,6 +643,7 @@ modded class MissionServer extends MissionBase
 			leaderboardData.showHeadshotPercentage = g_TrackingModConfig.ShowHeadshotPercentage;
 			leaderboardData.showDistanceTravelled = g_TrackingModConfig.ShowDistanceTravelled;
 			leaderboardData.showAccuracy = g_TrackingModConfig.ShowAccuracy;
+			leaderboardData.showReputation = g_TrackingModConfig.ShowReputation;
 			if (g_TrackingModConfig.PVEColumns)
 				leaderboardData.pveColumns = g_TrackingModConfig.PVEColumns;
 			if (g_TrackingModConfig.PVPColumns)
@@ -889,6 +895,7 @@ modded class MissionServer extends MissionBase
 		leaderboardPlayer.playTimeSeconds = playerData.PlayTimeSeconds;
 		leaderboardPlayer.accuracy = playerData.GetAccuracy();
 		leaderboardPlayer.headshotPercentage = playerData.GetHeadshotPercentage();
+		leaderboardPlayer.hardlineReputation = playerData.HardlineReputation;
 
 		return leaderboardPlayer;
 	}

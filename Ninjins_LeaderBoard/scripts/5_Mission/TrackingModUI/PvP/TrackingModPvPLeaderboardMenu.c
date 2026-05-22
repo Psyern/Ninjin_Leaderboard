@@ -170,9 +170,17 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 			return;
 		
 		m_MenuController.PlayerEntries.Clear();
-		
+
+		Widget reputationHeader;
+		if (GetLayoutRoot())
+		{
+			reputationHeader = GetLayoutRoot().FindAnyWidget("th_reputation");
+			if (reputationHeader)
+				reputationHeader.Show(m_LeaderboardData.showReputation);
+		}
+
 		m_MenuController.PlayerOnlineCounter = string.Format("Online: %1", m_LeaderboardData.playerOnlineCounter);
-		
+
 		if (m_IsPVPMode && m_LeaderboardData.topPVPPlayers)
 		{
 			m_CurrentPage = m_LeaderboardData.currentPage;
@@ -210,6 +218,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 					position = ((m_CurrentPage - 1) * 25) + i + 1;
 					entry = new TrackingModPvPPlayerEntry(playerData, position);
 					entry.SetShowOnlineStatus(m_LeaderboardData.showPlayerOnlineStatusPVP);
+					entry.SetShowReputation(m_LeaderboardData.showReputation);
 					entry.SetSurvivorIconPaths(m_LeaderboardData.survivorIconPathMale, m_LeaderboardData.survivorIconPathFemale);
 					entry.LoadIconImage();
 					entry.UpdateClaimRewardButtonVisibility();

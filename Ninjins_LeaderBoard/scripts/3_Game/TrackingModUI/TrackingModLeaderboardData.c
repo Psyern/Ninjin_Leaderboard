@@ -25,6 +25,7 @@ class TrackingModLeaderboardPlayerData
 	int playTimeSeconds;
 	float accuracy;
 	float headshotPercentage;
+	int hardlineReputation;
 
 	void TrackingModLeaderboardPlayerData()
 	{
@@ -50,6 +51,7 @@ class TrackingModLeaderboardPlayerData
 		playTimeSeconds = 0;
 		accuracy = 0.0;
 		headshotPercentage = 0.0;
+		hardlineReputation = 0;
 	}
 }
 
@@ -77,6 +79,7 @@ class TrackingModLeaderboardData
 	bool showHeadshotPercentage;
 	bool showDistanceTravelled;
 	bool showAccuracy;
+	bool showReputation;
 	ref array<ref TrackingModColumnConfig> pveColumns;
 	ref array<ref TrackingModColumnConfig> pvpColumns;
 
@@ -104,6 +107,7 @@ class TrackingModLeaderboardData
 		showHeadshotPercentage = true;
 		showDistanceTravelled = true;
 		showAccuracy = true;
+		showReputation = true;
 		pveColumns = new array<ref TrackingModColumnConfig>();
 		pvpColumns = new array<ref TrackingModColumnConfig>();
 	}

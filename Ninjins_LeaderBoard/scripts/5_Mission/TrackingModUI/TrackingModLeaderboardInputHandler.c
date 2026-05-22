@@ -801,6 +801,7 @@ modded class MissionBase
 		leaderboardPlayer.suicides = playerData.GetSuicides();
 		leaderboardPlayer.accuracy = playerData.GetAccuracy();
 		leaderboardPlayer.headshotPercentage = playerData.GetHeadshotPercentage();
+		leaderboardPlayer.hardlineReputation = playerData.HardlineReputation;
 
 		return leaderboardPlayer;
 	}

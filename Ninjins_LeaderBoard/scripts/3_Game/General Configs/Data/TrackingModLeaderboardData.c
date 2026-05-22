@@ -25,6 +25,7 @@ class TrackingModLeaderboardPlayerData
 	int playTimeSeconds;
 	float accuracy;
 	float headshotPercentage;
+	int hardlineReputation;
 
 	void TrackingModLeaderboardPlayerData()
 	{
@@ -50,6 +51,7 @@ class TrackingModLeaderboardPlayerData
 		playTimeSeconds = 0;
 		accuracy = 0.0;
 		headshotPercentage = 0.0;
+		hardlineReputation = 0;
 	}
 }
 
@@ -76,6 +78,7 @@ class TrackingModLeaderboardData
 	bool showHeadshotPercentage;
 	bool showDistanceTravelled;
 	bool showAccuracy;
+	bool showReputation;
 
 	void TrackingModLeaderboardData()
 	{
@@ -100,6 +103,7 @@ class TrackingModLeaderboardData
 		showHeadshotPercentage = true;
 		showDistanceTravelled = true;
 		showAccuracy = true;
+		showReputation = true;
 	}
 }
 

@@ -4,6 +4,8 @@ class TrackingModPvPPlayerEntry: ScriptView
 	protected ref TrackingModLeaderboardPlayerData m_PlayerData;
 	protected int m_Position;
 	protected bool m_ShowOnlineStatus = true;
+	protected bool m_ShowReputation = true;
+	protected TextWidget m_ReputationWidget;
 	protected string m_SurvivorIconPathMale;
 	protected string m_SurvivorIconPathFemale;
 	protected Widget player_online_indicator;
@@ -195,8 +197,9 @@ class TrackingModPvPPlayerEntry: ScriptView
 
 			m_EntryController.LongestRange = longestRange.ToString() + " m";
 			m_EntryController.PlayTime = FormatPlaytime(m_PlayerData.playTimeSeconds);
+			m_EntryController.Reputation = m_PlayerData.hardlineReputation.ToString();
 
-			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVPPoints", "Kills", "Deaths", "KDRatio", "LongestRange", "PlayTime"});
+			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVPPoints", "Kills", "Deaths", "KDRatio", "LongestRange", "PlayTime", "Reputation"});
 		}
 	}
 	
@@ -224,6 +227,9 @@ class TrackingModPvPPlayerEntry: ScriptView
 		player_online_indicator = GetLayoutRoot().FindAnyWidget("player_online_indicator");
 		claim_reward_button = ButtonWidget.Cast(GetLayoutRoot().FindAnyWidget("claim_reward_button"));
 		Survivor_Female = ImageWidget.Cast(GetLayoutRoot().FindAnyWidget("Survivor_Female"));
+		m_ReputationWidget = TextWidget.Cast(GetLayoutRoot().FindAnyWidget("player_reputation"));
+		if (m_ReputationWidget)
+			m_ReputationWidget.Show(m_ShowReputation);
 		
 		if (claim_reward_button)
 		{
@@ -340,6 +346,15 @@ class TrackingModPvPPlayerEntry: ScriptView
 		}
 	}
 	
+	void SetShowReputation(bool show)
+	{
+		m_ShowReputation = show;
+		if (!m_ReputationWidget && GetLayoutRoot())
+			m_ReputationWidget = TextWidget.Cast(GetLayoutRoot().FindAnyWidget("player_reputation"));
+		if (m_ReputationWidget)
+			m_ReputationWidget.Show(show);
+	}
+
 	void SetShowOnlineStatus(bool show)
 	{
 		m_ShowOnlineStatus = show;

@@ -167,6 +167,15 @@ class TrackingModColumnSort
 			else if (valA < valB)
 				result = -1;
 		}
+		else if (s_NJN_CurrentSortColumn == "Reputation")
+		{
+			valA = a.hardlineReputation;
+			valB = b.hardlineReputation;
+			if (valA > valB)
+				result = 1;
+			else if (valA < valB)
+				result = -1;
+		}
 
 		if (s_NJN_SortAscending)
 			return result;

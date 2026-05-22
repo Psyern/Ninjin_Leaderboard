@@ -359,6 +359,21 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text halign" right
              "text valign" center
             }
+            TextWidgetClass th_reputation {
+             ignorepointer 1
+             color 1 1 1 1
+             position 0.745 0
+             size 0.045 1
+             valign center_ref
+             hexactpos 0
+             vexactpos 0
+             hexactsize 0
+             text "Ruf"
+             font "gui/fonts/metronbook16"
+             "bold text" 1
+             "text halign" right
+             "text valign" center
+            }
            }
           }
           ScrollWidgetClass players_scroller {

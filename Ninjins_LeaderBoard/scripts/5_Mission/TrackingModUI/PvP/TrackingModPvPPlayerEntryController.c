@@ -8,4 +8,5 @@ class TrackingModPvPPlayerEntryController: ViewController
 	string Deaths = "0";
 	string KDRatio = "0.00";
 	string PlayTime = "0h";
+	string Reputation = "0";
 }

@@ -5,6 +5,8 @@ class TrackingModPlayerEntry: ScriptView
 	protected int m_Position;
 	protected bool m_IsExpanded = false;
 	protected bool m_ShowOnlineStatus = true;
+	protected bool m_ShowReputation = true;
+	protected TextWidget m_ReputationWidget;
 	protected ref map<string, string> m_CategoryPreviews;
 	protected string m_SurvivorIconPathMale;
 	protected string m_SurvivorIconPathFemale;
@@ -119,8 +121,9 @@ class TrackingModPlayerEntry: ScriptView
 			m_EntryController.DistanceOnFoot = FormatDistance(m_PlayerData.distanceOnFoot);
 			m_EntryController.DistanceInVehicle = FormatDistance(m_PlayerData.distanceInVehicle);
 			m_EntryController.PlayTime = FormatPlaytime(m_PlayerData.playTimeSeconds);
+			m_EntryController.Reputation = m_PlayerData.hardlineReputation.ToString();
 
-			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "LongestRange", "TotalDeaths", "Suicides", "DistanceOnFoot", "DistanceInVehicle", "PlayTime"});
+			m_EntryController.NotifyPropertiesChanged({"PlayerName", "PlayerPosition", "PVEPoints", "LongestRange", "TotalDeaths", "Suicides", "DistanceOnFoot", "DistanceInVehicle", "PlayTime", "Reputation"});
 		}
 	}
 	
@@ -152,6 +155,9 @@ class TrackingModPlayerEntry: ScriptView
 		Survivor_Female = ImageWidget.Cast(GetLayoutRoot().FindAnyWidget("Survivor_Female"));
 		kill_categories = WrapSpacerWidget.Cast(GetLayoutRoot().FindAnyWidget("kill_categories"));
 		player_online_indicator = GetLayoutRoot().FindAnyWidget("player_online_indicator");
+		m_ReputationWidget = TextWidget.Cast(GetLayoutRoot().FindAnyWidget("player_reputation"));
+		if (m_ReputationWidget)
+			m_ReputationWidget.Show(m_ShowReputation);
 		
 		if (claim_reward_button)
 		{
@@ -352,6 +358,15 @@ class TrackingModPlayerEntry: ScriptView
 		m_SurvivorIconPathFemale = femalePath;
 	}
 	
+	void SetShowReputation(bool show)
+	{
+		m_ShowReputation = show;
+		if (!m_ReputationWidget && GetLayoutRoot())
+			m_ReputationWidget = TextWidget.Cast(GetLayoutRoot().FindAnyWidget("player_reputation"));
+		if (m_ReputationWidget)
+			m_ReputationWidget.Show(show);
+	}
+
 	void SetShowOnlineStatus(bool show)
 	{
 		m_ShowOnlineStatus = show;
