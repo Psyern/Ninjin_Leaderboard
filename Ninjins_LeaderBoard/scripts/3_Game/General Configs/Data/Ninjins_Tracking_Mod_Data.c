@@ -1052,62 +1052,57 @@ class TrackingModData
 	
 	void SortPlayersByPVEPoints(array<ref PlayerDeathData> players)
 	{
-		int i;
-		int j;
-		PlayerDeathData player1;
-		PlayerDeathData player2;
-		int points1;
-		int points2;
-		
-		for (i = 0; i < players.Count() - 1; i++)
-		{
-			for (j = 0; j < players.Count() - i - 1; j++)
-			{
-				player1 = players.Get(j);
-				player2 = players.Get(j + 1);
-				
-				if (player1 && player2)
-				{
-					points1 = player1.GetPVEPoints();
-					points2 = player2.GetPVEPoints();
-					
-					if (points1 < points2)
-					{
-						players.SwapItems(j, j + 1);
-					}
-				}
-			}
-		}
+		SortPlayersByPoints(players, true);
 	}
-	
+
 	void SortPlayersByPVPPoints(array<ref PlayerDeathData> players)
 	{
+		SortPlayersByPoints(players, false);
+	}
+
+	// Stable Timsort over a precomputed key array (see TrackingModSort).
+	// Two things changed versus the old bubble sort:
+	//  - the points accessor runs once per player instead of once per comparison
+	//  - comparisons drop from n*(n-1)/2 to ~n, because a rebuild is almost
+	//    always triggered by a single player's points changing, so the list is
+	//    still sorted apart from that one entry and Timsort detects the run.
+	// Order is unchanged: highest points first, ties keep their previous order.
+	void SortPlayersByPoints(array<ref PlayerDeathData> players, bool usePVE)
+	{
+		array<int> keys;
+		array<int> order;
 		int i;
-		int j;
-		PlayerDeathData player1;
-		PlayerDeathData player2;
-		int points1;
-		int points2;
-		
-		for (i = 0; i < players.Count() - 1; i++)
+		int count;
+		PlayerDeathData entry;
+		int points;
+
+		if (!players)
+			return;
+
+		count = players.Count();
+		if (count < 2)
+			return;
+
+		keys = new array<int>();
+		order = new array<int>();
+
+		for (i = 0; i < count; i++)
 		{
-			for (j = 0; j < players.Count() - i - 1; j++)
+			entry = players.Get(i);
+			points = 0;
+			if (entry)
 			{
-				player1 = players.Get(j);
-				player2 = players.Get(j + 1);
-				
-				if (player1 && player2)
-				{
-					points1 = player1.GetPVPPoints();
-					points2 = player2.GetPVPPoints();
-					
-					if (points1 < points2)
-					{
-						players.SwapItems(j, j + 1);
-					}
-				}
+				if (usePVE)
+					points = entry.GetPVEPoints();
+				else
+					points = entry.GetPVPPoints();
 			}
+			keys.Insert(points);
 		}
+
+		// false == descending
+		TrackingModSort.BuildOrderByInt(keys, false, order);
+		TrackingModSort.ApplyOrderPlayerDeathData(players, order);
 	}
 	
 	static void CheckDirectories()

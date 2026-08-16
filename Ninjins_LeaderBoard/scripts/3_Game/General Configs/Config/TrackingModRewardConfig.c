@@ -528,66 +528,61 @@ class TrackingModRewardConfig
 	
 	void SortRewardConfigArrays()
 	{
-		string categoryID;
 		array<ref RewardConfigEntry> rewardConfigs;
 		int i;
-		int j;
-		int k;
-		int milestoneValue;
-		int compareValue;
-		RewardConfigEntry tempEntry;
-		
+
 		if (PVERewardConfigs)
 		{
 			for (i = 0; i < PVERewardConfigs.Count(); i++)
 			{
-				categoryID = PVERewardConfigs.GetKey(i);
 				rewardConfigs = PVERewardConfigs.GetElement(i);
-				if (rewardConfigs)
-				{
-					for (j = 0; j < rewardConfigs.Count() - 1; j++)
-					{
-						for (k = j + 1; k < rewardConfigs.Count(); k++)
-						{
-							milestoneValue = rewardConfigs.Get(j).Milestone.ToInt();
-							compareValue = rewardConfigs.Get(k).Milestone.ToInt();
-							if (milestoneValue > compareValue)
-							{
-								tempEntry = rewardConfigs.Get(j);
-								rewardConfigs.Set(j, rewardConfigs.Get(k));
-								rewardConfigs.Set(k, tempEntry);
-							}
-						}
-					}
-				}
+				SortRewardEntriesByMilestone(rewardConfigs);
 			}
 		}
-		
+
 		if (PVPRewardConfigs)
 		{
 			for (i = 0; i < PVPRewardConfigs.Count(); i++)
 			{
-				categoryID = PVPRewardConfigs.GetKey(i);
 				rewardConfigs = PVPRewardConfigs.GetElement(i);
-				if (rewardConfigs)
-				{
-					for (j = 0; j < rewardConfigs.Count() - 1; j++)
-					{
-						for (k = j + 1; k < rewardConfigs.Count(); k++)
-						{
-							milestoneValue = rewardConfigs.Get(j).Milestone.ToInt();
-							compareValue = rewardConfigs.Get(k).Milestone.ToInt();
-							if (milestoneValue > compareValue)
-							{
-								tempEntry = rewardConfigs.Get(j);
-								rewardConfigs.Set(j, rewardConfigs.Get(k));
-								rewardConfigs.Set(k, tempEntry);
-							}
-						}
-					}
-				}
+				SortRewardEntriesByMilestone(rewardConfigs);
 			}
 		}
+	}
+
+	// Ascending by milestone, as before. Milestone is stored as a string, so the
+	// old nested loops paid a ToInt() conversion per comparison; extracting the
+	// keys up front makes that n conversions instead of n*(n-1)/2.
+	void SortRewardEntriesByMilestone(array<ref RewardConfigEntry> rewardConfigs)
+	{
+		array<int> keys;
+		array<int> order;
+		RewardConfigEntry entry;
+		int milestoneValue;
+		int i;
+		int count;
+
+		if (!rewardConfigs)
+			return;
+
+		count = rewardConfigs.Count();
+		if (count < 2)
+			return;
+
+		keys = new array<int>();
+		order = new array<int>();
+
+		for (i = 0; i < count; i++)
+		{
+			entry = rewardConfigs.Get(i);
+			milestoneValue = 0;
+			if (entry)
+				milestoneValue = entry.Milestone.ToInt();
+			keys.Insert(milestoneValue);
+		}
+
+		TrackingModSort.BuildOrderByInt(keys, true, order);
+		TrackingModSort.ApplyOrderRewardEntries(rewardConfigs, order);
 	}
 	
 	string GetRewardConfigFileName(string categoryID, string milestoneStr, bool isPvE)

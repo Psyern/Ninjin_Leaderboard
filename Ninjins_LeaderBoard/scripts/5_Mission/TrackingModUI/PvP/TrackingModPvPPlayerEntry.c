@@ -35,112 +35,16 @@ class TrackingModPvPPlayerEntry: ScriptView
 		return minutes.ToString() + "m";
 	}
 
-	protected int GetPVPCategoryValue(map<string, int> categoryMap, string categoryID)
-	{
-		PVPCategoryConfig pvpCategoryConfig;
-		string primaryCategoryID;
-		int totalValue;
-		
-		if (!categoryMap)
-			return 0;
-		
-		if (categoryMap.Contains(categoryID))
-			return categoryMap.Get(categoryID);
-		
-		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
-		if (!pvpCategoryConfig)
-			return 0;
-		
-		primaryCategoryID = pvpCategoryConfig.GetPrimaryPlayerCategoryID();
-		if (categoryID != primaryCategoryID)
-			return 0;
-		
-		totalValue = 0;
-		if (categoryMap.Contains("Players"))
-			totalValue += categoryMap.Get("Players");
-		if (categoryMap.Contains("Player"))
-			totalValue += categoryMap.Get("Player");
-		if (categoryMap.Contains("Spieler"))
-			totalValue += categoryMap.Get("Spieler");
-		if (categoryMap.Contains("Survivor"))
-			totalValue += categoryMap.Get("Survivor");
-		
-		return totalValue;
-	}
-
+	// Shared with the column sort (TrackingModColumnSort) so the sorted order
+	// always matches the displayed values.
 	protected int GetTotalPVPKills()
 	{
-		PVPCategoryConfig pvpCategoryConfig;
-		array<ref PVPCategory> categories;
-		ref map<string, bool> processedCategories;
-		PVPCategory category;
-		string categoryID;
-		int totalKills;
-		int i;
-		
-		if (!m_PlayerData || !m_PlayerData.categoryKills)
-			return 0;
-		
-		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
-		if (!pvpCategoryConfig)
-			return GetPVPCategoryValue(m_PlayerData.categoryKills, "Players");
-		
-		categories = pvpCategoryConfig.GetCategories();
-		processedCategories = new map<string, bool>();
-		totalKills = 0;
-		for (i = 0; i < categories.Count(); i++)
-		{
-			category = categories.Get(i);
-			if (!category || category.CategoryID == "")
-				continue;
-			
-			categoryID = category.CategoryID;
-			if (processedCategories.Contains(categoryID))
-				continue;
-			processedCategories.Set(categoryID, true);
-			totalKills += GetPVPCategoryValue(m_PlayerData.categoryKills, categoryID);
-		}
-		
-		return totalKills;
+		return TrackingModColumnSort.GetTotalPVPKills(m_PlayerData);
 	}
 
 	protected int GetLongestPVPRange()
 	{
-		PVPCategoryConfig pvpCategoryConfig;
-		array<ref PVPCategory> categories;
-		ref map<string, bool> processedCategories;
-		PVPCategory category;
-		string categoryID;
-		int longestRange;
-		int categoryRange;
-		int i;
-		
-		if (!m_PlayerData || !m_PlayerData.categoryLongestRanges)
-			return 0;
-		
-		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
-		if (!pvpCategoryConfig)
-			return GetPVPCategoryValue(m_PlayerData.categoryLongestRanges, "Players");
-		
-		categories = pvpCategoryConfig.GetCategories();
-		processedCategories = new map<string, bool>();
-		longestRange = 0;
-		for (i = 0; i < categories.Count(); i++)
-		{
-			category = categories.Get(i);
-			if (!category || category.CategoryID == "")
-				continue;
-			
-			categoryID = category.CategoryID;
-			if (processedCategories.Contains(categoryID))
-				continue;
-			processedCategories.Set(categoryID, true);
-			categoryRange = GetPVPCategoryValue(m_PlayerData.categoryLongestRanges, categoryID);
-			if (categoryRange > longestRange)
-				longestRange = categoryRange;
-		}
-		
-		return longestRange;
+		return TrackingModColumnSort.GetLongestPVPRange(m_PlayerData);
 	}
 	
 	void TrackingModPvPPlayerEntry(TrackingModLeaderboardPlayerData playerData, int position)
@@ -169,11 +73,9 @@ class TrackingModPvPPlayerEntry: ScriptView
 			m_EntryController.Kills = playerKills.ToString();
 			m_EntryController.Deaths = m_PlayerData.deathCount.ToString();
 			
-			kdRatio = 0.0;
-			if (m_PlayerData.deathCount > 0)
-				kdRatio = playerKills / m_PlayerData.deathCount;
-			else if (playerKills > 0)
-				kdRatio = playerKills;
+			// Float division via the shared helper - the old int division
+			// truncated 5 kills / 2 deaths to 2.00 instead of 2.50.
+			kdRatio = TrackingModColumnSort.GetKDRatio(m_PlayerData);
 			kdRatio = Math.Round(kdRatio * 100.0) / 100.0;
 			kdStr = kdRatio.ToString();
 			dotPos = kdStr.IndexOf(".");

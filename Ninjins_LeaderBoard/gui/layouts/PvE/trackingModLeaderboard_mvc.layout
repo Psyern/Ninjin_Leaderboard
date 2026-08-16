@@ -241,7 +241,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              style DayZDefaultPanel
             }
             TextWidgetClass th_rank {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.08 0
              size 0.05 1
@@ -256,7 +256,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_player {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.13 0
              size 0.14 1
@@ -270,7 +270,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_points {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.28 0
              size 0.06 1
@@ -285,7 +285,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_longest_range {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.35 0
              size 0.06 1
@@ -300,7 +300,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_total_deaths {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.42 0
              size 0.05 1
@@ -315,7 +315,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_suicides {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.48 0
              size 0.05 1
@@ -330,7 +330,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_distance_foot {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.54 0
              size 0.07 1
@@ -345,7 +345,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_distance_vehicle {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.62 0
              size 0.07 1
@@ -360,7 +360,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_playtime {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.70 0
              size 0.06 1
@@ -375,7 +375,7 @@ FrameWidgetClass TrackingModLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_reputation {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.77 0
              size 0.06 1

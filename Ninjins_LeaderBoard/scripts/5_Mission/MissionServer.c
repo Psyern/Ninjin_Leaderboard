@@ -3,11 +3,9 @@ modded class MissionServer extends MissionBase
 	protected ref map<string, int> m_LeaderboardRequestTimes;
 	protected const int LEADERBOARD_RATE_LIMIT_MS = 500;
 	protected float m_NJN_DistanceTrackTimer;
-	#ifdef Psyerns_Framework
 	protected float m_WebExportTimer;
 	protected float m_WebExportInterval;
 	protected bool m_WebExportEnabled;
-	#endif
 	
 	override void OnInit()
 	{
@@ -65,20 +63,20 @@ modded class MissionServer extends MissionBase
 			#endif
 			TrackingMod.LogInfo("Server initialized - Directories checked/created, data loaded, categories initialized, config loaded");
 
-			#ifdef Psyerns_Framework
+			// Periodic refresh of the local web export file. The HTTP upload
+			// itself is owned by Psyerns Framework V2 (PF_LeaderboardExport
+			// reads the player JSONs directly), so no PF classes are
+			// referenced here anymore.
 			m_WebExportEnabled = false;
 			m_WebExportTimer = 0;
 			m_WebExportInterval = 300;
 			if (g_TrackingModConfig && g_TrackingModConfig.WebExportIntervalSeconds > 0)
 				m_WebExportInterval = g_TrackingModConfig.WebExportIntervalSeconds;
-			if (PF_WebConfig.GetInstance().IsEndpointEnabled("Leaderboard"))
+			if (g_TrackingModConfig && g_TrackingModConfig.EnableWebExport)
 			{
-				TrackingModWebExportHelper.Init();
-				m_WebExportEnabled = TrackingModWebExportHelper.IsInitialized();
-				if (m_WebExportEnabled)
-					TrackingMod.LogInfo("Web export enabled - interval: " + m_WebExportInterval.ToString() + "s");
+				m_WebExportEnabled = true;
+				TrackingMod.LogInfo("Web export enabled - interval: " + m_WebExportInterval.ToString() + "s");
 			}
-			#endif
 		}
 	}
 	
@@ -110,21 +108,19 @@ modded class MissionServer extends MissionBase
 			}
 		}
 
-		#ifdef Psyerns_Framework
 		if (m_WebExportEnabled && GetGame().IsDedicatedServer())
 		{
 			m_WebExportTimer += timeslice;
 			if (m_WebExportTimer >= m_WebExportInterval)
 			{
 				m_WebExportTimer = 0;
-				if (g_TrackingModConfig && g_TrackingModConfig.EnableWebExport)
+				if (g_TrackingModConfig && g_TrackingModConfig.EnableWebExport && g_TrackingModData)
 				{
 					TrackingModWarHardlineSync.SyncAllPlayers();
-					TrackingModWebExportHelper.SendExport();
+					g_TrackingModData.ExportWebLeaderboard();
 				}
 			}
 		}
-		#endif
 	}
 
 	protected bool IsSenderTrackingModAdmin(PlayerIdentity sender)

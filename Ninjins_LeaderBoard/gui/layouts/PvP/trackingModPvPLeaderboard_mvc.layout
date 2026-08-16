@@ -241,7 +241,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              style DayZDefaultPanel
             }
             TextWidgetClass th_rank {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.08 0
              size 0.05 1
@@ -256,7 +256,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_player {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.13 0
              size 0.16 1
@@ -270,7 +270,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_points {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.30 0
              size 0.07 1
@@ -285,7 +285,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_range {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.38 0
              size 0.07 1
@@ -300,7 +300,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_kills {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.46 0
              size 0.06 1
@@ -315,7 +315,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_deaths {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.53 0
              size 0.06 1
@@ -330,7 +330,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_ratio {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.60 0
              size 0.07 1
@@ -345,7 +345,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_playtime {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.68 0
              size 0.06 1
@@ -360,7 +360,7 @@ FrameWidgetClass TrackingModPvPLeaderboardMenu {
              "text valign" center
             }
             TextWidgetClass th_reputation {
-             ignorepointer 1
+             ignorepointer 0
              color 1 1 1 1
              position 0.745 0
              size 0.045 1

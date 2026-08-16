@@ -20,29 +20,9 @@ class TrackingModPlayerEntry: ScriptView
 	
 	protected int GetLongestPVERange()
 	{
-		PVPCategoryConfig pvpCategoryConfig;
-		string categoryID;
-		int longestRange;
-		int categoryRange;
-		int i;
-
-		if (!m_PlayerData || !m_PlayerData.categoryLongestRanges)
-			return 0;
-
-		pvpCategoryConfig = PVPCategoryConfig.GetInstance();
-		longestRange = 0;
-		for (i = 0; i < m_PlayerData.categoryLongestRanges.Count(); i++)
-		{
-			categoryID = m_PlayerData.categoryLongestRanges.GetKey(i);
-			if (pvpCategoryConfig && pvpCategoryConfig.HasCategory(categoryID))
-				continue;
-
-			categoryRange = m_PlayerData.categoryLongestRanges.GetElement(i);
-			if (categoryRange > longestRange)
-				longestRange = categoryRange;
-		}
-
-		return longestRange;
+		// Shared with the column sort so the sorted order always matches
+		// the displayed value.
+		return TrackingModColumnSort.GetLongestPVERange(m_PlayerData);
 	}
 
 	protected string FormatPlaytime(int totalSeconds)

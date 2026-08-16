@@ -20,6 +20,7 @@ class TrackingModLeaderboardMenu: ScriptViewMenu
 		m_PageCache = new map<int, ref TrackingModLeaderboardData>();
 		m_NextPreloadPage = 0;
 		m_MaxPreloadPage = 0;
+		TrackingModColumnSort.ClearSort();
 	}
 
 	void ~TrackingModLeaderboardMenu()
@@ -55,6 +56,132 @@ class TrackingModLeaderboardMenu: ScriptViewMenu
 
 		m_SettingsButton = ButtonWidget.Cast(GetLayoutRoot().FindAnyWidget("settings_button"));
 		UpdateSettingsButtonVisibility();
+		UpdateSortIndicators();
+	}
+
+	// Column ID (see TrackingModColumnSort) for a clickable header widget.
+	// Empty string means the widget is not a sortable column.
+	protected string GetColumnIDForHeader(string widgetName)
+	{
+		if (widgetName == "th_player")
+			return "Name";
+		if (widgetName == "th_points")
+			return "PvEPoints";
+		if (widgetName == "th_longest_range")
+			return "LongestRange";
+		if (widgetName == "th_total_deaths")
+			return "TotalDeaths";
+		if (widgetName == "th_suicides")
+			return "Suicides";
+		if (widgetName == "th_distance_foot")
+			return "DistanceOnFoot";
+		if (widgetName == "th_distance_vehicle")
+			return "DistanceInVehicle";
+		if (widgetName == "th_playtime")
+			return "PlayTime";
+		if (widgetName == "th_reputation")
+			return "Reputation";
+		return "";
+	}
+
+	// Base captions as set in trackingModLeaderboard_mvc.layout. TextWidget has
+	// no GetText(), so the labels are mirrored here for the sort indicator.
+	protected string GetHeaderBaseLabel(string widgetName)
+	{
+		if (widgetName == "th_player")
+			return "Player";
+		if (widgetName == "th_points")
+			return "PVE";
+		if (widgetName == "th_longest_range")
+			return "Weitester";
+		if (widgetName == "th_total_deaths")
+			return "Tode";
+		if (widgetName == "th_suicides")
+			return "Selbstm.";
+		if (widgetName == "th_distance_foot")
+			return "Fuß";
+		if (widgetName == "th_distance_vehicle")
+			return "Fahrzeug";
+		if (widgetName == "th_playtime")
+			return "Spielzeit";
+		if (widgetName == "th_reputation")
+			return "Ruf";
+		return "";
+	}
+
+	protected TStringArray GetSortableHeaderNames()
+	{
+		return {"th_player", "th_points", "th_longest_range", "th_total_deaths", "th_suicides", "th_distance_foot", "th_distance_vehicle", "th_playtime", "th_reputation"};
+	}
+
+	protected void UpdateSortIndicators()
+	{
+		TStringArray headerNames;
+		string widgetName;
+		string columnID;
+		string label;
+		string currentColumn;
+		TextWidget headerWidget;
+		int i;
+
+		if (!GetLayoutRoot())
+			return;
+
+		headerNames = GetSortableHeaderNames();
+		currentColumn = TrackingModColumnSort.GetCurrentColumn();
+
+		for (i = 0; i < headerNames.Count(); i++)
+		{
+			widgetName = headerNames.Get(i);
+			headerWidget = TextWidget.Cast(GetLayoutRoot().FindAnyWidget(widgetName));
+			if (!headerWidget)
+				continue;
+
+			label = GetHeaderBaseLabel(widgetName);
+			columnID = GetColumnIDForHeader(widgetName);
+			if (columnID != "" && columnID == currentColumn)
+			{
+				if (TrackingModColumnSort.IsAscending())
+					label = label + " ^";
+				else
+					label = label + " v";
+			}
+			headerWidget.SetText(label);
+		}
+	}
+
+	override bool OnMouseButtonDown(Widget w, int x, int y, int button)
+	{
+		bool handled;
+		string widgetName;
+		string columnID;
+
+		handled = super.OnMouseButtonDown(w, x, y, button);
+
+		if (!w || button != MouseState.LEFT)
+			return handled;
+
+		widgetName = w.GetName();
+
+		// Clicking the rank header restores the server-side points order.
+		if (widgetName == "th_rank")
+		{
+			if (TrackingModColumnSort.GetCurrentColumn() == "")
+				return handled;
+			TrackingModColumnSort.ClearSort();
+			LoadPlayers();
+			UpdateSortIndicators();
+			return true;
+		}
+
+		columnID = GetColumnIDForHeader(widgetName);
+		if (columnID == "")
+			return handled;
+
+		TrackingModColumnSort.SetSort(columnID);
+		LoadPlayers();
+		UpdateSortIndicators();
+		return true;
 	}
 	
 	void SetLeaderboardData(TrackingModLeaderboardData data)
@@ -208,14 +335,31 @@ class TrackingModLeaderboardMenu: ScriptViewMenu
 			int i;
 			TrackingModLeaderboardPlayerData playerData;
 			int position;
+			int originalIndex;
 			TrackingModPlayerEntry entry;
-			
+			array<ref TrackingModLeaderboardPlayerData> displayPlayers;
+
+			// Render from a copy so the cached page keeps the server-side
+			// points order; the active column sort only affects the display.
+			displayPlayers = new array<ref TrackingModLeaderboardPlayerData>();
 			for (i = 0; i < m_LeaderboardData.topPVEPlayers.Count(); i++)
 			{
-				playerData = m_LeaderboardData.topPVEPlayers.Get(i);
+				displayPlayers.Insert(m_LeaderboardData.topPVEPlayers.Get(i));
+			}
+
+			if (TrackingModColumnSort.GetCurrentColumn() != "")
+				TrackingModColumnSort.SortPlayerList(displayPlayers);
+
+			for (i = 0; i < displayPlayers.Count(); i++)
+			{
+				playerData = displayPlayers.Get(i);
 				if (playerData)
 				{
-					position = ((m_CurrentPage - 1) * 25) + i + 1;
+					// Rank stays the points-based position from the server list.
+					originalIndex = m_LeaderboardData.topPVEPlayers.Find(playerData);
+					if (originalIndex == -1)
+						originalIndex = i;
+					position = ((m_CurrentPage - 1) * 25) + originalIndex + 1;
 					entry = new TrackingModPlayerEntry(playerData, position);
 					entry.SetShowOnlineStatus(m_LeaderboardData.showPlayerOnlineStatusPVE);
 					entry.SetShowReputation(m_LeaderboardData.showReputation);
