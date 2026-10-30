@@ -67,7 +67,7 @@ class TrackingModKillCategory: ScriptView
 			m_CategoryController = TrackingModKillCategoryController.Cast(GetController());
 			if (!m_CategoryController)
 			{
-				GetGame().GetCallQueue(CALL_CATEGORY_GUI).CallLater(LoadCategoryPreview, 100, false);
+				g_Game.GetCallQueue(CALL_CATEGORY_GUI).CallLater(LoadCategoryPreview, 100, false);
 				return;
 			}
 		}
@@ -86,7 +86,7 @@ class TrackingModKillCategory: ScriptView
 			
 			if (!category_item_preview_container)
 			{
-				GetGame().GetCallQueue(CALL_CATEGORY_GUI).CallLater(LoadCategoryPreview, 100, false);
+				g_Game.GetCallQueue(CALL_CATEGORY_GUI).CallLater(LoadCategoryPreview, 100, false);
 				return;
 			}
 		}
@@ -98,7 +98,7 @@ class TrackingModKillCategory: ScriptView
 			
 			if (!category_item_preview)
 			{
-				GetGame().GetCallQueue(CALL_CATEGORY_GUI).CallLater(LoadCategoryPreview, 100, false);
+				g_Game.GetCallQueue(CALL_CATEGORY_GUI).CallLater(LoadCategoryPreview, 100, false);
 				return;
 			}
 		}

@@ -1,5 +1,5 @@
-const string TRACKING_MOD_REWARD_CONFIG_FILE = TRACKING_MOD_DATA_DIR + "TrackingModRewardConfig.json";
-const string TRACKING_MOD_REWARD_SYSTEM_DIR = TRACKING_MOD_DATA_DIR + "RewardSystem\\";
+const string TRACKING_MOD_REWARD_CONFIG_FILE = TRACKING_MOD_ROOT_FOLDER + "Data\\TrackingModRewardConfig.json";
+const string TRACKING_MOD_REWARD_SYSTEM_DIR = TRACKING_MOD_ROOT_FOLDER + "Data\\RewardSystem\\";
 ref TrackingModRewardConfig g_TrackingModRewardConfig;
 
 class RewardConfigEntry
@@ -274,7 +274,7 @@ class TrackingModRewardConfig
 	{
 		string rewardSystemDir;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		
 		rewardSystemDir = RewardConfigFolder;
@@ -283,7 +283,7 @@ class TrackingModRewardConfig
 		
 		if (!FileExist(rewardSystemDir))
 		{
-			CF_Directory.CreateDirectory(rewardSystemDir);
+			MakeDirectory(rewardSystemDir);
 			TrackingMod.LogInfo("Created RewardSystem directory: " + rewardSystemDir);
 		}
 		
@@ -629,7 +629,7 @@ class TrackingModRewardConfig
 	{
 		string actualFilePath;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 		{
 			return;
 		}
@@ -648,14 +648,14 @@ class TrackingModRewardConfig
 	{
 		string actualFilePath;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 		{
 			return null;
 		}
 		TrackingModData.CheckDirectories();
 		if (!FileExist(TRACKING_MOD_REWARD_SYSTEM_DIR))
 		{
-			CF_Directory.CreateDirectory(TRACKING_MOD_REWARD_SYSTEM_DIR);
+			MakeDirectory(TRACKING_MOD_REWARD_SYSTEM_DIR);
 			TrackingMod.LogInfo("Created RewardSystem directory: " + TRACKING_MOD_REWARD_SYSTEM_DIR);
 		}
 		TrackingModRewardConfig config;

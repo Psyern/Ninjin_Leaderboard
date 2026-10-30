@@ -38,7 +38,7 @@ modded class MissionBase
 			m_RPCRegistered = true;
 		}
 		
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player)
 			return;
 
@@ -48,7 +48,7 @@ modded class MissionBase
 		{
 			if (adminMenu)
 			{
-				GetGame().GetMission().GetHud().Show(true);
+				g_Game.GetMission().GetHud().Show(true);
 				adminMenu.Close();
 			}
 			else
@@ -67,13 +67,13 @@ modded class MissionBase
 					TrackingModUI.LogRPC("[Cache] Menu closing, clearing cache");
 					m_LeaderboardMenu.ClearCache();
 				}
-				GetGame().GetMission().GetHud().Show(true);
+				g_Game.GetMission().GetHud().Show(true);
 				m_LeaderboardMenu.Close();
 				m_LeaderboardMenu = null;
 			}
 			else if (!m_LeaderboardMenu)
 			{
-				if (GetGame().GetUIManager().GetMenu())
+				if (g_Game.GetUIManager().GetMenu())
 					return;
 				
 				OpenTrackingModLeaderboardPVE();
@@ -85,13 +85,13 @@ modded class MissionBase
 		{
 			if (m_PvPLeaderboardMenu && m_PvPLeaderboardMenu.IsVisible())
 			{
-				GetGame().GetMission().GetHud().Show(true);
+				g_Game.GetMission().GetHud().Show(true);
 				m_PvPLeaderboardMenu.Close();
 				m_PvPLeaderboardMenu = null;
 			}
 			else if (!m_PvPLeaderboardMenu)
 			{
-				if (GetGame().GetUIManager().GetMenu())
+				if (g_Game.GetUIManager().GetMenu())
 					return;
 				
 				OpenTrackingModLeaderboardPVP();
@@ -100,13 +100,13 @@ modded class MissionBase
 		
 		if (m_LeaderboardMenu && !m_LeaderboardMenu.IsVisible())
 		{
-			GetGame().GetMission().GetHud().Show(true);
+			g_Game.GetMission().GetHud().Show(true);
 			m_LeaderboardMenu = null;
 		}
 		
 		if (m_PvPLeaderboardMenu && !m_PvPLeaderboardMenu.IsVisible())
 		{
-			GetGame().GetMission().GetHud().Show(true);
+			g_Game.GetMission().GetHud().Show(true);
 			m_PvPLeaderboardMenu = null;
 		}
 	}
@@ -118,7 +118,7 @@ modded class MissionBase
 		if (m_LeaderboardMenu || m_PvPLeaderboardMenu || TrackingModAdminMenu.GetInstance())
 			return;
 
-		if (GetGame().GetUIManager().GetMenu())
+		if (g_Game.GetUIManager().GetMenu())
 			return;
 
 		if (m_LastLeaderboardData && m_LastLeaderboardData.isAdmin)
@@ -127,7 +127,7 @@ modded class MissionBase
 			return;
 		}
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -153,7 +153,7 @@ modded class MissionBase
 	{
 		PlayerBase player;
 		
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 		
@@ -174,7 +174,7 @@ modded class MissionBase
 	{
 		PlayerBase player;
 		
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 		
@@ -209,7 +209,7 @@ modded class MissionBase
 		
 		m_PendingPVEMode = false;
 		m_PendingPVPMode = false;
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (player)
 			player.MessageAction(message);
 	}
@@ -233,7 +233,7 @@ modded class MissionBase
 		if (ctx.Read(data))
 		{
 			leaderboardData = data.param1;
-			player = PlayerBase.Cast(GetGame().GetPlayer());
+			player = PlayerBase.Cast(g_Game.GetPlayer());
 			if (leaderboardData)
 			{
 				m_LastLeaderboardData = leaderboardData;
@@ -316,7 +316,7 @@ modded class MissionBase
 				if (!m_LeaderboardMenu)
 				{
 					m_LeaderboardMenu = new TrackingModLeaderboardMenu();
-					GetGame().GetMission().GetHud().Show(false);
+					g_Game.GetMission().GetHud().Show(false);
 				}
 				
 				if (m_LeaderboardMenu)
@@ -343,7 +343,7 @@ modded class MissionBase
 				if (!m_PvPLeaderboardMenu)
 				{
 					m_PvPLeaderboardMenu = new TrackingModPvPLeaderboardMenu();
-					GetGame().GetMission().GetHud().Show(false);
+					g_Game.GetMission().GetHud().Show(false);
 				}
 				
 				if (m_PvPLeaderboardMenu)
@@ -369,7 +369,7 @@ modded class MissionBase
 		if (ctx.Read(responseParam))
 		{
 			response = responseParam.param1;
-			player = PlayerBase.Cast(GetGame().GetPlayer());
+			player = PlayerBase.Cast(g_Game.GetPlayer());
 			if (response && player)
 			{
 				if (response.success)
@@ -491,7 +491,7 @@ modded class MissionBase
 		if (adminMenu)
 			adminMenu.OnAdminConfigSaved(responseParam.param1);
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (player && responseParam.param1.Message != "")
 			player.MessageAction(responseParam.param1.Message);
 	}
@@ -551,7 +551,7 @@ modded class MissionBase
 		if (!ctx.Read(responseParam) || !responseParam || !responseParam.param1)
 			return;
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (player && responseParam.param1.Message != "")
 		{
 			if (responseParam.param1.Success)

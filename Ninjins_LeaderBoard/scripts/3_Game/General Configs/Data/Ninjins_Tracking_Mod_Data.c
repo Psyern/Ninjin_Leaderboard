@@ -1047,7 +1047,7 @@ class TrackingModData
 		SortPlayersByPVPPoints(m_CachedSortedPVP);
 		
 		m_LeaderboardDataDirty = false;
-		m_LastSortTime = GetGame().GetTime();
+		m_LastSortTime = g_Game.GetTime();
 	}
 	
 	void SortPlayersByPVEPoints(array<ref PlayerDeathData> players)
@@ -1138,7 +1138,7 @@ class TrackingModData
 		data = new TrackingModData();
 		g_TrackingModData = data;
 		
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 		{
 			data.LoadAllPlayerFiles();
 		}
@@ -1155,7 +1155,7 @@ class TrackingModData
 		if (!g_TrackingModData)
 		{
 			g_TrackingModData = new TrackingModData();
-			if (!GetGame().IsDedicatedServer())
+			if (!g_Game.IsDedicatedServer())
 			{
 				g_TrackingModData.m_PlayerDataMap = new map<string, ref PlayerDeathData>();
 			}
@@ -1181,7 +1181,7 @@ class TrackingModData
 		if (!g_TrackingModData)
 			return;
 		
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 		{
 			g_TrackingModData.m_PlayerDataMap.Clear();
 			g_TrackingModData.LoadAllPlayerFiles();
@@ -1204,7 +1204,7 @@ class TrackingModData
 		PlayerDeathData loadedPlayerData;
 		CF_Date currentDate;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		
 		if (!m_PlayerDataMap)
@@ -1305,7 +1305,7 @@ class TrackingModData
 		string playerID;
 		PlayerDeathData playerData;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		
 		if (!m_PlayerDataMap)
@@ -1428,7 +1428,7 @@ class TrackingModData
 		playerData.PlayerID = plainID;
 		filePath = GetPlayerFilePath(plainID);
 		
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 		{
 			JsonFileLoader<PlayerDeathData>.JsonSaveFile(filePath, playerData);
 		}
@@ -1465,7 +1465,7 @@ class TrackingModData
 		TrackingModWebLeaderboardPlayerData exportPlayer;
 		string exportFilePath;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		
 		if (!g_TrackingModConfig || !g_TrackingModConfig.EnableWebExport)
@@ -2067,7 +2067,7 @@ class TrackingModData
 		int lastLoginTimestamp;
 		int secondsDiff;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		
 		if (maxAgeDays <= 0)

@@ -129,7 +129,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		LockControls();
 		SetActiveTab(0);
 		SetFocus(GetLayoutRoot());
-		GetGame().GetMission().GetHud().Show(false);
+		g_Game.GetMission().GetHud().Show(false);
 		FillZoneTypeList();
 		RequestConfigIfPossible();
 	}
@@ -158,7 +158,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		if (!m_LeaderboardData || !m_LeaderboardData.isAdmin)
 			return;
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -361,7 +361,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		PlayerBase player;
 		PlayerIdentity identity;
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player)
 			return "";
 
@@ -920,7 +920,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		if (!m_LeaderboardData || !m_LeaderboardData.isAdmin)
 			return;
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -1153,7 +1153,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		if (searchTerm == "")
 			return;
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -1171,7 +1171,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 		}
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -1189,7 +1189,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 		}
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -1218,7 +1218,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 		}
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -1247,7 +1247,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 		}
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -1280,7 +1280,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		if (amount <= 0)
 			amount = 1;
 
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 
@@ -1364,7 +1364,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 
 	protected void CloseAdminMenu()
 	{
-		GetGame().GetMission().GetHud().Show(true);
+		g_Game.GetMission().GetHud().Show(true);
 		Close();
 	}
 

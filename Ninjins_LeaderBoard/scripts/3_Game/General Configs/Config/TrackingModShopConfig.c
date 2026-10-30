@@ -1,4 +1,4 @@
-const string TRACKING_MOD_SHOP_CONFIG_FILE = TRACKING_MOD_DATA_DIR + "ShopConfig.json";
+const string TRACKING_MOD_SHOP_CONFIG_FILE = TRACKING_MOD_ROOT_FOLDER + "Data\\ShopConfig.json";
 ref TrackingModShopConfig g_TrackingModShopConfig;
 
 class TrackingModShopItem

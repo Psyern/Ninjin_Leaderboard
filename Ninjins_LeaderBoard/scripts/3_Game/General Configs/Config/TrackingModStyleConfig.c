@@ -1,4 +1,4 @@
-const string TRACKING_MOD_STYLE_CONFIG_FILE = TRACKING_MOD_DATA_DIR + "StyleConfig.json";
+const string TRACKING_MOD_STYLE_CONFIG_FILE = TRACKING_MOD_ROOT_FOLDER + "Data\\StyleConfig.json";
 ref TrackingModStyleConfig g_TrackingModStyleConfig;
 
 class TrackingModColorSetting

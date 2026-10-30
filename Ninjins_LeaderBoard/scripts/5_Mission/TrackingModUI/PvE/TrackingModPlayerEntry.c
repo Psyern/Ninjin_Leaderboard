@@ -185,7 +185,7 @@ class TrackingModPlayerEntry: ScriptView
 		if (!m_PlayerData)
 			return;
 
-		highlightPlayer = PlayerBase.Cast(GetGame().GetPlayer());
+		highlightPlayer = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!highlightPlayer)
 			return;
 
@@ -256,7 +256,7 @@ class TrackingModPlayerEntry: ScriptView
 			return;
 		}
 		
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player)
 		{
 			Print("[TrackingMod UI] ERROR: Player is null!");
@@ -305,7 +305,7 @@ class TrackingModPlayerEntry: ScriptView
 			return;
 		}
 		
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player)
 		{
 			claim_reward_button.Show(false);

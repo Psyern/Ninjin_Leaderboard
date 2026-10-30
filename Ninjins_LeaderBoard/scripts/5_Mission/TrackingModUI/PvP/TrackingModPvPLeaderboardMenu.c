@@ -250,7 +250,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 			return;
 		}
 		
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 		
@@ -404,7 +404,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		}
 		
 		TrackingModUI.LogRPC(string.Format("[RPC] Page %1 not in cache, requesting from server", page));
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player || !player.GetIdentity())
 			return;
 		
@@ -539,7 +539,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		{
 			TrackingModUI.LogRPC("[Cache] ESC pressed, clearing cache before close");
 			ClearCache();
-			GetGame().GetMission().GetHud().Show(true);
+			g_Game.GetMission().GetHud().Show(true);
 			Close();
 		}
 	}
@@ -562,7 +562,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		if (!response || !m_MenuController || !m_MenuController.PlayerEntries)
 			return;
 		
-		player = PlayerBase.Cast(GetGame().GetPlayer());
+		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player)
 			return;
 		

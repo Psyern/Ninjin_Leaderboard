@@ -28,7 +28,7 @@ class TrackingModUI
 	{
 		TrackingModUILoggerConfigJson config;
 		
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 			return;
 		
 		config = new TrackingModUILoggerConfigJson();
@@ -51,7 +51,7 @@ class TrackingModUI
 	
 	static void InitLogFile()
 	{
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 			return;
 		
 		LoadLoggerConfig();
@@ -80,7 +80,7 @@ class TrackingModUI
 		bool logFolderCreated;
 		bool logsCreated;
 		
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 			return;
 		
 		if (!FileExist(TRACKING_MOD_UI_ROOT_FOLDER))
@@ -135,7 +135,7 @@ class TrackingModUI
 		string logMessage;
 		FileHandle tempLogFile;
 		
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 			return;
 		
 		if (m_LogLevel == 0)

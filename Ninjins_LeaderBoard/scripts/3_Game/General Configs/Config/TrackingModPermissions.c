@@ -43,7 +43,7 @@ class TrackingModPermissions
 
 		if (!FileExist(TRACKING_MOD_PERMISSIONS_DIR))
 		{
-			CF_Directory.CreateDirectory(TRACKING_MOD_PERMISSIONS_DIR);
+			MakeDirectory(TRACKING_MOD_PERMISSIONS_DIR);
 			Print("[TrackingMod] Created Permissions directory: " + TRACKING_MOD_PERMISSIONS_DIR);
 		}
 

@@ -1,5 +1,5 @@
 ref TrackingModConfig g_TrackingModConfig;
-const string TRACKING_MOD_CONFIG_FILE = TRACKING_MOD_DATA_DIR + "LeaderBoardConfig.json";
+const string TRACKING_MOD_CONFIG_FILE = TRACKING_MOD_ROOT_FOLDER + "Data\\LeaderBoardConfig.json";
 class TrackingModConfig
 {
 	autoptr array<string> AdminIDs;
@@ -148,7 +148,7 @@ class TrackingModConfig
 	}
 	void SaveConfig()
 	{
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 		{
 			return;
 		}
@@ -157,7 +157,7 @@ class TrackingModConfig
 	}
 	static TrackingModConfig LoadConfig()
 	{
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 		{
 			return null;
 		}

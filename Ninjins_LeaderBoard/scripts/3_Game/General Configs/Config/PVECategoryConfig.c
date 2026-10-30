@@ -221,30 +221,30 @@ class PVECategory
 	{
 		if (className == baseClassName)
 			return true;
-		if (!GetGame().ConfigIsExisting("CfgVehicles " + className))
+		if (!g_Game.ConfigIsExisting("CfgVehicles " + className))
 			return false;
-		if (!GetGame().ConfigIsExisting("CfgVehicles " + baseClassName))
+		if (!g_Game.ConfigIsExisting("CfgVehicles " + baseClassName))
 			return false;
 		string configPath = "CfgVehicles " + className;
 		string parentPath = configPath + " parent";
-		if (GetGame().ConfigIsExisting(parentPath))
+		if (g_Game.ConfigIsExisting(parentPath))
 		{
 			string parentClass;
-			GetGame().ConfigGetText(parentPath, parentClass);
+			g_Game.ConfigGetText(parentPath, parentClass);
 			if (parentClass == baseClassName)
 				return true;
 			if (MatchesBaseClassByConfig(parentClass, baseClassName))
 				return true;
 		}
-		int childCount = GetGame().ConfigGetChildrenCount(configPath);
+		int childCount = g_Game.ConfigGetChildrenCount(configPath);
 		for (int i = 0; i < childCount; i++)
 		{
 			string childName;
-			GetGame().ConfigGetChildName(configPath, i, childName);
+			g_Game.ConfigGetChildName(configPath, i, childName);
 			if (childName == "parent")
 			{
 				string parentClassFromChild;
-				GetGame().ConfigGetText(configPath + " " + childName, parentClassFromChild);
+				g_Game.ConfigGetText(configPath + " " + childName, parentClassFromChild);
 				if (parentClassFromChild == baseClassName)
 					return true;
 				if (MatchesBaseClassByConfig(parentClassFromChild, baseClassName))

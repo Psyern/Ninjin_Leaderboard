@@ -26,7 +26,7 @@ class TrackingModMilestoneRewardLoader
 		int i;
 		string fileFullPath;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return null;
 		
 		if (!g_TrackingModRewardConfig)
@@ -38,7 +38,7 @@ class TrackingModMilestoneRewardLoader
 		
 		if (!FileExist(actualFilePath))
 		{
-			CF_Directory.CreateDirectory(actualFilePath);
+			MakeDirectory(actualFilePath);
 			TrackingMod.LogInfo("Created RewardSystem directory: " + actualFilePath);
 		}
 		

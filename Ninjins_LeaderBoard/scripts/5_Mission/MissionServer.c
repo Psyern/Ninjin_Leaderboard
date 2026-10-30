@@ -18,7 +18,7 @@ modded class MissionServer extends MissionBase
 		super.OnInit();
 		m_LeaderboardRequestTimes = new map<string, int>();
 		m_NJN_DistanceTrackTimer = 0;
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 		{
 			TrackingModData.CheckDirectories();
 			data = TrackingModData.LoadData();
@@ -108,7 +108,7 @@ modded class MissionServer extends MissionBase
 			}
 		}
 
-		if (m_WebExportEnabled && GetGame().IsDedicatedServer())
+		if (m_WebExportEnabled && g_Game.IsDedicatedServer())
 		{
 			m_WebExportTimer += timeslice;
 			if (m_WebExportTimer >= m_WebExportInterval)
@@ -357,7 +357,7 @@ modded class MissionServer extends MissionBase
 		TrackingModPVEAdminData pveData;
 		TrackingModPVPAdminData pvpData;
 
-		if (!GetGame().IsDedicatedServer() || type != CallType.Server || !sender)
+		if (!g_Game.IsDedicatedServer() || type != CallType.Server || !sender)
 			return;
 
 		if (!IsSenderTrackingModAdmin(sender))
@@ -386,7 +386,7 @@ modded class MissionServer extends MissionBase
 		TrackingModGeneralAdminData freshData;
 		string senderID;
 
-		if (!GetGame().IsDedicatedServer() || type != CallType.Server || !sender)
+		if (!g_Game.IsDedicatedServer() || type != CallType.Server || !sender)
 			return;
 
 		response = new TrackingModAdminSaveResponse();
@@ -444,7 +444,7 @@ modded class MissionServer extends MissionBase
 		TrackingModPVPAdminData freshPVPData;
 		string senderID;
 
-		if (!GetGame().IsDedicatedServer() || type != CallType.Server || !sender)
+		if (!g_Game.IsDedicatedServer() || type != CallType.Server || !sender)
 			return;
 
 		response = new TrackingModAdminSaveResponse();
@@ -559,7 +559,7 @@ modded class MissionServer extends MissionBase
 			senderID = sender.GetPlainId();
 		}
 		
-		currentTime = GetGame().GetTime();
+		currentTime = g_Game.GetTime();
 		if (m_LeaderboardRequestTimes && senderID != "")
 		{
 			if (m_LeaderboardRequestTimes.Contains(senderID))
@@ -575,7 +575,7 @@ modded class MissionServer extends MissionBase
 		}
 		
 		TrackingMod.LogDebug("RequestTrackingModLeaderboard received from: " + senderName + " (page: " + requestedPage.ToString() + ")");
-		if (!GetGame().IsDedicatedServer() || !sender)
+		if (!g_Game.IsDedicatedServer() || !sender)
 		{
 			TrackingMod.LogWarning("Request rejected - not server or no sender");
 			return;
@@ -600,7 +600,7 @@ modded class MissionServer extends MissionBase
 		}
 		
 		players = new array<Man>();
-		GetGame().GetPlayers(players);
+		g_Game.GetPlayers(players);
 		playerOnlineCounter = players.Count();
 
 		// Reputation in PlayerDeathData ist sonst nur bei Connect/Disconnect aktuell.
@@ -1028,7 +1028,7 @@ modded class MissionServer extends MissionBase
 		}
 
 		allPlayers = new array<Man>();
-		GetGame().GetPlayers(allPlayers);
+		g_Game.GetPlayers(allPlayers);
 		buyerPlayer = null;
 		for (pIdx = 0; pIdx < allPlayers.Count(); pIdx++)
 		{
@@ -1332,7 +1332,7 @@ modded class MissionServer extends MissionBase
 		response = new TrackingModAdminSaveResponse();
 
 		allPlayers = new array<Man>();
-		GetGame().GetPlayers(allPlayers);
+		g_Game.GetPlayers(allPlayers);
 		targetPlayer = null;
 		for (i = 0; i < allPlayers.Count(); i++)
 		{
@@ -1384,7 +1384,7 @@ modded class MissionServer extends MissionBase
 		int i;
 		PlayerDeathData playerData;
 		
-		if (GetGame().IsDedicatedServer())
+		if (g_Game.IsDedicatedServer())
 		{
 			if (g_TrackingModData && g_TrackingModData.m_PlayerDataMap)
 			{
@@ -1420,7 +1420,7 @@ modded class MissionServer extends MissionBase
 		int recalculatedCount;
 		
 		super.OnEvent(eventTypeId, params);
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		if (eventTypeId == ChatMessageEventTypeID)
 		{
@@ -1455,7 +1455,7 @@ modded class MissionServer extends MissionBase
 		PlayerBase player;
 		
 		players = new array<Man>();
-		GetGame().GetPlayers(players);
+		g_Game.GetPlayers(players);
 		for (i = 0; i < players.Count(); i++)
 		{
 			player = PlayerBase.Cast(players[i]);
@@ -1481,7 +1481,7 @@ modded class MissionServer extends MissionBase
 		
 		super.PlayerDisconnected(player, identity, uid);
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		
 		data = TrackingModData.LoadData();
@@ -1489,7 +1489,7 @@ modded class MissionServer extends MissionBase
 			return;
 		
 		connectedPlayers = new array<Man>();
-		GetGame().GetPlayers(connectedPlayers);
+		g_Game.GetPlayers(connectedPlayers);
 		
 		connectedPlayerIDs = new map<string, bool>();
 		for (connectedIdx = 0; connectedIdx < connectedPlayers.Count(); connectedIdx++)
@@ -1560,7 +1560,7 @@ modded class MissionServer extends MissionBase
 		string playerName;
 		PlayerDeathData playerData;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return 0;
 		TrackingMod.LogInfo("Reloading configs...");
 		g_TrackingModConfig = TrackingModConfig.LoadConfig();
@@ -1585,7 +1585,7 @@ modded class MissionServer extends MissionBase
 			
 			TrackingMod.LogInfo("Updating online status for currently connected players...");
 			currentPlayers = new array<Man>();
-			GetGame().GetPlayers(currentPlayers);
+			g_Game.GetPlayers(currentPlayers);
 			updatedCount = 0;
 			for (i = 0; i < currentPlayers.Count(); i++)
 			{
@@ -1669,7 +1669,7 @@ modded class MissionServer extends MissionBase
 		string rewardDisplayName;
 		string rewardNotificationText;
 		
-		if (!GetGame().IsDedicatedServer())
+		if (!g_Game.IsDedicatedServer())
 			return;
 		
 		if (sender)
@@ -1687,7 +1687,7 @@ modded class MissionServer extends MissionBase
 		plainID = sender.GetPlainId();
 		player = null;
 		allPlayers = new array<Man>();
-		GetGame().GetPlayers(allPlayers);
+		g_Game.GetPlayers(allPlayers);
 		for (i = 0; i < allPlayers.Count(); i++)
 		{
 			tempPlayer = PlayerBase.Cast(allPlayers.Get(i));
