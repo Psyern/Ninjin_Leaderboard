@@ -1,4 +1,4 @@
-const string TRACKING_MOD_UI_ROOT_FOLDER = "$profile:Ninjins_LeaderBoard\\";
+const string TRACKING_MOD_UI_ROOT_FOLDER = "$profile:Psyerns_Leaderboard\\";
 const string TRACKING_MOD_UI_LOG_FOLDER = TRACKING_MOD_UI_ROOT_FOLDER + "Logging\\";
 const string TRACKING_MOD_UI_LOGGER_LOG_DIR = TRACKING_MOD_UI_LOG_FOLDER + "Logs\\";
 const string TRACKING_MOD_UI_LOGGER_LOG_FILE = TRACKING_MOD_UI_LOGGER_LOG_DIR + "TrackingModUI_%1.log";

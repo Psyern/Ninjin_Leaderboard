@@ -12,7 +12,7 @@ This document outlines the analysis for renaming classes to use the `TrackingMod
 ### Main Mod (`Ninjins_Tracking_Mod`):
 
 1. **`PlayerDeathData`** → `TrackingMod_PlayerDeathData`
-   - **~52 occurrences** in `Ninjins_Tracking_Mod_Data.c`
+   - **~52 occurrences** in `Psyerns_Tracking_Mod_Data.c`
    - Used in MissionServer, PlayerBase, etc.
    - **High impact** - Core data class
 
@@ -115,7 +115,7 @@ These classes already have `TrackingMod_` prefix:
 
 ### Files Most Affected:
 
-1. **`Ninjins_Tracking_Mod_Data.c`** - ~52 changes for `PlayerDeathData`
+1. **`Psyerns_Tracking_Mod_Data.c`** - ~52 changes for `PlayerDeathData`
 2. **`PVECategoryConfig.c`** - ~66 changes total
 3. **`PVPCategoryConfig.c`** - ~46 changes total
 4. **`TrackingModRewardConfig.c`** - ~32 changes for `RewardConfigEntry`

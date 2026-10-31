@@ -11,7 +11,7 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 
 ### A.1 Death/Kill-Filter-Labels waren missverstaendlich
 - **Status:** Behoben
-- **Datei:** `Ninjins_LeaderBoard/gui/layouts/Admin/trackingModAdminMenu.layout`
+- **Datei:** `Psyerns_Leaderboard/gui/layouts/Admin/trackingModAdminMenu.layout`
 - **Vorher:** Checkboxen hiessen nur `Suicide`, `Grenade`, `Trap`, usw., speicherten aber `Disable...`-Flags.
 - **Jetzt:** Labels sind explizit als `... ignorieren` formuliert.
 - **Ergebnis:** UI-Semantik passt jetzt zur gespeicherten Config.
@@ -19,8 +19,8 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 ### A.2 Self-Lockout ueber AdminIDs war moeglich
 - **Status:** Behoben
 - **Dateien:**
-  - `Ninjins_LeaderBoard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
-  - `Ninjins_LeaderBoard/scripts/5_Mission/MissionServer.c`
+  - `Psyerns_Leaderboard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
+  - `Psyerns_Leaderboard/scripts/5_Mission/MissionServer.c`
 - **Vorher:** Ein Admin konnte seine eigene SteamID entfernen oder eine leere `AdminIDs`-Liste speichern.
 - **Jetzt:**
   - Client blockiert das Entfernen der eigenen ID.
@@ -29,7 +29,7 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 
 ### A.3 Wertevalidierung fuer Zahlenfelder fehlte
 - **Status:** Behoben
-- **Datei:** `Ninjins_LeaderBoard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
+- **Datei:** `Psyerns_Leaderboard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
 - **Jetzt begrenzt:**
   - `DeletePlayerFilesOlderThanDays`: `0..3650`
   - `MaxPVEPlayersDisplay`: `1..100`
@@ -45,7 +45,7 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 ## Kategorie 1: Serialisierung / RPC (HOCH)
 
 ### 1.1 Auto-Serialisierung von `ref array<string>` muss praktisch verifiziert werden
-- **Datei:** `Ninjins_LeaderBoard/scripts/3_Game/Admin/TrackingModAdminData.c`
+- **Datei:** `Psyerns_Leaderboard/scripts/3_Game/Admin/TrackingModAdminData.c`
 - **Problem:** `TrackingModGeneralAdminData` enthaelt `ref array<string> AdminIDs` und `ref array<string> TrackPVEKillsInZoneTypes`.
 - **Risiko:** Falls DayZ/CF diese Arrays im `Param1<T>`-RPC nicht sauber serialisiert, kommen sie clientseitig leer oder `null` an.
 - **Auswirkung:**
@@ -55,7 +55,7 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 - **Empfohlene Verifikation:** Admin-Menue oeffnen und pruefen, ob `AdminIDs` und `TrackPVEKillsInZoneTypes` korrekt ankommen.
 
 ### 1.2 Grosse Admin-Datenstruktur bleibt versionssensitiv
-- **Datei:** `Ninjins_LeaderBoard/scripts/3_Game/Admin/TrackingModAdminData.c`
+- **Datei:** `Psyerns_Leaderboard/scripts/3_Game/Admin/TrackingModAdminData.c`
 - **Problem:** Viele Felder in `TrackingModGeneralAdminData` erhoehen das Risiko stiller Deserialisierungsprobleme bei Client-/Server-Versionsabweichung.
 - **Auswirkung:** Falsche Werte koennen in falschen Feldern landen, wenn Client und Server nicht dieselbe Mod-Version nutzen.
 - **Status:** Architektur-Risiko, kein aktueller Codefehler.
@@ -66,14 +66,14 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 
 ### 2.1 `player.GetIdentity()` im Client-RPC sollte praktisch bestaetigt werden
 - **Dateien:**
-  - `Ninjins_LeaderBoard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
+  - `Psyerns_Leaderboard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
   - bestehende Leaderboard-RPC-Aufrufe im Mod
 - **Problem:** Das Muster ist im Projekt bereits etabliert, aber fuer das Admin-Menue noch nicht praktisch bestaetigt.
 - **Status:** Kein bestaetigter Bug.
 - **Verifikation:** Oeffnen, laden, speichern und pruefen, ob `RequestAdminConfig` und `SaveAdminConfig` auf dem Server ankommen.
 
 ### 2.2 Zwei Antwort-RPCs direkt hintereinander koennen in wechselnder Reihenfolge ankommen
-- **Datei:** `Ninjins_LeaderBoard/scripts/5_Mission/MissionServer.c`
+- **Datei:** `Psyerns_Leaderboard/scripts/5_Mission/MissionServer.c`
 - **Ablauf:** Nach Save sendet der Server `ReceiveAdminConfig` und danach `ReceiveAdminConfigSaved`.
 - **Risiko:** Reihenfolge ist nicht garantiert.
 - **Auswirkung:** Eher kosmetisch — Statusmeldung kann kurz vor oder nach dem Refresh erscheinen.
@@ -85,14 +85,14 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 
 ### 3.1 Doppelklick-Schutz fuer den Wechsel ins Admin-Menue fehlt weiterhin
 - **Dateien:**
-  - `Ninjins_LeaderBoard/scripts/5_Mission/TrackingModUI/PvE/TrackingModLeaderboardMenu.c`
-  - `Ninjins_LeaderBoard/scripts/5_Mission/TrackingModUI/PvP/TrackingModPvPLeaderboardMenu.c`
+  - `Psyerns_Leaderboard/scripts/5_Mission/TrackingModUI/PvE/TrackingModLeaderboardMenu.c`
+  - `Psyerns_Leaderboard/scripts/5_Mission/TrackingModUI/PvP/TrackingModPvPLeaderboardMenu.c`
 - **Problem:** `OnClickSettings()` hat keinen expliziten Guard gegen sehr schnelles Mehrfachklicken.
 - **Auswirkung:** Wahrscheinlich gering, aber ein Guard-Flag waere robuster.
 - **Status:** Niedrige Prioritaet.
 
 ### 3.2 Admin-List- und Zone-Type-UI haengen an erfolgreicher RPC-Deserialisierung
-- **Datei:** `Ninjins_LeaderBoard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
+- **Datei:** `Psyerns_Leaderboard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
 - **Problem:** Die Menuelogik selbst ist null-sicher genug, aber die Anzeige bleibt falsch oder leer, wenn die Arrays aus 1.1 nicht ankommen.
 - **Status:** Folgeeffekt von 1.1, kein separater Bug.
 
@@ -101,7 +101,7 @@ Referenz: `copilot-instructions.md` — keine kosmetischen Punkte, keine bereits
 ## Kategorie 4: Editor-Diagnose
 
 ### 4.1 Parser-Fehlalarm fuer Enforce-Script-Datei bleibt bestehen
-- **Datei:** `Ninjins_LeaderBoard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
+- **Datei:** `Psyerns_Leaderboard/scripts/5_Mission/TrackingModUI/Admin/TrackingModAdminMenu.c`
 - **Problem:** Der Editor meldet weiterhin eine kollabierte C-Parserdiagnose (`class undefined`, `expected ';'` etc.).
 - **Bewertung:** Aktuell kein belastbarer Nachweis fuer einen echten Enforce-Syntaxfehler, da:
   - die Datei byte-sauber ist,

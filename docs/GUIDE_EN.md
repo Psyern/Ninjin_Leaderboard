@@ -1,6 +1,6 @@
-# 📖 Ninjins LeaderBoard — User Guide (English)
+# 📖 Psyerns Leaderboard — User Guide (English)
 
-> This guide is aimed at **players** and **server administrators** who want to use or set up the Ninjins LeaderBoard mod.
+> This guide is aimed at **players** and **server administrators** who want to use or set up the Psyerns Leaderboard mod.
 
 ---
 
@@ -89,8 +89,8 @@ Copy the mod folder into your DayZ server root directory:
 
 ```
 <DayZ Server Root>/
-└── @Ninjins_LeaderBoard/
-    └── Ninjins_LeaderBoard/
+└── @Psyerns_Leaderboard/
+    └── Psyerns_Leaderboard/
         ├── config.cpp
         ├── scripts/
         └── ...
@@ -106,23 +106,23 @@ Make sure the **Community Framework (CF)** mod is also installed:
 Add the mod to your server startup script:
 
 ```
--mod=@CF;@Ninjins_LeaderBoard
+-mod=@CF;@Psyerns_Leaderboard
 ```
 
 **With optional mods:**
 
 ```
 # With zone system:
--mod=@CF;@NinjinsPvPPvE;@Ninjins_LeaderBoard
+-mod=@CF;@NinjinsPvPPvE;@Psyerns_Leaderboard
 
 # With Expansion AI:
--mod=@CF;@DayZ-Expansion-AI;@Ninjins_LeaderBoard
+-mod=@CF;@DayZ-Expansion-AI;@Psyerns_Leaderboard
 
 # All combined:
--mod=@CF;@NinjinsPvPPvE;@DayZ-Expansion-AI;@Ninjins_LeaderBoard
+-mod=@CF;@NinjinsPvPPvE;@DayZ-Expansion-AI;@Psyerns_Leaderboard
 ```
 
-> ⚠️ The order matters. CF must always come **before** Ninjins_LeaderBoard.
+> ⚠️ The order matters. CF must always come **before** Psyerns_Leaderboard.
 
 ---
 
@@ -354,7 +354,7 @@ You can read this file with a web server or a small script and display it on you
 | Leaderboard does not open | Check if CF mod is loaded; check client logs for `[TrackingModUI]` |
 | No kills tracked | Check server logs for `[TrackingMod]`; verify category config |
 | Rewards not working | Set `EnableRewardSystem: true`; check if reward JSON files exist |
-| Zone integration broken | Load NinjinsPvPPvE before Ninjins_LeaderBoard; check `EnableZoneKillExclusions` |
+| Zone integration broken | Load NinjinsPvPPvE before Psyerns_Leaderboard; check `EnableZoneKillExclusions` |
 | Points not updating | Restart server after config changes |
 
 **Increase log verbosity for debugging:**
@@ -362,7 +362,7 @@ You can read this file with a web server or a small script and display it on you
 // Server: $profile:Ninjins_Tracking_Mod/LoggerConfig.json
 { "Level": 6 }
 
-// Client: $profile:Ninjins_LeaderBoard/LoggerConfig.json
+// Client: $profile:Psyerns_Leaderboard/LoggerConfig.json
 { "Level": 6 }
 ```
 
@@ -370,4 +370,4 @@ Log levels: `0` = Off · `1` = Critical · `2` = Error · `3` = Warning · `4` =
 
 ---
 
-> **Questions, bugs or feature requests?** → [GitHub Issues](https://github.com/Psyern/Ninjins_Leaderboard/issues)
+> **Questions, bugs or feature requests?** → [GitHub Issues](https://github.com/Psyern/Ninjin_Leaderboard/issues)

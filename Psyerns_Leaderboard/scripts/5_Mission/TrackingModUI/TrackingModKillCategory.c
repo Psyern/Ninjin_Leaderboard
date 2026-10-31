@@ -139,6 +139,6 @@ class TrackingModKillCategory: ScriptView
 	
 	override string GetLayoutFile()
 	{
-		return "Ninjins_LeaderBoard\\GUI\\layouts\\PvE\\trackingModKillCategory_mvc.layout";
+		return "Psyerns_Leaderboard\\GUI\\layouts\\PvE\\trackingModKillCategory_mvc.layout";
 	}
 }

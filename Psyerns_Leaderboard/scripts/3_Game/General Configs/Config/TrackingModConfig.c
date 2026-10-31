@@ -64,8 +64,8 @@ class TrackingModConfig
 		MaxPVPPlayersDisplay = 24;
 		ShowPlayerOnlineStatusPVE = true;
 		ShowPlayerOnlineStatusPVP = true;
-		SurvivorIconPathMale = "Ninjins_LeaderBoard/gui/icons/survivor/male.edds";
-		SurvivorIconPathFemale = "Ninjins_LeaderBoard/gui/icons/survivor/female.edds";
+		SurvivorIconPathMale = "Psyerns_Leaderboard/gui/icons/survivor/male.edds";
+		SurvivorIconPathFemale = "Psyerns_Leaderboard/gui/icons/survivor/female.edds";
 		DisableDeathBySuicide = false;
 		DisableDeathByGrenade = false;
 		DisableDeathByTrap = false;
@@ -177,6 +177,9 @@ class TrackingModConfig
 				config.WebExportMaxPlayers = 1;
 			if (config.WebExportMaxPlayers > 1000)
 				config.WebExportMaxPlayers = 1000;
+			// Configs written before the rename still point at the old addon folder.
+			config.SurvivorIconPathMale.Replace("Ninjins_LeaderBoard/", "Psyerns_Leaderboard/");
+			config.SurvivorIconPathFemale.Replace("Ninjins_LeaderBoard/", "Psyerns_Leaderboard/");
 			config.SaveConfig();
 			Print("[TrackingMod] Config loaded from: " + TRACKING_MOD_CONFIG_FILE);
 			Print("[TrackingMod] Loaded values - MaxPVEPlayersDisplay: " + config.MaxPVEPlayersDisplay.ToString() + ", MaxPVPPlayersDisplay: " + config.MaxPVPPlayersDisplay.ToString() + ", ShowPlayerOnlineStatusPVE: " + config.ShowPlayerOnlineStatusPVE.ToString() + ", ShowPlayerOnlineStatusPVP: " + config.ShowPlayerOnlineStatusPVP.ToString());

@@ -20,20 +20,20 @@ modded class MissionBase
 		
 		if (!m_RPCRegistered)
 		{
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboard", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboardDenied", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceivePlayerDataUpdate", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPVEConfig", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPVPConfig", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminPlayerSearch", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceivePlayerOwnStats", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveShopConfig", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", this, SingleplayerExecutionType.Client);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ReceiveStyleConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveTrackingModLeaderboard", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveTrackingModLeaderboardDenied", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceivePlayerDataUpdate", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveAdminConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveAdminPVEConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveAdminPVPConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveAdminPlayerSearch", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceivePlayerOwnStats", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveShopConfig", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", this, SingleplayerExecutionType.Client);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ReceiveStyleConfig", this, SingleplayerExecutionType.Client);
 			TrackingModUI.InitLogFile();
 			m_RPCRegistered = true;
 		}
@@ -134,7 +134,7 @@ modded class MissionBase
 		m_PendingAdminMenu = true;
 		m_PendingPVEMode = false;
 		m_PendingPVPMode = false;
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
 	}
 
 	void OpenTrackingModAdminMenuFromData(TrackingModLeaderboardData leaderboardData)
@@ -167,7 +167,7 @@ modded class MissionBase
 		TrackingModUI.LogRPC("PlayerID[" + player.GetIdentity().GetPlainId() + "]");
 		TrackingModUI.LogRPC("========================================");
 		
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
 	}
 	
 	void OpenTrackingModLeaderboardPVP()
@@ -188,7 +188,7 @@ modded class MissionBase
 		TrackingModUI.LogRPC("PlayerID[" + player.GetIdentity().GetPlainId() + "]");
 		TrackingModUI.LogRPC("========================================");
 		
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestTrackingModLeaderboard", new Param1<int>(1), true, player.GetIdentity());
 	}
 
 	void ReceiveTrackingModLeaderboardDenied(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)

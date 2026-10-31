@@ -1,7 +1,7 @@
-# Multi-Agent Orchestrierung — Ninjins LeaderBoard Feature-Ergaenzung
+# Multi-Agent Orchestrierung — Psyerns Leaderboard Feature-Ergaenzung
 
 > **Ziel:** Alle fehlenden Features implementieren, die im Audit vom 2026-04-14 identifiziert wurden.
-> **Mod-Pfad:** `C:\Users\Administrator\Desktop\Ninjin_Leaderboard\Ninjins_LeaderBoard`
+> **Mod-Pfad:** `C:\Users\Administrator\Desktop\Ninjin_Leaderboard\Psyerns_Leaderboard`
 > **Regeln:** Alle CLAUDE.md und `.claude/rules/` Regeln gelten. Enforce Script only. Tabs. Kein Ternary. Kein `delete`. Kein `ref` auf Locals. `g_Game` statt `GetGame()`. `override` + `super` first immer.
 
 ---
@@ -53,7 +53,7 @@ TRACKING_MOD_REWARD_SYSTEM_DIR = "$profile:Ninjins_Tracking_Mod\Data\RewardSyste
 "SaveAdminFullConfig"             — Client->Server (Param3<General, PVE, PVP>)
 ```
 
-### PlayerDeathData Felder (Ninjins_Tracking_Mod_Data.c, Zeile 11-696)
+### PlayerDeathData Felder (Psyerns_Tracking_Mod_Data.c, Zeile 11-696)
 ```
 string PlayerID, PlayerName
 ref map<string, int> CategoryKills, CategoryDeaths, CategoryLongestRanges
@@ -110,7 +110,7 @@ void TrackDeath(Object killer) — zentrale Kill/Death Logik
 
 **Schritt 1 — Datenmodell erweitern**
 
-Datei: `scripts/3_Game/General Configs/Data/Ninjins_Tracking_Mod_Data.c`
+Datei: `scripts/3_Game/General Configs/Data/Psyerns_Tracking_Mod_Data.c`
 Klasse: `PlayerDeathData` (ab Zeile 11)
 
 Neue Felder hinzufuegen (nach den bestehenden Feldern, VOR den Methoden):
@@ -292,7 +292,7 @@ Logik:
 
 **Schritt 3 — Hook in Kill-Tracking**
 
-Datei: `scripts/3_Game/General Configs/Data/Ninjins_Tracking_Mod_Data.c`
+Datei: `scripts/3_Game/General Configs/Data/Psyerns_Tracking_Mod_Data.c`
 
 In den Methoden `AddKill()` (Zeile 1487), `AddZombieKill()` (Zeile 1576), `AddAnimalKill()` (Zeile 1627), `AddAIKill()` (Zeile 1678):
 
@@ -494,7 +494,7 @@ StringLocaliser msg = new StringLocaliser(string.Format(g_TrackingModRewardConfi
 NotificationSystem.Create(title, msg, "set:dayz_gui image:icon_star", ARGB(255, 255, 215, 0), 8.0, NULL);
 ```
 
-Der Hook dafuer: In `ClaimTrackingModReward` Handler (MissionServer.c Zeile 1060+) ODER besser direkt in `CheckAndAddMilestones()` (Ninjins_Tracking_Mod_Data.c Zeile 513).
+Der Hook dafuer: In `ClaimTrackingModReward` Handler (MissionServer.c Zeile 1060+) ODER besser direkt in `CheckAndAddMilestones()` (Psyerns_Tracking_Mod_Data.c Zeile 513).
 
 ACHTUNG: `NotificationSystem.Create` mit `NULL` als letzten Parameter = Broadcast an alle.
 
@@ -829,7 +829,7 @@ class TrackingModStyleConfig
 	// Titel
 	ref TrackingModColorSetting TitleColor;
 	int TitleFontSize;
-	string LeaderboardTitle;  // "Ninjins Leaderboard" oder custom
+	string LeaderboardTitle;  // "Psyerns Leaderboard" oder custom
 }
 ```
 

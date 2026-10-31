@@ -1,6 +1,6 @@
-# 📖 Ninjins LeaderBoard — Benutzeranleitung (Deutsch)
+# 📖 Psyerns Leaderboard — Benutzeranleitung (Deutsch)
 
-> Diese Anleitung richtet sich an **Spieler** und **Server-Administratoren**, die die Ninjins LeaderBoard Mod nutzen oder einrichten möchten.
+> Diese Anleitung richtet sich an **Spieler** und **Server-Administratoren**, die die Psyerns Leaderboard Mod nutzen oder einrichten möchten.
 
 ---
 
@@ -89,8 +89,8 @@ Kopiere den Mod-Ordner in das DayZ-Server-Stammverzeichnis:
 
 ```
 <DayZ Server Root>/
-└── @Ninjins_LeaderBoard/
-    └── Ninjins_LeaderBoard/
+└── @Psyerns_Leaderboard/
+    └── Psyerns_Leaderboard/
         ├── config.cpp
         ├── scripts/
         └── ...
@@ -106,23 +106,23 @@ Stelle sicher, dass auch der **Community Framework (CF)** Mod installiert ist:
 Füge die Mod zum Server-Startskript hinzu:
 
 ```
--mod=@CF;@Ninjins_LeaderBoard
+-mod=@CF;@Psyerns_Leaderboard
 ```
 
 **Mit optionalen Mods:**
 
 ```
 # Mit Zonen-System:
--mod=@CF;@NinjinsPvPPvE;@Ninjins_LeaderBoard
+-mod=@CF;@NinjinsPvPPvE;@Psyerns_Leaderboard
 
 # Mit Expansion AI:
--mod=@CF;@DayZ-Expansion-AI;@Ninjins_LeaderBoard
+-mod=@CF;@DayZ-Expansion-AI;@Psyerns_Leaderboard
 
 # Alle kombiniert:
--mod=@CF;@NinjinsPvPPvE;@DayZ-Expansion-AI;@Ninjins_LeaderBoard
+-mod=@CF;@NinjinsPvPPvE;@DayZ-Expansion-AI;@Psyerns_Leaderboard
 ```
 
-> ⚠️ Die Reihenfolge ist wichtig. CF muss immer **vor** Ninjins_LeaderBoard stehen.
+> ⚠️ Die Reihenfolge ist wichtig. CF muss immer **vor** Psyerns_Leaderboard stehen.
 
 ---
 
@@ -354,7 +354,7 @@ Diese Datei kann mit einem Webserver oder einem kleinen Skript eingelesen und au
 | Leaderboard öffnet sich nicht | Prüfen ob CF-Mod geladen ist; Client-Logs nach `[TrackingModUI]` durchsuchen |
 | Keine Kills werden getrackt | Server-Logs nach `[TrackingMod]` prüfen; Kategorie-Config überprüfen |
 | Rewards funktionieren nicht | `EnableRewardSystem: true` setzen; prüfen ob Reward-JSON-Dateien vorhanden sind |
-| Zonen-Integration funktioniert nicht | NinjinsPvPPvE vor Ninjins_LeaderBoard laden; `EnableZoneKillExclusions` prüfen |
+| Zonen-Integration funktioniert nicht | NinjinsPvPPvE vor Psyerns_Leaderboard laden; `EnableZoneKillExclusions` prüfen |
 | Punkte werden nicht aktualisiert | Server nach Config-Änderungen neu starten |
 
 **Log-Level für Debugging erhöhen:**
@@ -362,7 +362,7 @@ Diese Datei kann mit einem Webserver oder einem kleinen Skript eingelesen und au
 // Server: $profile:Ninjins_Tracking_Mod/LoggerConfig.json
 { "Level": 6 }
 
-// Client: $profile:Ninjins_LeaderBoard/LoggerConfig.json
+// Client: $profile:Psyerns_Leaderboard/LoggerConfig.json
 { "Level": 6 }
 ```
 
@@ -370,4 +370,4 @@ Log-Level: `0` = Aus · `1` = Critical · `2` = Error · `3` = Warning · `4` = 
 
 ---
 
-> **Fragen, Bugs oder Feature-Requests?** → [GitHub Issues](https://github.com/Psyern/Ninjins_Leaderboard/issues)
+> **Fragen, Bugs oder Feature-Requests?** → [GitHub Issues](https://github.com/Psyern/Ninjin_Leaderboard/issues)

@@ -164,7 +164,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 
 		m_HasRequestedConfig = true;
 		SetStatus("Lade Admin-Konfiguration...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestAdminConfig", null, true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestAdminConfig", null, true, player.GetIdentity());
 	}
 
 	void ApplyGeneralConfigData(TrackingModGeneralAdminData data)
@@ -928,7 +928,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		pveData = BuildPVEConfigDataFromWidgets();
 		pvpData = BuildPVPConfigDataFromWidgets();
 		SetStatus("Speichere Admin-Konfiguration...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "SaveAdminFullConfig", new Param3<TrackingModGeneralAdminData, TrackingModPVEAdminData, TrackingModPVPAdminData>(generalData, pveData, pvpData), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "SaveAdminFullConfig", new Param3<TrackingModGeneralAdminData, TrackingModPVEAdminData, TrackingModPVPAdminData>(generalData, pveData, pvpData), true, player.GetIdentity());
 	}
 
 	void OnClickAddPVECategory()
@@ -1158,7 +1158,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 
 		SetPlayerActionStatus("Suche...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminSearchPlayer", new Param1<string>(searchTerm), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "AdminSearchPlayer", new Param1<string>(searchTerm), true, player.GetIdentity());
 	}
 
 	void OnClickWipePlayerData()
@@ -1176,7 +1176,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 
 		SetPlayerActionStatus("Loesche Daten fuer " + m_SelectedPlayerName + "...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminWipePlayerData", new Param1<string>(m_SelectedPlayerID), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "AdminWipePlayerData", new Param1<string>(m_SelectedPlayerID), true, player.GetIdentity());
 	}
 
 	void OnClickWipePlayerPoints()
@@ -1194,7 +1194,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 
 		SetPlayerActionStatus("Setze Points zurueck fuer " + m_SelectedPlayerName + "...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminWipePlayerPoints", new Param1<string>(m_SelectedPlayerID), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "AdminWipePlayerPoints", new Param1<string>(m_SelectedPlayerID), true, player.GetIdentity());
 	}
 
 	void OnClickAwardPVEPoints()
@@ -1223,7 +1223,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 
 		SetPlayerActionStatus("Vergebe " + amount.ToString() + " PvE Points an " + m_SelectedPlayerName + "...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminAwardPoints", new Param3<string, int, bool>(m_SelectedPlayerID, amount, true), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "AdminAwardPoints", new Param3<string, int, bool>(m_SelectedPlayerID, amount, true), true, player.GetIdentity());
 	}
 
 	void OnClickAwardPVPPoints()
@@ -1252,7 +1252,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 
 		SetPlayerActionStatus("Vergebe " + amount.ToString() + " PvP Points an " + m_SelectedPlayerName + "...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminAwardPoints", new Param3<string, int, bool>(m_SelectedPlayerID, amount, false), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "AdminAwardPoints", new Param3<string, int, bool>(m_SelectedPlayerID, amount, false), true, player.GetIdentity());
 	}
 
 	void OnClickAwardItem()
@@ -1285,7 +1285,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 			return;
 
 		SetPlayerActionStatus("Gebe " + amount.ToString() + "x " + className + " an " + m_SelectedPlayerName + "...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "AdminAwardItem", new Param3<string, string, int>(m_SelectedPlayerID, className, amount), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "AdminAwardItem", new Param3<string, string, int>(m_SelectedPlayerID, className, amount), true, player.GetIdentity());
 	}
 
 	void ReceiveAdminPlayerSearch(string resultJSON)
@@ -1473,6 +1473,6 @@ class TrackingModAdminMenu: ScriptViewMenu
 
 	override string GetLayoutFile()
 	{
-		return "Ninjins_LeaderBoard\\GUI\\layouts\\Admin\\trackingModAdminMenu.layout";
+		return "Psyerns_Leaderboard\\GUI\\layouts\\Admin\\trackingModAdminMenu.layout";
 	}
 }

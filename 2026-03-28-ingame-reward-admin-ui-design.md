@@ -2,7 +2,7 @@
 
 ## Uebersicht
 
-Ein vollstaendiges In-Game Admin-Menue fuer den Ninjins Tracking Mod, das es Admins ermoeglicht, alle Reward- und Leaderboard-Einstellungen direkt im Spiel zu konfigurieren, ohne JSON-Dateien manuell bearbeiten zu muessen. Aenderungen werden sofort live angewendet (Server-Reload).
+Ein vollstaendiges In-Game Admin-Menue fuer den Psyerns Leaderboard, das es Admins ermoeglicht, alle Reward- und Leaderboard-Einstellungen direkt im Spiel zu konfigurieren, ohne JSON-Dateien manuell bearbeiten zu muessen. Aenderungen werden sofort live angewendet (Server-Reload).
 
 ## Zielgruppe
 

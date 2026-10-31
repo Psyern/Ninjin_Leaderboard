@@ -40,19 +40,19 @@ modded class MissionServer extends MissionBase
 				data.ExportWebLeaderboard();
 			}
 			
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "ClaimTrackingModReward", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestAdminConfig", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "SaveAdminConfig", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "SaveAdminFullConfig", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminSearchPlayer", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminWipePlayerData", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminWipePlayerPoints", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminAwardPoints", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "AdminAwardItem", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestShopConfig", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "PurchaseShopItem", this, SingleplayerExecutionType.Server);
-			GetRPCManager().AddRPC("Ninjins_LeaderBoard", "RequestStyleConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "RequestTrackingModLeaderboard", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "ClaimTrackingModReward", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "RequestAdminConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "SaveAdminConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "SaveAdminFullConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "AdminSearchPlayer", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "AdminWipePlayerData", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "AdminWipePlayerPoints", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "AdminAwardPoints", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "AdminAwardItem", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "RequestShopConfig", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "PurchaseShopItem", this, SingleplayerExecutionType.Server);
+			GetRPCManager().AddRPC("Psyerns_Leaderboard", "RequestStyleConfig", this, SingleplayerExecutionType.Server);
 
 			#ifdef NinjinsPvPPvE
 			stateHandler = new TrackingModZoneHandler();
@@ -366,7 +366,7 @@ modded class MissionServer extends MissionBase
 			deniedResponse = new TrackingModAdminSaveResponse();
 			deniedResponse.Success = false;
 			deniedResponse.Message = "Keine Berechtigung fuer Admin-Konfiguration";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(deniedResponse), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(deniedResponse), true, sender);
 			return;
 		}
 
@@ -374,9 +374,9 @@ modded class MissionServer extends MissionBase
 		pveData = BuildPVEAdminData();
 		pvpData = BuildPVPAdminData();
 		TrackingMod.LogInfo(string.Format("[AdminRPC] Sending admin config to %1 | General AdminIDs=%2 | PVE Categories=%3 | PVP Categories=%4", sender.GetName(), generalData.AdminIDs.Count(), pveData.Categories.Count(), pvpData.Categories.Count()));
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(generalData), true, sender);
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVEConfig", new Param1<TrackingModPVEAdminData>(pveData), true, sender);
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVPConfig", new Param1<TrackingModPVPAdminData>(pvpData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(generalData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminPVEConfig", new Param1<TrackingModPVEAdminData>(pveData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminPVPConfig", new Param1<TrackingModPVPAdminData>(pvpData), true, sender);
 	}
 
 	void SaveAdminConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -396,7 +396,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Keine Berechtigung";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -404,7 +404,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Ungueltige Admin-Daten";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -412,7 +412,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Mindestens eine Admin-ID muss erhalten bleiben";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -420,7 +420,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Eigene Admin-ID darf nicht entfernt werden";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -431,8 +431,8 @@ modded class MissionServer extends MissionBase
 		response.Success = true;
 		response.Message = "LeaderBoardConfig geladen und angewendet";
 		freshData = BuildGeneralAdminData();
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(freshData), true, sender);
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(freshData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 
 	void SaveAdminFullConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -454,7 +454,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Keine Berechtigung";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -462,7 +462,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Ungueltige Admin-Daten";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -470,7 +470,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Mindestens eine Admin-ID muss erhalten bleiben";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -478,7 +478,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Eigene Admin-ID darf nicht entfernt werden";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -493,10 +493,10 @@ modded class MissionServer extends MissionBase
 		freshGeneralData = BuildGeneralAdminData();
 		freshPVEData = BuildPVEAdminData();
 		freshPVPData = BuildPVPAdminData();
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(freshGeneralData), true, sender);
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVEConfig", new Param1<TrackingModPVEAdminData>(freshPVEData), true, sender);
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPVPConfig", new Param1<TrackingModPVPAdminData>(freshPVPData), true, sender);
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfig", new Param1<TrackingModGeneralAdminData>(freshGeneralData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminPVEConfig", new Param1<TrackingModPVEAdminData>(freshPVEData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminPVPConfig", new Param1<TrackingModPVPAdminData>(freshPVPData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminConfigSaved", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 
 	void RequestTrackingModLeaderboard(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -796,7 +796,7 @@ modded class MissionServer extends MissionBase
 		
 		TrackingMod.LogRPC("========================================");
 		
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModLeaderboard", new Param1<TrackingModLeaderboardData>(leaderboardData), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModLeaderboard", new Param1<TrackingModLeaderboardData>(leaderboardData), true, sender);
 
 		if (senderID != "" && data.m_PlayerDataMap && data.m_PlayerDataMap.Contains(senderID))
 		{
@@ -808,7 +808,7 @@ modded class MissionServer extends MissionBase
 				ownStats = CreateLeaderboardPlayerData(ownPlayerData);
 				if (ownStats)
 				{
-					GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceivePlayerOwnStats", new Param1<TrackingModLeaderboardPlayerData>(ownStats), true, sender);
+					GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceivePlayerOwnStats", new Param1<TrackingModLeaderboardPlayerData>(ownStats), true, sender);
 				}
 			}
 		}
@@ -903,7 +903,7 @@ modded class MissionServer extends MissionBase
 		if (!g_TrackingModStyleConfig)
 			return;
 
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveStyleConfig", new Param1<TrackingModStyleConfig>(g_TrackingModStyleConfig), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveStyleConfig", new Param1<TrackingModStyleConfig>(g_TrackingModStyleConfig), true, sender);
 	}
 
 	void RequestShopConfig(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -914,7 +914,7 @@ modded class MissionServer extends MissionBase
 		if (!g_TrackingModShopConfig)
 			return;
 
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopConfig", new Param1<TrackingModShopConfig>(g_TrackingModShopConfig), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopConfig", new Param1<TrackingModShopConfig>(g_TrackingModShopConfig), true, sender);
 	}
 
 	void PurchaseShopItem(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -953,7 +953,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Shop ist deaktiviert";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -971,7 +971,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Item nicht im Shop gefunden";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -989,7 +989,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Nicht kaufbar mit diesem Punktetyp";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -999,7 +999,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Daten nicht verfuegbar";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1008,7 +1008,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Spielerdaten nicht gefunden";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1016,14 +1016,14 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Nicht genug PvE Points (" + buyerData.PvEPoints.ToString() + "/" + totalCost.ToString() + ")";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 		if (!usePvEPoints && buyerData.PvPPoints < totalCost)
 		{
 			response.Success = false;
 			response.Message = "Nicht genug PvP Points (" + buyerData.PvPPoints.ToString() + "/" + totalCost.ToString() + ")";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1044,7 +1044,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Spieler nicht online";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1092,7 +1092,7 @@ modded class MissionServer extends MissionBase
 			response.Message = "Item konnte nicht erstellt werden";
 		}
 
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 
 	void AdminSearchPlayer(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -1140,7 +1140,7 @@ modded class MissionServer extends MissionBase
 			}
 		}
 
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminPlayerSearch", new Param1<string>(resultStr), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminPlayerSearch", new Param1<string>(resultStr), true, sender);
 	}
 
 	void AdminWipePlayerData(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -1166,7 +1166,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Daten nicht verfuegbar";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1187,7 +1187,7 @@ modded class MissionServer extends MissionBase
 
 		response.Success = true;
 		response.Message = "Spielerdaten fuer " + targetPlayerID + " geloescht";
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 
 	void AdminWipePlayerPoints(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -1213,7 +1213,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Daten nicht verfuegbar";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1222,7 +1222,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Spieler " + targetPlayerID + " nicht gefunden";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1235,7 +1235,7 @@ modded class MissionServer extends MissionBase
 
 		response.Success = true;
 		response.Message = "Points fuer " + targetData.PlayerName + " auf 0 gesetzt";
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 
 	void AdminAwardPoints(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -1265,7 +1265,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Daten nicht verfuegbar";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1274,7 +1274,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Spieler " + targetPlayerID + " nicht gefunden";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1297,7 +1297,7 @@ modded class MissionServer extends MissionBase
 
 		response.Success = true;
 		response.Message = amount.ToString() + " " + pointType + " Points an " + targetData.PlayerName + " vergeben";
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 
 	void AdminAwardItem(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -1348,7 +1348,7 @@ modded class MissionServer extends MissionBase
 		{
 			response.Success = false;
 			response.Message = "Spieler " + targetPlayerID + " ist nicht online";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 			return;
 		}
 
@@ -1375,7 +1375,7 @@ modded class MissionServer extends MissionBase
 
 		response.Success = true;
 		response.Message = spawned.ToString() + "x " + className + " an " + targetPlayer.GetIdentity().GetName() + " vergeben";
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveAdminActionResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
 	}
 
 	override void OnMissionFinish()
@@ -1708,7 +1708,7 @@ modded class MissionServer extends MissionBase
 			response.success = false;
 			response.remainingRewards = 0;
 			response.message = "Player not found";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 			return;
 		}
 		
@@ -1724,7 +1724,7 @@ modded class MissionServer extends MissionBase
 			response.success = false;
 			response.remainingRewards = 0;
 			response.message = "Player data not found";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 			return;
 		}
 		
@@ -1738,7 +1738,7 @@ modded class MissionServer extends MissionBase
 			response.success = false;
 			response.remainingRewards = calculatedPendingRewards;
 			response.message = "Config not loaded";
-			GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 			return;
 		}
 		
@@ -1754,7 +1754,7 @@ modded class MissionServer extends MissionBase
 				response.success = false;
 				response.remainingRewards = 0;
 				response.message = "No pending milestone rewards";
-				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+				GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 				return;
 			}
 			
@@ -1769,7 +1769,7 @@ modded class MissionServer extends MissionBase
 				response.success = false;
 				response.remainingRewards = calculatedPendingRewards;
 				response.message = "No available milestone found";
-				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+				GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 				return;
 			}
 			
@@ -1790,7 +1790,7 @@ modded class MissionServer extends MissionBase
 				response.success = false;
 				response.remainingRewards = calculatedPendingRewards;
 				response.message = "Reward config file not found for milestone";
-				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+				GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 				return;
 			}
 			
@@ -1802,7 +1802,7 @@ modded class MissionServer extends MissionBase
 				response.success = false;
 				response.remainingRewards = calculatedPendingRewards;
 				response.message = "Failed to load reward config file";
-				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+				GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 				return;
 			}
 			
@@ -1826,7 +1826,7 @@ modded class MissionServer extends MissionBase
 				response.success = false;
 				response.remainingRewards = calculatedPendingRewards;
 				response.message = "Reward config has no sections and no currency";
-				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+				GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 				return;
 			}
 		}
@@ -2001,7 +2001,7 @@ modded class MissionServer extends MissionBase
 				response.success = false;
 				response.remainingRewards = calculatedPendingRewards;
 				response.message = "Failed to select reward section after retries";
-				GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+				GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 				return;
 			}
 		}
@@ -2035,7 +2035,7 @@ modded class MissionServer extends MissionBase
 		response.success = true;
 		response.remainingRewards = calculatedPendingRewards;
 		response.message = "Reward claimed successfully";
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveTrackingModRewardClaim", new Param1<TrackingModRewardClaimResponse>(response), true, sender);
 		TrackingMod.LogInfo("[ClaimTrackingModReward] Response sent to client - success: true, remaining: " + calculatedPendingRewards.ToString());
 	}
 	

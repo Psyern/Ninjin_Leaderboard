@@ -1,6 +1,6 @@
 class CfgPatches
 {
-	class Ninjins_LeaderBoard
+	class Psyerns_Leaderboard
 	{
 		units[]={};
 		weapons[]={};
@@ -10,22 +10,22 @@ class CfgPatches
 };
 class CfgMods
 {
-	class Ninjins_LeaderBoard
+	class Psyerns_Leaderboard
 	{
-		dir="Ninjins_LeaderBoard";
+		dir="Psyerns_Leaderboard";
 		picture="";
 		action="";
 		hideName=1;
 		hidePicture=1;
-		name="Ninjins LeaderBoard";
-		credits="Ninjin";
-		author="Ninjin";
+		name="Psyerns Leaderboard";
+		credits="Psyern, original mod by Ninjin";
+		author="Psyern";
 		authorID="0";
 		version="1.0.0";
 		extra=0;
 		type="mod";
 		storageVersion=1;
-		inputs="Ninjins_LeaderBoard/data/modded_inputs.xml";
+		inputs="Psyerns_Leaderboard/data/modded_inputs.xml";
 		dependencies[]=
 		{
 			"Game",
@@ -39,7 +39,7 @@ class CfgMods
 				value="";
 				files[]=
 				{
-					"Ninjins_LeaderBoard/scripts/3_Game"
+					"Psyerns_Leaderboard/scripts/3_Game"
 				};
 			};
 			class worldScriptModule
@@ -47,7 +47,7 @@ class CfgMods
 				value="";
 				files[]=
 				{
-					"Ninjins_LeaderBoard/scripts/4_World"
+					"Psyerns_Leaderboard/scripts/4_World"
 				};
 			};
 			class missionScriptModule
@@ -55,7 +55,7 @@ class CfgMods
 				value="";
 				files[]=
 				{
-					"Ninjins_LeaderBoard/scripts/5_Mission"
+					"Psyerns_Leaderboard/scripts/5_Mission"
 				};
 			};
 		};

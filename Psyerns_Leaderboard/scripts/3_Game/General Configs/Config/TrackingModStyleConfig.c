@@ -115,7 +115,7 @@ class TrackingModStyleConfig
 		TitleColor.B = 30;
 		TitleColor.A = 255;
 		TitleFontSize = 18;
-		LeaderboardTitle = "Ninjins Leaderboard";
+		LeaderboardTitle = "Psyerns Leaderboard";
 	}
 
 	void SaveConfig()
@@ -138,6 +138,12 @@ class TrackingModStyleConfig
 		{
 			config = new TrackingModStyleConfig();
 			JsonFileLoader<TrackingModStyleConfig>.JsonLoadFile(TRACKING_MOD_STYLE_CONFIG_FILE, config);
+			// Only the old default title is migrated, a custom title stays untouched.
+			if (config.LeaderboardTitle == "Ninjins Leaderboard")
+			{
+				config.LeaderboardTitle = "Psyerns Leaderboard";
+				config.SaveConfig();
+			}
 			Print("[TrackingMod] StyleConfig loaded from: " + TRACKING_MOD_STYLE_CONFIG_FILE);
 		}
 		else

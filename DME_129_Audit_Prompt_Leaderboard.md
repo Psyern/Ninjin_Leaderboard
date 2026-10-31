@@ -1,8 +1,8 @@
-# Ninjins_LeaderBoard - DayZ 1.29 Kompatibilitaets-Audit (Multi-Agent Orchestration)
+# Psyerns_Leaderboard - DayZ 1.29 Kompatibilitaets-Audit (Multi-Agent Orchestration)
 
 ## Auftrag
 
-Fuehre ein vollstaendiges Code-Audit des Mods **Ninjins_LeaderBoard** durch, um alle Fehlerquellen und Inkompatibilitaeten mit **DayZ 1.29+** zu finden. Nutze dafuer parallele Sub-Agenten. Aendere in Phase 1 und 2 NICHTS - nur analysieren und reporten.
+Fuehre ein vollstaendiges Code-Audit des Mods **Psyerns_Leaderboard** durch, um alle Fehlerquellen und Inkompatibilitaeten mit **DayZ 1.29+** zu finden. Nutze dafuer parallele Sub-Agenten. Aendere in Phase 1 und 2 NICHTS - nur analysieren und reporten.
 
 ## Referenz-Wissensbasis (autoritativ)
 
@@ -18,7 +18,7 @@ Lies bei Bedarf die Dateien in diesen Unterordnern:
 ## Mod-Verzeichnis (Ziel des Audits)
 
 ```
-C:\Users\Administrator\Desktop\Ninjin_Leaderboard\Ninjins_LeaderBoard\scripts\
+C:\Users\Administrator\Desktop\Ninjin_Leaderboard\Psyerns_Leaderboard\scripts\
 ```
 
 ### Vollstaendige Dateiliste
@@ -31,7 +31,7 @@ General Configs/Config/PVECategoryConfig.c
 General Configs/Config/PVPCategoryConfig.c
 General Configs/Config/TrackingModConfig.c
 General Configs/Config/TrackingModRewardConfig.c
-General Configs/Data/Ninjins_Tracking_Mod_Data.c
+General Configs/Data/Psyerns_Tracking_Mod_Data.c
 General Configs/Data/TrackingModLeaderboardData.c
 General Configs/Rewards/TrackingModMilestoneHelper.c
 General Configs/Rewards/TrackingModMilestoneRewardLoader.c
@@ -175,7 +175,7 @@ if (g_Game.IsDedicatedServer()) { ... }    // Server-Check
 12. **`foreach` mit Index-Modifikation** - NIEMALS das iterierte Array innerhalb von `foreach` veraendern (Add/Remove).
 
 **Mod-spezifische Schwerpunkte:**
-- `Ninjins_Tracking_Mod_Data.c` und `TrackingModLeaderboardData.c` - Datenstrukturen auf Multi-Var-Deklarationen pruefen
+- `Psyerns_Tracking_Mod_Data.c` und `TrackingModLeaderboardData.c` - Datenstrukturen auf Multi-Var-Deklarationen pruefen
 - `TrackingModConfig.c` / `PVECategoryConfig.c` / `PVPCategoryConfig.c` - JSON-Laden-Logik auf Syntax-Fallen
 - `TrackingModMilestoneHelper.c` / `TrackingModMilestoneRewardLoader.c` - foreach-Schleifen mit Array-Manipulation
 
@@ -213,7 +213,7 @@ if (g_Game.IsDedicatedServer()) { ... }    // Server-Check
 - `1 < int.MIN` gibt TRUE in EnScript - Integer-Grenzwert-Vergleiche vermeiden
 
 **Mod-spezifische Schwerpunkte:**
-- `Ninjins_Tracking_Mod_Data.c` - `ref array<ref TrackingModPlayerData>` und aehnliche verschachtelte Referenzketten
+- `Psyerns_Tracking_Mod_Data.c` - `ref array<ref TrackingModPlayerData>` und aehnliche verschachtelte Referenzketten
 - `TrackingModAdminData.c` - Neu hinzugefuegte PVE/PVP Datenklassen mit `ref array<ref PVECategory>` etc.
 - `TrackingModMilestoneRewardLoader.c` - On-demand Laden von Reward-Dateien: NULL-Check nach JsonLoadFile
 - `TrackingModRewardHelper.c` - Reward-Zuweisung: Entity-Null-Checks nach `GetInventory()`, `FindAttachment()`
@@ -417,7 +417,7 @@ Pruefe:
 
 **config.cpp Regeln:**
 ```
-Ninjins_LeaderBoard/config.cpp
+Psyerns_Leaderboard/config.cpp
 ```
 - `requiredVersion` muss `0.1` sein
 - `requiredAddons[]` nur `"DZ_Data"` (und CF/Expansion falls hardte Dependency)

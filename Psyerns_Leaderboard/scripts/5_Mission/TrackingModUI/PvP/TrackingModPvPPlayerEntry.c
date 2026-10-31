@@ -142,12 +142,12 @@ class TrackingModPvPPlayerEntry: ScriptView
 		{
 			imagePath = m_SurvivorIconPathFemale;
 			if (m_SurvivorIconPathFemale == "")
-				imagePath = "Ninjins_LeaderBoard/gui/icons/survivor/female.edds";
+				imagePath = "Psyerns_Leaderboard/gui/icons/survivor/female.edds";
 			if (m_PlayerData.survivorType == "Male")
 			{
 				imagePath = m_SurvivorIconPathMale;
 				if (m_SurvivorIconPathMale == "")
-					imagePath = "Ninjins_LeaderBoard/gui/icons/survivor/male.edds";
+					imagePath = "Psyerns_Leaderboard/gui/icons/survivor/male.edds";
 			}
 			Survivor_Female.LoadImageFile(0, imagePath);
 		}
@@ -206,12 +206,12 @@ class TrackingModPvPPlayerEntry: ScriptView
 		{
 			imagePath = m_SurvivorIconPathFemale;
 			if (m_SurvivorIconPathFemale == "")
-				imagePath = "Ninjins_LeaderBoard/gui/icons/survivor/female.edds";
+				imagePath = "Psyerns_Leaderboard/gui/icons/survivor/female.edds";
 			if (m_PlayerData.survivorType == "Male")
 			{
 				imagePath = m_SurvivorIconPathMale;
 				if (m_SurvivorIconPathMale == "")
-					imagePath = "Ninjins_LeaderBoard/gui/icons/survivor/male.edds";
+					imagePath = "Psyerns_Leaderboard/gui/icons/survivor/male.edds";
 			}
 			Survivor_Female.LoadImageFile(0, imagePath);
 		}
@@ -310,7 +310,7 @@ class TrackingModPvPPlayerEntry: ScriptView
 		}
 		
 		Print("[TrackingMod UI] Sending ClaimTrackingModReward RPC to server...");
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "ClaimTrackingModReward", null, true, identity);
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "ClaimTrackingModReward", null, true, identity);
 		Print("[TrackingMod UI] ClaimTrackingModReward RPC sent");
 	}
 	
@@ -360,6 +360,6 @@ class TrackingModPvPPlayerEntry: ScriptView
 	
 	override string GetLayoutFile()
 	{
-		return "Ninjins_LeaderBoard\\GUI\\layouts\\PvP\\trackingModPvPPlayerEntry_mvc.layout";
+		return "Psyerns_Leaderboard\\GUI\\layouts\\PvP\\trackingModPvPPlayerEntry_mvc.layout";
 	}
 }

@@ -1,4 +1,4 @@
-# Ninjins LeaderBoard — DayZ Mod
+# Psyerns Leaderboard — DayZ Mod
 
 [![DayZ](https://img.shields.io/badge/DayZ-1.29+-blue)](https://dayz.com)
 [![Enforce Script](https://img.shields.io/badge/Enforce-Script-orange)](https://community.bistudio.com/wiki/DayZ:Enforce_Script_Syntax)
@@ -106,17 +106,17 @@
 
 1. **Copy the mod folder:**
    ```
-   Ninjins_LeaderBoard/
+   Psyerns_Leaderboard/
    ```
    into the DayZ server root directory.
 
 2. **Extend server startup parameters:**
    ```
-   -mod=@CF;@Ninjins_LeaderBoard
+   -mod=@CF;@Psyerns_Leaderboard
    ```
    > If NinjinsPvPPvE is used:
    > ```
-   > -mod=@CF;@NinjinsPvPPvE;@Ninjins_LeaderBoard
+   > -mod=@CF;@NinjinsPvPPvE;@Psyerns_Leaderboard
    > ```
 
 3. **Start the server** — configuration files will be automatically created under `$profile:Ninjins_Tracking_Mod\Data\`.
@@ -380,7 +380,7 @@ Defines the kill categories for the PvE leaderboard.
 }
 ```
 
-#### Client Logger (`$profile:Ninjins_LeaderBoard/LoggerConfig.json`)
+#### Client Logger (`$profile:Psyerns_Leaderboard/LoggerConfig.json`)
 ```json
 {
     "Level": 6
@@ -414,7 +414,7 @@ Key bindings can be changed in-game under **Options → Controls → Tracking Mo
 ## Project Structure
 
 ```
-Ninjins_LeaderBoard/
+Psyerns_Leaderboard/
 ├── config.cpp                          # Mod definition (CfgPatches, CfgMods)
 ├── stringtable.csv                     # Localization (EN)
 │
@@ -445,7 +445,7 @@ Ninjins_LeaderBoard/
 │   │   │   │   ├── PVPCategoryConfig.c         # PvP categories
 │   │   │   │   └── DeathCategoryConfig.c       # Death categories
 │   │   │   ├── Data/
-│   │   │   │   ├── Ninjins_Tracking_Mod_Data.c # Player data (PlayerDeathData)
+│   │   │   │   ├── Psyerns_Tracking_Mod_Data.c # Player data (PlayerDeathData)
 │   │   │   │   └── TrackingModLeaderboardData.c# Leaderboard data structures
 │   │   │   ├── Rewards/
 │   │   │   │   ├── TrackingModMilestoneHelper.c      # Milestone calculation
@@ -699,7 +699,7 @@ The following files/folders are automatically created on first start:
 
 ### Increasing the log level
 - Server: `$profile:Ninjins_Tracking_Mod/LoggerConfig.json` → `"Level": 6`
-- Client: `$profile:Ninjins_LeaderBoard/LoggerConfig.json` → `"Level": 6`
+- Client: `$profile:Psyerns_Leaderboard/LoggerConfig.json` → `"Level": 6`
 
 ---
 
@@ -718,4 +718,4 @@ This project is a community mod for DayZ Standalone. All rights to the game DayZ
 
 ---
 
-> **Questions, bugs or feature requests?** → [GitHub Issues](https://github.com/Psyern/Ninjins_Leaderboard/issues)
+> **Questions, bugs or feature requests?** → [GitHub Issues](https://github.com/Psyern/Ninjin_Leaderboard/issues)

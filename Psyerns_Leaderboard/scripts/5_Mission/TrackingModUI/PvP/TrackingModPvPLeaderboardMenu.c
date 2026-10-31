@@ -255,7 +255,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 			return;
 		
 		TrackingModUI.LogRPC(string.Format("[RPC] Preloading page %1/%2 from server", m_NextPreloadPage, m_MaxPreloadPage));
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", new Param1<int>(m_NextPreloadPage), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestTrackingModLeaderboard", new Param1<int>(m_NextPreloadPage), true, player.GetIdentity());
 		m_NextPreloadPage++;
 	}
 	
@@ -408,7 +408,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		if (!player || !player.GetIdentity())
 			return;
 		
-		GetRPCManager().SendRPC("Ninjins_LeaderBoard", "RequestTrackingModLeaderboard", new Param1<int>(page), true, player.GetIdentity());
+		GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestTrackingModLeaderboard", new Param1<int>(page), true, player.GetIdentity());
 	}
 	
 	void OnClickPageFirst()
@@ -593,7 +593,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 
 	override string GetLayoutFile()
 	{
-		return "Ninjins_LeaderBoard\\GUI\\layouts\\PvP\\trackingModPvPLeaderboard_mvc.layout";
+		return "Psyerns_Leaderboard\\GUI\\layouts\\PvP\\trackingModPvPLeaderboard_mvc.layout";
 	}
 	
 }
