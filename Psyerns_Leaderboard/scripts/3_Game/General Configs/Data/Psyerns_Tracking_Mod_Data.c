@@ -20,6 +20,9 @@ class PlayerDeathData
 	ref map<string, int> CategoryLongestRanges;
 	ref map<string, int> CategoryDeaths;
 	int PvEPoints;
+	// Shop purchases and admin grants. The points are rebuilt from kills, so they have to be kept apart.
+	int PvEPointAdjustment;
+	int PvPPointAdjustment;
 	int PvPPoints;
 	int playerIsOnline;
 	string survivorType;
@@ -137,6 +140,7 @@ class PlayerDeathData
 				}
 			}
 			
+			PvPPoints += PvPPointAdjustment;
 			if (PvPPoints < 0)
 				PvPPoints = 0;
 			return;
@@ -197,6 +201,7 @@ class PlayerDeathData
 			}
 		}
 		
+		PvPPoints += PvPPointAdjustment;
 		if (PvPPoints < 0)
 			PvPPoints = 0;
 	}
@@ -257,6 +262,7 @@ class PlayerDeathData
 				}
 			}
 			
+			PvEPoints += PvEPointAdjustment;
 			if (PvEPoints < 0)
 				PvEPoints = 0;
 			return;
@@ -321,6 +327,7 @@ class PlayerDeathData
 			}
 		}
 		
+		PvEPoints += PvEPointAdjustment;
 		if (PvEPoints < 0)
 			PvEPoints = 0;
 	}
@@ -870,7 +877,7 @@ class PlayerDeathData
 								if (g_TrackingModRewardConfig && g_TrackingModRewardConfig.EnableServerwideMilestoneNotification)
 								{
 									broadcastMsg = string.Format(g_TrackingModRewardConfig.ServerwideMilestoneMessage, PlayerName, milestone.ToString(), categoryID);
-									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "set:dayz_gui image:notify_special", ARGB(255, 255, 215, 0), 8.0, null);
+									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "Psyerns_Leaderboard/gui/icons/success.edds", ARGB(255, 255, 215, 0), 8.0, null);
 								}
 							}
 						}
@@ -946,7 +953,7 @@ class PlayerDeathData
 								if (g_TrackingModRewardConfig && g_TrackingModRewardConfig.EnableServerwideMilestoneNotification)
 								{
 									broadcastMsg = string.Format(g_TrackingModRewardConfig.ServerwideMilestoneMessage, PlayerName, milestone.ToString(), categoryID);
-									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "set:dayz_gui image:notify_special", ARGB(255, 255, 215, 0), 8.0, null);
+									NotificationSystem.Create(new StringLocaliser("Kill Streak!"), new StringLocaliser(broadcastMsg), "Psyerns_Leaderboard/gui/icons/success.edds", ARGB(255, 255, 215, 0), 8.0, null);
 								}
 							}
 						}

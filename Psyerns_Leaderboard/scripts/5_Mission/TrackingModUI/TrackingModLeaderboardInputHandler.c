@@ -7,6 +7,7 @@ modded class MissionBase
 	protected ref TrackingModPvPLeaderboardMenu m_PvPLeaderboardMenu;
 	protected ref TrackingModLeaderboardData m_LastLeaderboardData;
 	protected bool m_RPCRegistered = false;
+	protected bool m_NJN_StyleRequested = false;
 	
 	override void OnUpdate(float timeslice)
 	{
@@ -41,6 +42,13 @@ modded class MissionBase
 		player = PlayerBase.Cast(g_Game.GetPlayer());
 		if (!player)
 			return;
+
+		if (!m_NJN_StyleRequested && player.GetIdentity())
+		{
+			m_NJN_StyleRequested = true;
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestStyleConfig", null, true, player.GetIdentity());
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "RequestShopConfig", null, true, player.GetIdentity());
+		}
 
 		adminMenu = TrackingModAdminMenu.GetInstance();
 		adminInput = GetUApi().GetInputByName("UAOpenTrackingModAdminMenu");
@@ -149,6 +157,23 @@ modded class MissionBase
 			adminMenu.SetLeaderboardData(leaderboardData);
 	}
 	
+	void NJN_OpenShopMenu()
+	{
+		if (!g_TrackingModShopConfig || !g_TrackingModShopConfig.EnableShop)
+			return;
+
+		new TrackingModShopMenu();
+	}
+
+	void NJN_OpenAdminMenu()
+	{
+		TrackingModAdminMenu adminMenu;
+
+		adminMenu = new TrackingModAdminMenu();
+		if (adminMenu && m_LastLeaderboardData)
+			adminMenu.SetLeaderboardData(m_LastLeaderboardData);
+	}
+
 	void OpenTrackingModLeaderboardPVE()
 	{
 		PlayerBase player;
@@ -256,8 +281,7 @@ modded class MissionBase
 						uiPvePlayerData = leaderboardData.topPVEPlayers.Get(uiPveIdx);
 						if (uiPvePlayerData)
 						{
-							TrackingModUI.LogRPC(string.Format("  [%1] PlayerName[%2] PVEPoints[%3] IsOnline[%4] PlayerID[%5]", 
-								uiPveIdx + 1, uiPvePlayerData.playerName, uiPvePlayerData.pvePoints, uiPvePlayerData.isOnline, uiPvePlayerData.playerID));
+							TrackingModUI.LogRPC(string.Format("  [%1] PlayerName[%2] PVEPoints[%3] IsOnline[%4] PlayerID[%5]", uiPveIdx + 1, uiPvePlayerData.playerName, uiPvePlayerData.pvePoints, uiPvePlayerData.isOnline, uiPvePlayerData.playerID));
 						}
 					}
 				}
@@ -270,8 +294,7 @@ modded class MissionBase
 						uiPvpPlayerData = leaderboardData.topPVPPlayers.Get(uiPvpIdx);
 						if (uiPvpPlayerData)
 						{
-							TrackingModUI.LogRPC(string.Format("  [%1] PlayerName[%2] PVPPoints[%3] IsOnline[%4] PlayerID[%5]", 
-								uiPvpIdx + 1, uiPvpPlayerData.playerName, uiPvpPlayerData.pvpPoints, uiPvpPlayerData.isOnline, uiPvpPlayerData.playerID));
+							TrackingModUI.LogRPC(string.Format("  [%1] PlayerName[%2] PVPPoints[%3] IsOnline[%4] PlayerID[%5]", uiPvpIdx + 1, uiPvpPlayerData.playerName, uiPvpPlayerData.pvpPoints, uiPvpPlayerData.isOnline, uiPvpPlayerData.playerID));
 						}
 					}
 				}
@@ -508,6 +531,8 @@ modded class MissionBase
 		if (!ctx.Read(statsParam) || !statsParam || !statsParam.param1)
 			return;
 
+		TrackingModShopMenu.SetOwnStats(statsParam.param1);
+
 		pveMenu = TrackingModLeaderboardMenu.GetInstance();
 		if (pveMenu)
 			pveMenu.SetOwnPlayerStats(statsParam.param1);
@@ -539,6 +564,8 @@ modded class MissionBase
 			return;
 
 		g_TrackingModShopConfig = shopParam.param1;
+		if (TrackingModShopMenu.GetInstance())
+			TrackingModShopMenu.GetInstance().RefreshItems();
 	}
 
 	void ReceiveShopPurchaseResult(CallType type, ParamsReadContext ctx, PlayerIdentity sender, Object target)
@@ -555,9 +582,9 @@ modded class MissionBase
 		if (player && responseParam.param1.Message != "")
 		{
 			if (responseParam.param1.Success)
-				NotificationSystem.Create(new StringLocaliser("Shop"), new StringLocaliser(responseParam.param1.Message), "set:dayz_gui image:checkmark", ARGB(255, 0, 255, 0), 5.0, player.GetIdentity());
+				NotificationSystem.Create(new StringLocaliser("Shop"), new StringLocaliser(responseParam.param1.Message), "Psyerns_Leaderboard/gui/icons/success.edds", ARGB(255, 0, 255, 0), 5.0, player.GetIdentity());
 			else
-				NotificationSystem.Create(new StringLocaliser("Shop"), new StringLocaliser(responseParam.param1.Message), "set:dayz_gui image:cross", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
+				NotificationSystem.Create(new StringLocaliser("Shop"), new StringLocaliser(responseParam.param1.Message), "Psyerns_Leaderboard/gui/icons/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
 		}
 	}
 

@@ -359,7 +359,7 @@ class TrackingModRewardHelper
 				TrackingMod.LogInfo("[TrackingModRewardHelper] " + resultMessage);
 				if (player && player.GetIdentity())
 				{
-					NotificationSystem.Create(new StringLocaliser("Reward Claimed"), new StringLocaliser("Some items were placed on the ground due to full inventory."), "Ninjins_Tracking_Mod/gui/success.edds", ARGB(255, 255, 165, 0), 5.0, player.GetIdentity());
+					NotificationSystem.Create(new StringLocaliser("Reward Claimed"), new StringLocaliser("Some items were placed on the ground due to full inventory."), "Psyerns_Leaderboard/gui/icons/success.edds", ARGB(255, 255, 165, 0), 5.0, player.GetIdentity());
 				}
 			}
 			else
@@ -374,7 +374,7 @@ class TrackingModRewardHelper
 			TrackingMod.LogCritical("[TrackingModRewardHelper] Failed to spawn all items - expected " + rewardItems.Count().ToString() + " but only spawned " + (itemsAddedCount + itemsOnGroundCount).ToString() + "!");
 			if (player && player.GetIdentity())
 			{
-				NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser("Failed to spawn all reward items. Please try again."), "Ninjins_Tracking_Mod/gui/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
+				NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser("Failed to spawn all reward items. Please try again."), "Psyerns_Leaderboard/gui/icons/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
 			}
 			return false;
 		}
@@ -724,7 +724,7 @@ class TrackingModRewardHelper
 
 		title = new StringLocaliser("Cash Reward!");
 		message = new StringLocaliser(rewardAmount.ToString() + " " + currencyClassName + " for " + totalKills.ToString() + " " + categoryType + " kills!");
-		NotificationSystem.Create(title, message, "set:dayz_gui image:checkmark", ARGB(255, 0, 255, 0), 5.0, player.GetIdentity());
+		NotificationSystem.Create(title, message, "Psyerns_Leaderboard/gui/icons/success.edds", ARGB(255, 0, 255, 0), 5.0, player.GetIdentity());
 	}
 
 	static array<ref TrackingModCurrencyReward> SelectCurrencyRewards(array<ref TrackingModCurrencyReward> currencyRewards, int currencyMin, int currencyMax)

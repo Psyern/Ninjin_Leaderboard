@@ -108,6 +108,7 @@ class TrackingModAdminMenu: ScriptViewMenu
 		m_PVPConfigData = new TrackingModPVPAdminData();
 		m_SelectedPVECategoryIndex = -1;
 		m_SelectedPVPCategoryIndex = -1;
+		NJN_SetupView();
 	}
 
 	void ~TrackingModAdminMenu()
@@ -122,9 +123,9 @@ class TrackingModAdminMenu: ScriptViewMenu
 		return s_Instance;
 	}
 
-	override void OnWidgetScriptInit(Widget w)
+	// Dabs only builds the layout in the ScriptView constructor and never calls OnWidgetScriptInit on the view.
+	protected void NJN_SetupView()
 	{
-		super.OnWidgetScriptInit(w);
 		CacheWidgets();
 		LockControls();
 		SetActiveTab(0);

@@ -157,6 +157,8 @@ class TrackingModConfig
 	}
 	static TrackingModConfig LoadConfig()
 	{
+		string iconPath;
+
 		if (!g_Game.IsDedicatedServer())
 		{
 			return null;
@@ -178,8 +180,13 @@ class TrackingModConfig
 			if (config.WebExportMaxPlayers > 1000)
 				config.WebExportMaxPlayers = 1000;
 			// Configs written before the rename still point at the old addon folder.
-			config.SurvivorIconPathMale.Replace("Ninjins_LeaderBoard/", "Psyerns_Leaderboard/");
-			config.SurvivorIconPathFemale.Replace("Ninjins_LeaderBoard/", "Psyerns_Leaderboard/");
+			// string.Replace on a member does not change it, so it runs on locals.
+			iconPath = config.SurvivorIconPathMale;
+			iconPath.Replace("Ninjins_LeaderBoard/", "Psyerns_Leaderboard/");
+			config.SurvivorIconPathMale = iconPath;
+			iconPath = config.SurvivorIconPathFemale;
+			iconPath.Replace("Ninjins_LeaderBoard/", "Psyerns_Leaderboard/");
+			config.SurvivorIconPathFemale = iconPath;
 			config.SaveConfig();
 			Print("[TrackingMod] Config loaded from: " + TRACKING_MOD_CONFIG_FILE);
 			Print("[TrackingMod] Loaded values - MaxPVEPlayersDisplay: " + config.MaxPVEPlayersDisplay.ToString() + ", MaxPVPPlayersDisplay: " + config.MaxPVPPlayersDisplay.ToString() + ", ShowPlayerOnlineStatusPVE: " + config.ShowPlayerOnlineStatusPVE.ToString() + ", ShowPlayerOnlineStatusPVP: " + config.ShowPlayerOnlineStatusPVP.ToString());

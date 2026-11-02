@@ -4,14 +4,14 @@
         <actions>
 			<input name="UAOpenTrackingModLeaderboardPVE" loc="STR_tracking_mod_open_leaderboard_pve" />
 			<input name="UAOpenTrackingModLeaderboardPVP" loc="STR_tracking_mod_open_leaderboard_pvp" />
-			<input name="UAOpenTrackingModAdminMenu" loc="AdminMenu" />
+			<input name="UAOpenTrackingModAdminMenu" loc="STR_tracking_mod_open_admin_menu" />
         </actions>
-    </inputs>
-	<sorting name="PsyernsMods" loc="PsyernsMods">
+	<sorting name="psyern" loc="Psyern's">
 		<input name="UAOpenTrackingModLeaderboardPVE"/>
 		<input name="UAOpenTrackingModLeaderboardPVP"/>
 		<input name="UAOpenTrackingModAdminMenu"/>
 	</sorting>
+    </inputs>
     <preset>
 		<input name="UAOpenTrackingModLeaderboardPVE">
             <btn name="kF5"/>

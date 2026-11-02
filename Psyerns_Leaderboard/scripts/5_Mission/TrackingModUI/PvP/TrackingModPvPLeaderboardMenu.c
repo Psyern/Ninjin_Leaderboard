@@ -9,6 +9,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 	protected int m_NextPreloadPage;
 	protected int m_MaxPreloadPage;
 	protected ButtonWidget m_SettingsButton;
+	protected ButtonWidget m_NJN_ShopButton;
 	protected ref TrackingModLeaderboardPlayerData m_NJN_OwnPlayerStats;
 
 	void TrackingModPvPLeaderboardMenu()
@@ -21,6 +22,7 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		m_NextPreloadPage = 0;
 		m_MaxPreloadPage = 0;
 		TrackingModColumnSort.ClearSort();
+		NJN_SetupView();
 	}
 
 	void ~TrackingModPvPLeaderboardMenu()
@@ -41,9 +43,9 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		m_NJN_OwnPlayerStats = ownStats;
 	}
 	
-	override void OnWidgetScriptInit(Widget w)
+	// Dabs only builds the layout in the ScriptView constructor and never calls OnWidgetScriptInit on the view.
+	protected void NJN_SetupView()
 	{
-		super.OnWidgetScriptInit(w);
 		InitializeWidgets();
 		LockControls();
 		SetFocus(GetLayoutRoot());
@@ -56,6 +58,9 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 
 		m_SettingsButton = ButtonWidget.Cast(GetLayoutRoot().FindAnyWidget("settings_button"));
 		UpdateSettingsButtonVisibility();
+		m_NJN_ShopButton = ButtonWidget.Cast(GetLayoutRoot().FindAnyWidget("shop_button"));
+		if (m_NJN_ShopButton)
+			m_NJN_ShopButton.Show(g_TrackingModShopConfig && g_TrackingModShopConfig.EnableShop);
 		UpdateSortIndicators();
 	}
 
@@ -462,19 +467,25 @@ class TrackingModPvPLeaderboardMenu: ScriptViewMenu
 		m_SettingsButton.Show(m_LeaderboardData.isAdmin);
 	}
 
-	void OnClickSettings()
+	void OnClickShop()
 	{
-		TrackingModAdminMenu adminMenu;
-
-		if (!m_LeaderboardData || !m_LeaderboardData.isAdmin)
+		if (!g_TrackingModShopConfig || !g_TrackingModShopConfig.EnableShop)
 			return;
-
-		adminMenu = new TrackingModAdminMenu();
-		if (adminMenu)
-			adminMenu.SetLeaderboardData(m_LeaderboardData);
 
 		ClearCache();
 		Close();
+		// A menu opened on top of this one would be closed together with it.
+		g_Game.GetCallQueue(CALL_CATEGORY_GUI).CallLaterByName(g_Game.GetMission(), "NJN_OpenShopMenu", 100, false);
+	}
+
+	void OnClickSettings()
+	{
+		if (!m_LeaderboardData || !m_LeaderboardData.isAdmin)
+			return;
+
+		ClearCache();
+		Close();
+		g_Game.GetCallQueue(CALL_CATEGORY_GUI).CallLaterByName(g_Game.GetMission(), "NJN_OpenAdminMenu", 100, false);
 	}
 	
 	void LockControls()

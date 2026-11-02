@@ -763,8 +763,7 @@ modded class MissionServer extends MissionBase
 				sentPvePlayerData = leaderboardData.topPVEPlayers.Get(sentPveIdx);
 				if (sentPvePlayerData)
 				{
-					TrackingMod.LogRPC(string.Format("  [%1] PlayerName[%2] PVEPoints[%3] IsOnline[%4] PlayerID[%5]", 
-						sentPveIdx + 1, sentPvePlayerData.playerName, sentPvePlayerData.pvePoints, sentPvePlayerData.isOnline, sentPvePlayerData.playerID));
+					TrackingMod.LogRPC(string.Format("  [%1] PlayerName[%2] PVEPoints[%3] IsOnline[%4] PlayerID[%5]", sentPveIdx + 1, sentPvePlayerData.playerName, sentPvePlayerData.pvePoints, sentPvePlayerData.isOnline, sentPvePlayerData.playerID));
 				}
 			}
 		}
@@ -777,8 +776,7 @@ modded class MissionServer extends MissionBase
 				sentPvpPlayerData = leaderboardData.topPVPPlayers.Get(sentPvpIdx);
 				if (sentPvpPlayerData)
 				{
-					TrackingMod.LogRPC(string.Format("  [%1] PlayerName[%2] PVPPoints[%3] IsOnline[%4] PlayerID[%5]", 
-						sentPvpIdx + 1, sentPvpPlayerData.playerName, sentPvpPlayerData.pvpPoints, sentPvpPlayerData.isOnline, sentPvpPlayerData.playerID));
+					TrackingMod.LogRPC(string.Format("  [%1] PlayerName[%2] PVPPoints[%3] IsOnline[%4] PlayerID[%5]", sentPvpIdx + 1, sentPvpPlayerData.playerName, sentPvpPlayerData.pvpPoints, sentPvpPlayerData.isOnline, sentPvpPlayerData.playerID));
 				}
 			}
 		}
@@ -975,6 +973,14 @@ modded class MissionServer extends MissionBase
 			return;
 		}
 
+		if ((usePvEPoints && g_TrackingModShopConfig.PointType == "PvP") || (!usePvEPoints && g_TrackingModShopConfig.PointType == "PvE"))
+		{
+			response.Success = false;
+			response.Message = "Dieser Punktetyp ist im Shop nicht erlaubt";
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceiveShopPurchaseResult", new Param1<TrackingModAdminSaveResponse>(response), true, sender);
+			return;
+		}
+
 		if (amount < 1)
 			amount = 1;
 		if (amount > shopItem.MaxPerPurchase)
@@ -1073,10 +1079,18 @@ modded class MissionServer extends MissionBase
 
 		if (spawned > 0)
 		{
+			// Only items that really spawned are charged.
+			totalCost = price * spawned;
 			if (usePvEPoints)
-				buyerData.PvEPoints = buyerData.PvEPoints - totalCost;
+			{
+				buyerData.PvEPointAdjustment = buyerData.PvEPointAdjustment - totalCost;
+				buyerData.UpdatePVEPoints();
+			}
 			else
-				buyerData.PvPPoints = buyerData.PvPPoints - totalCost;
+			{
+				buyerData.PvPPointAdjustment = buyerData.PvPPointAdjustment - totalCost;
+				buyerData.UpdatePVPPoints();
+			}
 
 			data.SavePlayerData(buyerData, senderID);
 			data.MarkLeaderboardDirty();
@@ -1084,6 +1098,7 @@ modded class MissionServer extends MissionBase
 
 			response.Success = true;
 			response.Message = spawned.ToString() + "x " + shopItem.DisplayName + " gekauft fuer " + totalCost.ToString() + " Points";
+			GetRPCManager().SendRPC("Psyerns_Leaderboard", "ReceivePlayerOwnStats", new Param1<TrackingModLeaderboardPlayerData>(CreateLeaderboardPlayerData(buyerData)), true, sender);
 			TrackingMod.LogInfo("[Shop] " + sender.GetName() + " purchased " + spawned.ToString() + "x " + itemClassName + " for " + totalCost.ToString() + " points");
 		}
 		else
@@ -1228,6 +1243,8 @@ modded class MissionServer extends MissionBase
 
 		targetData.PvEPoints = 0;
 		targetData.PvPPoints = 0;
+		targetData.PvEPointAdjustment = 0;
+		targetData.PvPPointAdjustment = 0;
 		data.SavePlayerData(targetData, targetPlayerID);
 		data.MarkLeaderboardDirty();
 		data.RebuildSortedLists();
@@ -1279,9 +1296,15 @@ modded class MissionServer extends MissionBase
 		}
 
 		if (isPvE)
-			targetData.PvEPoints = targetData.PvEPoints + amount;
+		{
+			targetData.PvEPointAdjustment = targetData.PvEPointAdjustment + amount;
+			targetData.UpdatePVEPoints();
+		}
 		else
-			targetData.PvPPoints = targetData.PvPPoints + amount;
+		{
+			targetData.PvPPointAdjustment = targetData.PvPPointAdjustment + amount;
+			targetData.UpdatePVPPoints();
+		}
 
 		data.SavePlayerData(targetData, targetPlayerID);
 		data.MarkLeaderboardDirty();
@@ -1994,7 +2017,7 @@ modded class MissionServer extends MissionBase
 					{
 						rewardNotificationText = "Failed to claim reward \"" + rewardDisplayName + "\". Your inventory may be full. Please make space and try again.";
 					}
-					NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser(rewardNotificationText), "Ninjins_Tracking_Mod/gui/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
+					NotificationSystem.Create(new StringLocaliser("Reward Claim Failed"), new StringLocaliser(rewardNotificationText), "Psyerns_Leaderboard/gui/icons/error.edds", ARGB(255, 255, 0, 0), 5.0, player.GetIdentity());
 				}
 				calculatedPendingRewards = TrackingModMilestoneHelper.CalculatePendingRewards(playerData);
 				response = new TrackingModRewardClaimResponse();
@@ -2028,7 +2051,7 @@ modded class MissionServer extends MissionBase
 			{
 				rewardNotificationText = "Reward \"" + rewardDisplayName + "\" has been added to your inventory.";
 			}
-			NotificationSystem.Create(new StringLocaliser("Reward Claimed"), new StringLocaliser(rewardNotificationText), "Ninjins_Tracking_Mod/gui/success.edds", ARGB(255, 0, 255, 0), 3.0, player.GetIdentity());
+			NotificationSystem.Create(new StringLocaliser("Reward Claimed"), new StringLocaliser(rewardNotificationText), "Psyerns_Leaderboard/gui/icons/success.edds", ARGB(255, 0, 255, 0), 3.0, player.GetIdentity());
 		}
 		
 		response = new TrackingModRewardClaimResponse();

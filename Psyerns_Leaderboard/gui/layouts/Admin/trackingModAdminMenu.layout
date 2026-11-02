@@ -168,6 +168,7 @@ FrameWidgetClass TrackingModAdminMenu {
          style DayZDefaultPanel
          {
           ButtonWidgetClass btn_tab_general {
+           scriptclass "ViewBinding"
            visible 1
            color 1 0.5 0 1
            position 0.01 0.08
@@ -186,6 +187,7 @@ FrameWidgetClass TrackingModAdminMenu {
            }
           }
           ButtonWidgetClass btn_tab_pve {
+           scriptclass "ViewBinding"
            visible 1
            color 0.3 0.3 0.3 1
            position 0.14 0.08
@@ -204,6 +206,7 @@ FrameWidgetClass TrackingModAdminMenu {
            }
           }
           ButtonWidgetClass btn_tab_pvp {
+           scriptclass "ViewBinding"
            visible 1
            color 0.3 0.3 0.3 1
            position 0.25 0.08
@@ -222,6 +225,7 @@ FrameWidgetClass TrackingModAdminMenu {
            }
           }
           ButtonWidgetClass btn_tab_milestones {
+           scriptclass "ViewBinding"
            visible 1
            color 0.3 0.3 0.3 1
            position 0.36 0.08
@@ -240,6 +244,7 @@ FrameWidgetClass TrackingModAdminMenu {
            }
           }
           ButtonWidgetClass btn_tab_rewards {
+           scriptclass "ViewBinding"
            visible 1
            color 0.3 0.3 0.3 1
            position 0.51 0.08
@@ -257,8 +262,8 @@ FrameWidgetClass TrackingModAdminMenu {
             }
            }
           }
-         }
           ButtonWidgetClass btn_tab_players {
+           scriptclass "ViewBinding"
            visible 1
            color 0.3 0.3 0.3 1
            position 0.63 0.08
@@ -276,6 +281,7 @@ FrameWidgetClass TrackingModAdminMenu {
             }
            }
           }
+         }
         }
         PanelWidgetClass content_container {
          visible 1
@@ -347,6 +353,7 @@ FrameWidgetClass TrackingModAdminMenu {
                      font "gui/fonts/metronbook14"
                     }
                     ButtonWidgetClass btn_add_admin_id {
+                     scriptclass "ViewBinding"
                      color 0 0.8 0 1
                      position 0.64 0.44
                      size 0.15 0.16
@@ -360,6 +367,7 @@ FrameWidgetClass TrackingModAdminMenu {
                      }
                     }
                     ButtonWidgetClass btn_remove_admin_id {
+                     scriptclass "ViewBinding"
                      color 0.8 0 0 1
                      position 0.81 0.44
                      size 0.15 0.16
@@ -768,7 +776,6 @@ FrameWidgetClass TrackingModAdminMenu {
                      size 0.94 0.52
                      text "Dieses Menue bildet das neue In-Game-Admin-Design ab. Schreib-RPCs, Validierung und Live-Reload koennen nun schrittweise auf diese UI aufgesetzt werden."
                      font "gui/fonts/metronbook14"
-                     multiline 1
                     }
                    }
                   }
@@ -778,6 +785,7 @@ FrameWidgetClass TrackingModAdminMenu {
               }
              }
             }
+          }
           }
           PanelWidgetClass tab_pve_panel {
            visible 0
@@ -813,6 +821,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_add_pve_category {
+               scriptclass "ViewBinding"
                color 0 0.8 0 1
                position 0.73 0.42
                size 0.25 0.24
@@ -919,6 +928,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_add_pve_entry {
+               scriptclass "ViewBinding"
                color 0 0.8 0 1
                position 0.02 0.88
                size 0.3 0.07
@@ -932,6 +942,7 @@ FrameWidgetClass TrackingModAdminMenu {
                }
               }
               ButtonWidgetClass btn_delete_pve_entry {
+               scriptclass "ViewBinding"
                color 0.8 0.2 0.2 1
                position 0.34 0.88
                size 0.3 0.07
@@ -945,6 +956,7 @@ FrameWidgetClass TrackingModAdminMenu {
                }
               }
               ButtonWidgetClass btn_delete_pve_category {
+               scriptclass "ViewBinding"
                color 0.8 0 0 1
                position 0.68 0.88
                size 0.3 0.07
@@ -995,6 +1007,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_add_pvp_category {
+               scriptclass "ViewBinding"
                color 0 0.8 0 1
                position 0.73 0.42
                size 0.25 0.24
@@ -1088,6 +1101,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_add_pvp_entry {
+               scriptclass "ViewBinding"
                color 0 0.8 0 1
                position 0.02 0.88
                size 0.3 0.07
@@ -1101,6 +1115,7 @@ FrameWidgetClass TrackingModAdminMenu {
                }
               }
               ButtonWidgetClass btn_delete_pvp_entry {
+               scriptclass "ViewBinding"
                color 0.8 0.2 0.2 1
                position 0.34 0.88
                size 0.3 0.07
@@ -1114,6 +1129,7 @@ FrameWidgetClass TrackingModAdminMenu {
                }
               }
               ButtonWidgetClass btn_delete_pvp_category {
+               scriptclass "ViewBinding"
                color 0.8 0 0 1
                position 0.68 0.88
                size 0.3 0.07
@@ -1421,6 +1437,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_search_player {
+               scriptclass "ViewBinding"
                color 0.2 0.6 0.8 1
                position 0.7 0.15
                size 0.28 0.7
@@ -1481,6 +1498,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_wipe_player_data {
+               scriptclass "ViewBinding"
                color 0.8 0 0 1
                position 0.02 0.18
                size 0.45 0.07
@@ -1494,6 +1512,7 @@ FrameWidgetClass TrackingModAdminMenu {
                }
               }
               ButtonWidgetClass btn_wipe_player_points {
+               scriptclass "ViewBinding"
                color 0.8 0.3 0 1
                position 0.5 0.18
                size 0.45 0.07
@@ -1521,6 +1540,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_award_pve_points {
+               scriptclass "ViewBinding"
                color 0 0.6 0.2 1
                position 0.5 0.3
                size 0.23 0.06
@@ -1534,6 +1554,7 @@ FrameWidgetClass TrackingModAdminMenu {
                }
               }
               ButtonWidgetClass btn_award_pvp_points {
+               scriptclass "ViewBinding"
                color 0.2 0.4 0.8 1
                position 0.75 0.3
                size 0.23 0.06
@@ -1576,6 +1597,7 @@ FrameWidgetClass TrackingModAdminMenu {
                font "gui/fonts/metronbook14"
               }
               ButtonWidgetClass btn_award_item {
+               scriptclass "ViewBinding"
                color 0.6 0.4 0.8 1
                position 0.82 0.42
                size 0.16 0.06
@@ -1630,6 +1652,7 @@ FrameWidgetClass TrackingModAdminMenu {
            }
           }
           ButtonWidgetClass btn_save_apply {
+           scriptclass "ViewBinding"
            visible 1
            color 0.102 1 0 1
            position 0.62 0.15
@@ -1644,6 +1667,7 @@ FrameWidgetClass TrackingModAdminMenu {
            }
           }
           ButtonWidgetClass btn_close_admin {
+           scriptclass "ViewBinding"
            visible 1
            color 0.8 0 0 1
            position 0.82 0.15
